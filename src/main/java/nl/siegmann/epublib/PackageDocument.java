@@ -73,6 +73,7 @@ public class PackageDocument {
 		writer.writeAttribute("id", writeAction.getNcxId());;
 		writer.writeAttribute("href", writeAction.getNcxHref());
 		writer.writeAttribute("media-type", writeAction.getNcxMediaType());
+		writer.writeEndElement(); // item
 		writer.writeEndElement(); // manifest
 
 		writer.writeStartElement(NAMESPACE_OPF, "spine");
