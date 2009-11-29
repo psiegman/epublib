@@ -19,6 +19,21 @@
             <version>1.0-rc-3</version>
         </dependency>
 		<dependency>
+			<groupId>net.sourceforge.htmlcleaner</groupId>
+			<artifactId>htmlcleaner</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>args4j</groupId>
+			<artifactId>args4j</artifactId>
+			<version>2.0.16</version>
+		</dependency>
+		<dependency>
+		  <groupId>commons-lang</groupId>
+		  <artifactId>commons-lang</artifactId>
+		  <version>2.4</version>
+		</dependency>
+		<dependency>
 		  <groupId>commons-io</groupId>
 		  <artifactId>commons-io</artifactId>
 		  <version>1.4</version>
@@ -37,6 +52,19 @@
         </dependency>
     </dependencies>
 
+	<repositories>
+		<repository>
+			<id>net.java.repository</id>
+			<name>Java.net repository</name>
+			<url>http://download.java.net/maven/2/</url>
+		</repository>
+		<repository>
+			<id>org.hippocms</id>
+			<name>Hosts htmlcleaner</name>
+			<url>http://repository.hippocms.org/maven2/</url>
+		</repository>
+	</repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -46,10 +74,12 @@
                 <executions>
                     <execution>
                         <goals>
+<!-- 
                             <goal>generateStubs</goal>
                             <goal>compile</goal>
                             <goal>generateTestStubs</goal>
                             <goal>testCompile</goal>
+-->                            
                         </goals>
                     </execution>
                 </executions>

@@ -1,15 +1,24 @@
 package nl.siegmann.epublib;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Section {
 	private String id;
 	private String name;
 	private String href;
+	private List<Section> children;
 	
 	public Section(String id, String name, String href) {
+		this(id, name, href, new ArrayList<Section>());
+	}
+	
+	public Section(String id, String name, String href, List<Section> children) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.href = href;
+		this.children = children;
 	}
 	
 	public String getId() {
@@ -29,6 +38,14 @@ public class Section {
 	}
 	public void setHref(String href) {
 		this.href = href;
+	}
+
+	public List<Section> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<Section> children) {
+		this.children = children;
 	}
 	
 	

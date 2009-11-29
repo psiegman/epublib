@@ -10,7 +10,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-public class NCX {
+public class NCXDocument {
 	
 	public static final String NAMESPACE_NCX = "http://www.daisy.org/z3986/2005/ncx/";
 	public static final String PREFIX_NCX = "ncx";
