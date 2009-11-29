@@ -84,6 +84,7 @@ public class PackageDocument {
 		writer.writeEndElement(); // spine
 
 		writer.writeEndElement(); // package
+		writer.writeEndDocument();
 	}
 		/*
  
