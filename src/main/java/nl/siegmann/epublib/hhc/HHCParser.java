@@ -47,18 +47,111 @@ public class HHCParser {
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		Node ulNode = (Node) xpath.evaluate("body/ul", hhcDocument
 				.getDocumentElement(), XPathConstants.NODE);
-		result.setSections(processUlNode(xpath, chmRootDir, ulNode));
-		System.out.println("hi");
+		result.setSections(processUlNode(ulNode)); // processUlNode(xpath, chmRootDir, ulNode));
 		result.setResources(findResources(chmRootDir));
 		return result;
 	}
 	
+	/*
+	 * Sometimes the structure is:
+	 * <li> <!-- parent element -->
+	 * 	<object> ... </object>
+	 *  <ul> ... </ul> <!-- child elements -->
+	 * </li>
+	 * 
+	 * And sometimes:
+	 * <li> <!-- parent element -->
+	 * 	<object> ... </object>
+	 * </li>
+	 * <ul> ... </ul> <!-- child elements -->
+	 */
+	private static List<Section> processUlNode(Node ulNode) {
+		List<Section> result = new ArrayList<Section>();
+		NodeList children = ulNode.getChildNodes();
+		for(int i = 0; i < children.getLength(); i++) {
+			Node node = children.item(i);
+			if(node.getNodeName().equals("li")) {
+				List<Section> section = processLiNode(node);
+				result.addAll(section);
+			} else if(node.getNodeName().equals("ul")) {
+				List<Section> childSections = processUlNode(node);
+				if(result.isEmpty()) {
+					result = childSections;
+				} else {
+					result.get(result.size() - 1).getChildren().addAll(childSections);
+				}
+			}
+		}
+		return result;
+	}
+
+	
+	private static List<Section> processLiNode(Node liNode) {
+		List<Section> result = new ArrayList<Section>();
+		NodeList children = liNode.getChildNodes();
+		for(int i = 0; i < children.getLength(); i++) {
+			Node node = children.item(i);
+			if(node.getNodeName().equals("object")) {
+				Section section = processObjectNode(node);
+				if(section != null) {
+					result.add(section);
+				}
+			} else if(node.getNodeName().equals("ul")) {
+				List<Section> childSections = processUlNode(node);
+				if(result.isEmpty()) {
+					result = childSections;
+				} else {
+					result.get(result.size() - 1).getChildren().addAll(childSections);
+				}
+			}
+		}
+		return result;
+	}
+
+	
+	/**
+	 * Processes a CHM object node into a Section
+	 * 
+	 * <object type="text/sitemap">
+	 * 		<param name="Name" value="My favorite section" />
+	 * 		<param name="Local" value="section123.html" />
+	 *		<param name="ImageNumber" value="2" />
+	 * </object>
+	 * 
+	 * @param objectNode
+	 * 
+	 * @return A Section of the object has a non-blank param child with name 'Name' and a non-blank param name 'Local'
+	 */
+	private static Section processObjectNode(Node objectNode) {
+		Section result = null;
+		NodeList children = objectNode.getChildNodes();
+		String name = null;
+		String href = null;
+		for(int i = 0; i < children.getLength(); i++) {
+			Node node = children.item(i);
+			if(node.getNodeName().equals("param")) {
+				String paramName = ((Element) node).getAttribute("name");
+				if("Name".equals(paramName)) {
+					name = ((Element) node).getAttribute("value");
+				} else if("Local".equals(paramName)) {
+					href = ((Element) node).getAttribute("value");
+				}
+			}
+		}
+		if((! (StringUtils.isBlank(name)) && (! StringUtils.isBlank(href)))) {
+			result = new Section(href, name, href);
+		}
+		return result;
+	}
+
+
+	@SuppressWarnings("unchecked")
 	private static List<Resource> findResources(File rootDir) throws IOException {
 		List<Resource> result = new ArrayList<Resource>();
-		Iterator fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+		Iterator<File> fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		while(fileIter.hasNext()) {
-			File file = (File) fileIter.next();
-			System.out.println("file:" + file);
+			File file = fileIter.next();
+//			System.out.println("file:" + file);
 			if(file.isDirectory()) {
 				continue;
 			}
@@ -69,32 +162,6 @@ public class HHCParser {
 			String href = file.getCanonicalPath().substring(rootDir.getCanonicalPath().length() + 1);
 			result.add(new FileResource(file, href, mediaType));
 		}
-		return result;
-	}
-
-	private static List<Section> processUlNode(XPath xpath, File rootDir, Node ulNode) throws XPathExpressionException {
-		List<Section> result = new ArrayList<Section>();
-		NodeList liNodes = (NodeList) xpath.evaluate("li", ulNode,
-				XPathConstants.NODESET);
-		for (int i = 0; i < liNodes.getLength(); i++) {
-			Node objectNode = (Node) xpath.evaluate("object", liNodes.item(i),
-					XPathConstants.NODE);
-			String name = ((Element) xpath.evaluate("param[@name = 'Name']",
-					objectNode, XPathConstants.NODE)).getAttribute("value");
-			String href = ((Element) xpath.evaluate("param[@name = 'Local']",
-					objectNode, XPathConstants.NODE)).getAttribute("value");
-			// System.out.println(HHCParser.class.getName() + " node:" +
-			// nodes.item(i).getNodeName());
-			Section section = new Section(href, name, href);
-			result.add(section);
-			Node childUlNode = (Node) xpath.evaluate("ul", liNodes.item(i), XPathConstants.NODE);
-			if (childUlNode != null) {
-				section.setChildren(processUlNode(xpath, rootDir, childUlNode));
-			}
-			System.out.println(HHCParser.class.getName() + " name:" + name
-					+ ", href:" + href);
-		}
-		System.out.println("done with sections");
 		return result;
 	}
 
