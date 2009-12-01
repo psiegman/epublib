@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public class Book {
 	private String title = "";
-	private List<Section> sections = new ArrayList<Section>();
     private String rights = "";
 	private String uid = UUID.randomUUID().toString();
 	private List<Author> authors = new ArrayList<Author>();
@@ -15,6 +14,9 @@ public class Book {
 	private Date date = new Date();
 	private String language = "";
 	
+	private List<Section> sections = new ArrayList<Section>();
+	private List<Resource> resources = new ArrayList<Resource>();
+
 	public String getTitle() {
 		return title;
 	}
@@ -62,5 +64,11 @@ public class Book {
 	}
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+	public List<Resource> getResources() {
+		return resources;
+	}
+	public void setResources(List<Resource> resources) {
+		this.resources = resources;
 	}
 }

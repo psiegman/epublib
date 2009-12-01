@@ -69,11 +69,19 @@ public class PackageDocument {
 		writer.writeEndElement(); // dc:metadata
 
 		writer.writeStartElement(NAMESPACE_OPF, "manifest");
-		writer.writeStartElement(NAMESPACE_OPF, "item");
-		writer.writeAttribute("id", writeAction.getNcxId());;
+
+		writer.writeEmptyElement(NAMESPACE_OPF, "item");
+		writer.writeAttribute("id", writeAction.getNcxId());
 		writer.writeAttribute("href", writeAction.getNcxHref());
 		writer.writeAttribute("media-type", writeAction.getNcxMediaType());
-		writer.writeEndElement(); // item
+
+		for(Resource resource: book.getResources()) {
+			writer.writeEmptyElement(NAMESPACE_OPF, "item");
+			writer.writeAttribute("id", resource.getHref());
+			writer.writeAttribute("href", resource.getHref());
+			writer.writeAttribute("media-type", resource.getMediaType());
+		}
+		
 		writer.writeEndElement(); // manifest
 
 		writer.writeStartElement(NAMESPACE_OPF, "spine");

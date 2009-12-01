@@ -3,6 +3,7 @@ package nl.siegmann.epublib;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventFactory;
@@ -66,24 +67,33 @@ public class NCXDocument {
 			writer.writeEndElement();
 		}
 		writer.writeStartElement(NAMESPACE_NCX, "navMap");
-		for(int i = 0; i < book.getSections().size(); i++) {
-			Section section = book.getSections().get(i);
+		writeNavPoints(book.getSections(), 1, writer);
+		writer.writeEndElement();
+		writer.writeEndElement();
+		writer.writeEndDocument();
+	}
+
+
+	private static int writeNavPoints(List<Section> sections, int playOrder,
+			XMLStreamWriter writer) throws XMLStreamException {
+		for(Section section: sections) {
 			writer.writeStartElement(NAMESPACE_NCX, "navPoint");
-			writer.writeAttribute("id", "navPoint-" + (i + 1));
-			writer.writeAttribute("playOrder", String.valueOf(i + 1));
+			writer.writeAttribute("id", "navPoint-" + playOrder);
+			writer.writeAttribute("playOrder", String.valueOf(playOrder));
 			writer.writeAttribute("class", "chapter");
 			writer.writeStartElement(NAMESPACE_NCX, "navLabel");
 			writer.writeStartElement(NAMESPACE_NCX, "text");
 			writer.writeCharacters(section.getName());
-			writer.writeEndElement();
-			writer.writeEndElement();
-			writer.writeStartElement(NAMESPACE_NCX, "content");
-			writer.writeCharacters(section.getHref());
-			writer.writeEndElement();
-			writer.writeEndElement();
+			writer.writeEndElement(); // text
+			writer.writeEndElement(); // navLabel
+			writer.writeEmptyElement(NAMESPACE_NCX, "content");
+			writer.writeAttribute("src", section.getHref());
+			playOrder++;
+			if(! section.getChildren().isEmpty()) {
+				playOrder = writeNavPoints(section.getChildren(), playOrder, writer);
+			}
+			writer.writeEndElement(); // navPoint
 		}
-		writer.writeEndElement();
-		writer.writeEndElement();
-		writer.writeEndDocument();
+		return playOrder;
 	}
 }

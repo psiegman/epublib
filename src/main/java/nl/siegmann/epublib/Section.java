@@ -46,7 +46,5 @@ public class Section {
 
 	public void setChildren(List<Section> children) {
 		this.children = children;
-	}
-	
-	
+	}	
 }
