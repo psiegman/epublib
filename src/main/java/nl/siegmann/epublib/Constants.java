@@ -5,5 +5,6 @@ public interface Constants {
 
 	public interface MediaTypes {
 		String xhtml = "application/xhtml+xml";
+		String epub = "application/epub+zip";
 	}
 }

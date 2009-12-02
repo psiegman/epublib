@@ -17,8 +17,10 @@ public class HHCParserTest extends TestCase {
 
 	public void test1() {
 		try {
-			String root = "/home/paul/project/private/library/chm/peaa/";
-			String testHhc =  root + "0321127420.hhc";
+			String root = "/home/paul/project/veh/backbase/Backbase_Rich_Portal_4.1/documentation/client/Reference/ref/";
+			String testHhc =  root + "Reference.hhc";
+//			String root = "/home/paul/project/private/library/chm/peaa/";
+//			String testHhc =  root + "0321127420.hhc";
 			Book book = HHCParser.parseHhc(new File(testHhc), new File(root));
 			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/foo"));
 		} catch (IOException e) {
