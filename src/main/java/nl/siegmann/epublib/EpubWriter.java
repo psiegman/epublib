@@ -1,10 +1,12 @@
 package nl.siegmann.epublib;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventFactory;
@@ -12,7 +14,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.io.FileUtils;
+import nl.siegmann.epublib.html.htmlcleaner.XmlSerializer;
+
+import org.apache.log4j.Logger;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -22,46 +28,79 @@ import org.apache.commons.io.FileUtils;
  */
 public class EpubWriter {
 	
-	public void write(Book book, OutputStream out) throws IOException, XMLStreamException, FactoryConfigurationError {
-		File resultDir = new File("/home/paul/tmp/epublib");
-		writeMimeType(resultDir);
-		File oebpsDir = new File(resultDir.getAbsolutePath() + File.separator + "OEBPS");
-		FileUtils.forceMkdir(oebpsDir);
-		writeContainer(resultDir);
-		writeNcxDocument(book, oebpsDir);
-		writePackageDocument(book, oebpsDir);
+	private final static Logger logger = Logger.getLogger(EpubWriter.class); 
+	
+	private HtmlCleaner htmlCleaner;
+	private XmlSerializer xmlSerializer;
+	private XMLOutputFactory xmlOutputFactory;
+	
+	public EpubWriter() {
+		this.htmlCleaner = new HtmlCleaner();
+		xmlSerializer = new XmlSerializer(htmlCleaner.getProperties());
+		xmlOutputFactory = XMLOutputFactory.newInstance();
 	}
 	
-	private void writePackageDocument(Book book, File oebpsDir) throws XMLStreamException, IOException {
+	
+	public void write(Book book, OutputStream out) throws IOException, XMLStreamException, FactoryConfigurationError {
+		ZipOutputStream resultStream = new ZipOutputStream(out);
+		writeMimeType(resultStream);
+		writeContainer(resultStream);
+		writeResources(book, resultStream);
+		writeNcxDocument(book, resultStream);
+		writePackageDocument(book, resultStream);
+		resultStream.close();
+	}
+	
+	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
+		for(Resource resource: book.getResources()) {
+			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
+			resource.writeResource(resultStream, this);
+		}
+	}
+	
+	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
+		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
 		XMLOutputFactory xmlOutputFactory = createXMLOutputFactory();
-		Writer out = new FileWriter(oebpsDir.getAbsolutePath() + File.separator + "content.opf");
+		Writer out = new OutputStreamWriter(resultStream);
 		XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(out);
 		PackageDocument.write(this, xmlStreamWriter, book);
-		xmlStreamWriter.close();
+		xmlStreamWriter.flush();
 	}
 
-	private void writeNcxDocument(Book book, File oebpsDir) throws IOException, XMLStreamException, FactoryConfigurationError {
-		NCXDocument.write(book, new File(oebpsDir.getAbsolutePath() + File.separator + "toc.ncx"));
+	private void writeNcxDocument(Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
+		NCXDocument.write(book, resultStream);
 	}
 
-	private void writeContainer(File resultDir) throws IOException {
-		File containerDir = new File(resultDir.getAbsolutePath() + File.separator + "META-INF");
-		FileUtils.forceMkdir(containerDir);
-		File containerFile = new File(containerDir + File.separator + "container.xml");
-		Writer out = new FileWriter(containerFile);
+	private void writeContainer(ZipOutputStream resultStream) throws IOException {
+		resultStream.putNextEntry(new ZipEntry("META-INF/container.xml"));
+		Writer out = new OutputStreamWriter(resultStream);
 		out.write("<?xml version=\"1.0\"?>\n");
 		out.write("<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n");
 		out.write("\t<rootfiles>\n");
 		out.write("\t\t<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n");
 		out.write("\t</rootfiles>\n");
 		out.write("</container>");
-		out.close();
+		out.flush();
 	}
 
-	private void writeMimeType(File resultDir) throws IOException {
-		Writer out = new FileWriter(resultDir.getAbsolutePath() + File.separator + "mimetype");
-		out.write(Constants.MediaTypes.epub);
-		out.close();
+	public void cleanupHtml(InputStream in, OutputStream out) {
+		try {
+			TagNode node = htmlCleaner.clean(in);
+			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(out);
+			writer.writeStartDocument();
+			xmlSerializer.writeXml(node, writer);
+			writer.writeEndDocument();
+			writer.flush();
+		} catch (IOException e) {
+			logger.error(e);
+		} catch (XMLStreamException e) {
+			logger.error(e);
+		}
+		
+	}
+	private void writeMimeType(ZipOutputStream resultStream) throws IOException {
+		resultStream.putNextEntry(new ZipEntry("mimetype"));
+		resultStream.write((Constants.MediaTypes.epub).getBytes());
 	}
 
 	XMLEventFactory createXMLEventFactory() {
