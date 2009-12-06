@@ -22,7 +22,7 @@ public class HHCParserTest extends TestCase {
 //			String root = "/home/paul/project/private/library/chm/peaa/";
 //			String testHhc =  root + "0321127420.hhc";
 			Book book = HHCParser.parseHhc(new File(testHhc), new File(root));
-			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/foo"));
+			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/test.epub"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

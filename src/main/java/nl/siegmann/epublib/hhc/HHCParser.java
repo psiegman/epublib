@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.DomSerializer;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.TagNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,8 +41,8 @@ public class HHCParser {
 		CleanerProperties props = htmlCleaner.getProperties();
 		TagNode node = htmlCleaner.clean(hhcFile);
 		Document hhcDocument = new DomSerializer(props).createDOM(node);
-		PrettyXmlSerializer prettyPrinter = new PrettyXmlSerializer(props);
-		System.out.println(prettyPrinter.getXmlAsString(node));
+//		PrettyXmlSerializer prettyPrinter = new PrettyXmlSerializer(props);
+//		System.out.println(prettyPrinter.getXmlAsString(node));
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		Node ulNode = (Node) xpath.evaluate("body/ul", hhcDocument
 				.getDocumentElement(), XPathConstants.NODE);

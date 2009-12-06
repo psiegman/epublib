@@ -1,9 +1,13 @@
 package nl.siegmann.epublib;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.htmlcleaner.HtmlCleaner;
 
 public class FileResource implements Resource {
 	private File file;
@@ -17,8 +21,14 @@ public class FileResource implements Resource {
 		this.mediaType = mediaType;
 	}
 
-	public OutputStream getOutputStream() throws IOException {
-		return new FileOutputStream(file);
+	public void writeResource(OutputStream resultStream, EpubWriter epubWriter) throws IOException {
+		InputStream in = new FileInputStream(file);
+		if(mediaType.equals(Constants.MediaTypes.xhtml)) {
+			epubWriter.cleanupHtml(in, resultStream);
+		} else {
+			IOUtils.copy(in, resultStream);
+			in.close();
+		}
 	}
 	
 	public File getFile() {

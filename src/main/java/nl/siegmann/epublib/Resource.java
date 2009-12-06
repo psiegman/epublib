@@ -7,5 +7,5 @@ public interface Resource {
 	
 	public String getHref();
 	public String getMediaType();
-	public OutputStream getOutputStream() throws IOException;
+	public void writeResource(OutputStream resultStream, EpubWriter epubWriter) throws IOException;
 }
