@@ -4,31 +4,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
-import org.htmlcleaner.HtmlCleaner;
 
 public class FileResource implements Resource {
+	private String id;
 	private File file;
 	private String href;
 	private String mediaType = Constants.MediaTypes.xhtml;
+	private String inputEncoding;
 	
-	public FileResource(File file, String href, String mediaType) {
+	public FileResource(String id, File file, String href, String mediaType) {
 		super();
+		this.id = id;
 		this.file = file;
 		this.href = href;
 		this.mediaType = mediaType;
 	}
 
-	public void writeResource(OutputStream resultStream, EpubWriter epubWriter) throws IOException {
-		InputStream in = new FileInputStream(file);
-		if(mediaType.equals(Constants.MediaTypes.xhtml)) {
-			epubWriter.cleanupHtml(in, resultStream);
-		} else {
-			IOUtils.copy(in, resultStream);
-			in.close();
-		}
+	public String getId() {
+		return id;
 	}
 	
 	public File getFile() {
@@ -48,5 +41,18 @@ public class FileResource implements Resource {
 	}
 	public void setMediaType(String mediaType) {
 		this.mediaType = mediaType;
+	}
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return new FileInputStream(file);
+	}
+
+	public String getInputEncoding() {
+		return inputEncoding;
+	}
+
+	public void setInputEncoding(String inputEncoding) {
+		this.inputEncoding = inputEncoding;
 	}
 }

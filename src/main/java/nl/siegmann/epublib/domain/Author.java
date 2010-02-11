@@ -1,4 +1,4 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.domain;
 
 public class Author {
 	private String firstname;
