@@ -10,6 +10,10 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.domain.Author;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Section;
+
 public class NCXDocument {
 	
 	public static final String NAMESPACE_NCX = "http://www.daisy.org/z3986/2005/ncx/";
@@ -83,7 +87,11 @@ public class NCXDocument {
 			writer.writeEndElement(); // text
 			writer.writeEndElement(); // navLabel
 			writer.writeEmptyElement(NAMESPACE_NCX, "content");
+			try {
 			writer.writeAttribute("src", section.getHref());
+			} catch(NullPointerException e) {
+				e.printStackTrace();
+			}
 			playOrder++;
 			if(! section.getChildren().isEmpty()) {
 				playOrder = writeNavPoints(section.getChildren(), playOrder, writer);

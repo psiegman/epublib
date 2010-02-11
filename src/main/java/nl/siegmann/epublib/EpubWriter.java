@@ -14,11 +14,10 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import nl.siegmann.epublib.html.htmlcleaner.XmlSerializer;
+import nl.siegmann.epublib.domain.Book;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -30,14 +29,10 @@ public class EpubWriter {
 	
 	private final static Logger logger = Logger.getLogger(EpubWriter.class); 
 	
-	private HtmlCleaner htmlCleaner;
-	private XmlSerializer xmlSerializer;
-	private XMLOutputFactory xmlOutputFactory;
+	private HtmlProcessor htmlProcessor;
 	
 	public EpubWriter() {
-		this.htmlCleaner = new HtmlCleaner();
-		xmlSerializer = new XmlSerializer(htmlCleaner.getProperties());
-		xmlOutputFactory = XMLOutputFactory.newInstance();
+		htmlProcessor = new DefaultHtmlProcessor();
 	}
 	
 	
@@ -54,7 +49,13 @@ public class EpubWriter {
 	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
 		for(Resource resource: book.getResources()) {
 			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
-			resource.writeResource(resultStream, this);
+			if(resource.getMediaType().equals(Constants.MediaTypes.xhtml)) {
+				htmlProcessor.processHtmlResource(resource, resultStream);
+			} else {
+				InputStream inputStream = resource.getInputStream();
+				IOUtils.copy(inputStream, resultStream);
+				inputStream.close();
+			}
 		}
 	}
 	
@@ -83,21 +84,6 @@ public class EpubWriter {
 		out.flush();
 	}
 
-	public void cleanupHtml(InputStream in, OutputStream out) {
-		try {
-			TagNode node = htmlCleaner.clean(in);
-			XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(out);
-			writer.writeStartDocument();
-			xmlSerializer.writeXml(node, writer);
-			writer.writeEndDocument();
-			writer.flush();
-		} catch (IOException e) {
-			logger.error(e);
-		} catch (XMLStreamException e) {
-			logger.error(e);
-		}
-		
-	}
 	private void writeMimeType(ZipOutputStream resultStream) throws IOException {
 		resultStream.putNextEntry(new ZipEntry("mimetype"));
 		resultStream.write((Constants.MediaTypes.epub).getBytes());
@@ -108,7 +94,9 @@ public class EpubWriter {
 	}
 	
 	XMLOutputFactory createXMLOutputFactory() {
-		return XMLOutputFactory.newInstance();
+		XMLOutputFactory result = XMLOutputFactory.newInstance();
+//		result.setProperty(name, value)
+		return result;
 	}
 	
 	String getNcxId() {
@@ -121,5 +109,14 @@ public class EpubWriter {
 
 	String getNcxMediaType() {
 		return "application/x-dtbncx+xml";
+	}
+
+	public HtmlProcessor getHtmlProcessor() {
+		return htmlProcessor;
+	}
+
+
+	public void setHtmlProcessor(HtmlProcessor htmlProcessor) {
+		this.htmlProcessor = htmlProcessor;
 	}
 }

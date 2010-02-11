@@ -1,9 +1,12 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import nl.siegmann.epublib.Resource;
 
 public class Book {
 	private String title = "";
@@ -15,7 +18,7 @@ public class Book {
 	private String language = "";
 	
 	private List<Section> sections = new ArrayList<Section>();
-	private List<Resource> resources = new ArrayList<Resource>();
+	private Collection<Resource> resources = new ArrayList<Resource>();
 
 	public String getTitle() {
 		return title;
@@ -65,10 +68,10 @@ public class Book {
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	public List<Resource> getResources() {
+	public Collection<Resource> getResources() {
 		return resources;
 	}
-	public void setResources(List<Resource> resources) {
+	public void setResources(Collection<Resource> resources) {
 		this.resources = resources;
 	}
 }

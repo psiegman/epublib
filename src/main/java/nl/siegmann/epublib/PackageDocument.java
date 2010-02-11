@@ -1,12 +1,18 @@
 package nl.siegmann.epublib;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.domain.Author;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Section;
+
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.xml.XmlStreamWriter;
 
 public class PackageDocument {
 	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
@@ -77,7 +83,7 @@ public class PackageDocument {
 
 		for(Resource resource: book.getResources()) {
 			writer.writeEmptyElement(NAMESPACE_OPF, "item");
-			writer.writeAttribute("id", resource.getHref());
+			writer.writeAttribute("id", resource.getId());
 			writer.writeAttribute("href", resource.getHref());
 			writer.writeAttribute("media-type", resource.getMediaType());
 		}
@@ -85,11 +91,8 @@ public class PackageDocument {
 		writer.writeEndElement(); // manifest
 
 		writer.writeStartElement(NAMESPACE_OPF, "spine");
-		writer.writeAttribute("toc", writeAction.getNcxId());;
-		for(Section section: book.getSections()) {
-			writer.writeEmptyElement(NAMESPACE_OPF, "itemref");
-			writer.writeAttribute("idref", section.getId());;
-		}
+		writer.writeAttribute("toc", writeAction.getNcxId());
+		writeSections(book.getSections(), writer);
 		writer.writeEndElement(); // spine
 
 		writer.writeEndElement(); // package
@@ -131,4 +134,17 @@ public class PackageDocument {
 }
 
  */
+
+	/**
+	 * Recursively list the entire section tree.
+	 */
+	private static void writeSections(List<Section> sections, XMLStreamWriter writer) throws XMLStreamException {
+		for(Section section: sections) {
+			writer.writeEmptyElement(NAMESPACE_OPF, "itemref");
+			writer.writeAttribute("idref", section.getItemId());
+			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {
+				writeSections(section.getChildren(), writer);
+			}
+		}
+	}
 }
