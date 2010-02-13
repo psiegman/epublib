@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -14,6 +16,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.bookprocessor.BookProcessor;
+import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
+import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 
 import org.apache.commons.io.IOUtils;
@@ -30,13 +35,23 @@ public class EpubWriter {
 	private final static Logger logger = Logger.getLogger(EpubWriter.class); 
 	
 	private HtmlProcessor htmlProcessor;
+	private List<BookProcessor> bookProcessingPipeline;
 	
 	public EpubWriter() {
-		htmlProcessor = new DefaultHtmlProcessor();
+		this.bookProcessingPipeline = setupBookProcessingPipeline();
+	}
+	
+	
+	private List<BookProcessor> setupBookProcessingPipeline() {
+		return Arrays.asList(new BookProcessor[] {
+			new HtmlCleanerBookProcessor(),
+			new MissingResourceBookProcessor()
+		});
 	}
 	
 	
 	public void write(Book book, OutputStream out) throws IOException, XMLStreamException, FactoryConfigurationError {
+		book = processBook(book);
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
@@ -46,16 +61,20 @@ public class EpubWriter {
 		resultStream.close();
 	}
 	
+	private Book processBook(Book book) {
+		for(BookProcessor bookProcessor: bookProcessingPipeline) {
+			book = bookProcessor.processBook(book, this);
+		}
+		return book;
+	}
+
+
 	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
 		for(Resource resource: book.getResources()) {
 			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
-			if(resource.getMediaType().equals(Constants.MediaTypes.xhtml)) {
-				htmlProcessor.processHtmlResource(resource, resultStream);
-			} else {
-				InputStream inputStream = resource.getInputStream();
-				IOUtils.copy(inputStream, resultStream);
-				inputStream.close();
-			}
+			InputStream inputStream = resource.getInputStream();
+			IOUtils.copy(inputStream, resultStream);
+			inputStream.close();
 		}
 	}
 	

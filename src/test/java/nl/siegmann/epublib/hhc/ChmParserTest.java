@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 import nl.siegmann.epublib.EpubWriter;
 import nl.siegmann.epublib.domain.Book;
 
-public class HHCParserTest extends TestCase {
+public class ChmParserTest extends TestCase {
 
 	public void test1() {
 		try {
@@ -23,10 +23,10 @@ public class HHCParserTest extends TestCase {
 //			String root = "/home/paul/download/blender_man_chm";
 			String root = "";
 			root = "/home/paul/project/veh/morello/Morello_5.8/smart_client";
-//			root = "/home/paul/download/realworld";
-			root = "/home/paul/download/python_man";
-			Book book = HHCParser.parseHhc(new File(root));
-			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/pythonman.epub"));
+			root = "/home/paul/download/realworld";
+//			root = "/home/paul/download/python_man";
+			Book book = ChmParser.parseChm(new File(root));
+			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/realworld.epub"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -45,17 +45,17 @@ public class HHCParserTest extends TestCase {
 		}
 	}
 
-	public void test2() {
-		try {
-//			String root = "/home/paul/project/veh/backbase/Backbase_Rich_Portal_4.1/documentation/client/Reference/ref/";
-			String root = "/home/paul/project/private/library/chm/peaa/";
-//			String root = "/home/paul/download/python_man";
-//			String root = "/home/paul/download/blender_man_chm";
-			String title = HHCParser.findTitle(new File(root));
-			System.out.println("title:" + title);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void test2() {
+//		try {
+////			String root = "/home/paul/project/veh/backbase/Backbase_Rich_Portal_4.1/documentation/client/Reference/ref/";
+//			String root = "/home/paul/project/private/library/chm/peaa/";
+////			String root = "/home/paul/download/python_man";
+////			String root = "/home/paul/download/blender_man_chm";
+//			String title = HHCParser.findTitle(new File(root));
+//			System.out.println("title:" + title);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 }
