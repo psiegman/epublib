@@ -9,8 +9,6 @@ import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * For sections with empty or non-existing resources it creates a html file with just the name of the section.
  * 
@@ -46,7 +44,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	private static void matchSectionsAndResources(ItemIdGenerator sectionIdGenerator, List<Section> sections,
 			Map<String, Resource> resources) {
 		for(Section section: sections) {
-			Resource resource = getResourceByHref(section.getHref(), resources);
+			Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
 			if(resource == null) {
 				resource = createNewSectionResource(sectionIdGenerator, section, resources);
 				resources.put(resource.getHref(), resource);
@@ -57,11 +55,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 		}
 	}
 
-	private static Resource getResourceByHref(String href, Map<String, Resource> resources) {
-		return resources.get(StringUtils.substringBefore(href, "#"));
-	}
 	
-
 	private static Resource createNewSectionResource(ItemIdGenerator itemIdGenerator, Section section, Map<String, Resource> resources) {
 		String href = calculateSectionResourceHref(section, resources);
 		SectionResource result = new SectionResource(itemIdGenerator.getNextItemId(), section.getName(), href);
@@ -69,6 +63,15 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	}
 	
 	
+	/**
+	 * Tries to create a section with as href the name of the section + '.html'.
+	 * If that one already exists in the resources it tries to create a section called 'section_' + i + '.html' and 
+	 * keeps incrementing that 'i' until no resource is found.
+	 * 
+	 * @param section
+	 * @param resources
+	 * @return
+	 */
 	private static String calculateSectionResourceHref(Section section,
 			Map<String, Resource> resources) {
 		String result = section.getName() + ".html";
