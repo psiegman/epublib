@@ -1,4 +1,4 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.epub;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -8,8 +8,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 
 import org.apache.commons.lang.StringUtils;

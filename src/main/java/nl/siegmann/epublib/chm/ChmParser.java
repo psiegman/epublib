@@ -1,4 +1,4 @@
-package nl.siegmann.epublib.hhc;
+package nl.siegmann.epublib.chm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +13,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.FileResource;
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.FileResource;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 
 import org.apache.commons.io.FileUtils;

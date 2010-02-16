@@ -3,8 +3,8 @@ package nl.siegmann.epublib.bookprocessor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 
 public class BookProcessorUtil {
 

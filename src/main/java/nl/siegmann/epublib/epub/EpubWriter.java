@@ -1,10 +1,11 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.epub;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -16,11 +17,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
 import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -45,11 +48,13 @@ public class EpubWriter {
 	
 	
 	private List<BookProcessor> setupBookProcessingPipeline() {
-		return Arrays.asList(new BookProcessor[] {
+		List<BookProcessor> result = new ArrayList<BookProcessor>();
+		result.addAll(Arrays.asList(new BookProcessor[] {
 			new SectionHrefSanityCheckBookProcessor(),
 			new HtmlCleanerBookProcessor(),
 			new MissingResourceBookProcessor()
-		});
+		}));
+		return result;
 	}
 	
 	

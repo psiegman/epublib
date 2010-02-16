@@ -1,4 +1,4 @@
-package nl.siegmann.epublib.hhc;
+package nl.siegmann.epublib.chm;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +23,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Parses the windows help .hhc file.
+ * 
+ * @author paul
+ *
+ */
 public class HHCParser {
 
 	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
