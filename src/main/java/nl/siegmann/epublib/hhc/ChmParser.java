@@ -26,6 +26,7 @@ public class ChmParser {
 
 	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
 //	private String htmlInputEncoding = DEFAULT_HTML_ENCODING;
+	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
 	private static class ItemIdGenerator {
 		private int itemCounter = 1;
@@ -74,7 +75,7 @@ public class ChmParser {
 				if(inText) {
 					if(line.length() >= 3) {
 						lineCounter++;
-						if(lineCounter >= 3) {
+						if(lineCounter >= MINIMAL_SYSTEM_TITLE_LENGTH) {
 							return line.toString();
 						}
 					}

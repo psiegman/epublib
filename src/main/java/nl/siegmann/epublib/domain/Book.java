@@ -3,8 +3,12 @@ package nl.siegmann.epublib.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import javax.xml.namespace.QName;
 
 import nl.siegmann.epublib.Resource;
 
@@ -14,6 +18,7 @@ public class Book {
 	private String uid = UUID.randomUUID().toString();
 	private List<Author> authors = new ArrayList<Author>();
 	private List<String> subjects = new ArrayList<String>();
+	private Map<QName, String> metadataProperties = new HashMap<QName, String>();
 	private Date date = new Date();
 	private String language = "";
 	
@@ -73,5 +78,17 @@ public class Book {
 	}
 	public void setResources(Collection<Resource> resources) {
 		this.resources = resources;
+	}
+	
+	/**
+	 * Metadata properties not hard-coded like the author, title, etc.
+	 * 
+	 * @return
+	 */
+	public Map<QName, String> getMetadataProperties() {
+		return metadataProperties;
+	}
+	public void setMetadataProperties(Map<QName, String> metadataProperties) {
+		this.metadataProperties = metadataProperties;
 	}
 }

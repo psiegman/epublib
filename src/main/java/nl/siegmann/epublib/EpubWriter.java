@@ -19,6 +19,7 @@ import javax.xml.stream.XMLStreamWriter;
 import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
+import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 
 import org.apache.commons.io.IOUtils;
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
  */
 public class EpubWriter {
 	
-	private final static Logger logger = Logger.getLogger(EpubWriter.class); 
+	private final static Logger log = Logger.getLogger(EpubWriter.class); 
 	
 	private HtmlProcessor htmlProcessor;
 	private List<BookProcessor> bookProcessingPipeline;
@@ -44,6 +45,7 @@ public class EpubWriter {
 	
 	private List<BookProcessor> setupBookProcessingPipeline() {
 		return Arrays.asList(new BookProcessor[] {
+			new SectionHrefSanityCheckBookProcessor(),
 			new HtmlCleanerBookProcessor(),
 			new MissingResourceBookProcessor()
 		});
@@ -137,5 +139,15 @@ public class EpubWriter {
 
 	public void setHtmlProcessor(HtmlProcessor htmlProcessor) {
 		this.htmlProcessor = htmlProcessor;
+	}
+
+
+	public List<BookProcessor> getBookProcessingPipeline() {
+		return bookProcessingPipeline;
+	}
+
+
+	public void setBookProcessingPipeline(List<BookProcessor> bookProcessingPipeline) {
+		this.bookProcessingPipeline = bookProcessingPipeline;
 	}
 }

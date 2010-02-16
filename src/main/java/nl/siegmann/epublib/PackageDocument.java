@@ -2,8 +2,9 @@ package nl.siegmann.epublib;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.stream.XMLEventFactory;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -12,8 +13,13 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Section;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.util.xml.XmlStreamWriter;
 
+/**
+ * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf
+ *  
+ * @author paul
+ *
+ */
 public class PackageDocument {
 	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
 	public static final String NAMESPACE_DUBLIN_CORE = "http://purl.org/dc/elements/1.1/";
@@ -30,6 +36,34 @@ public class PackageDocument {
 		writer.writeAttribute("version", "2.0");
 		writer.writeAttribute("unique-identifier", "BookID");
 
+		writeMetaData(book, writer);
+
+		writer.writeStartElement(NAMESPACE_OPF, "manifest");
+
+		writer.writeEmptyElement(NAMESPACE_OPF, "item");
+		writer.writeAttribute("id", writeAction.getNcxId());
+		writer.writeAttribute("href", writeAction.getNcxHref());
+		writer.writeAttribute("media-type", writeAction.getNcxMediaType());
+
+		for(Resource resource: book.getResources()) {
+			writer.writeEmptyElement(NAMESPACE_OPF, "item");
+			writer.writeAttribute("id", resource.getId());
+			writer.writeAttribute("href", resource.getHref());
+			writer.writeAttribute("media-type", resource.getMediaType());
+		}
+		
+		writer.writeEndElement(); // manifest
+
+		writer.writeStartElement(NAMESPACE_OPF, "spine");
+		writer.writeAttribute("toc", writeAction.getNcxId());
+		writeSections(book.getSections(), writer);
+		writer.writeEndElement(); // spine
+
+		writer.writeEndElement(); // package
+		writer.writeEndDocument();
+	}
+
+	private static void writeMetaData(Book book, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(NAMESPACE_OPF, "metadata");
 		
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "identifier");
@@ -72,76 +106,26 @@ public class PackageDocument {
 			writer.writeEndElement(); // dc:rights
 		}
 
+		if(book.getMetadataProperties() != null) {
+			for(Map.Entry<QName, String> mapEntry: book.getMetadataProperties().entrySet()) {
+				writer.writeStartElement(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
+				writer.writeCharacters(mapEntry.getValue());
+				writer.writeEndElement();
+				
+			}
+		}
 		writer.writeEndElement(); // dc:metadata
-
-		writer.writeStartElement(NAMESPACE_OPF, "manifest");
-
-		writer.writeEmptyElement(NAMESPACE_OPF, "item");
-		writer.writeAttribute("id", writeAction.getNcxId());
-		writer.writeAttribute("href", writeAction.getNcxHref());
-		writer.writeAttribute("media-type", writeAction.getNcxMediaType());
-
-		for(Resource resource: book.getResources()) {
-			writer.writeEmptyElement(NAMESPACE_OPF, "item");
-			writer.writeAttribute("id", resource.getId());
-			writer.writeAttribute("href", resource.getHref());
-			writer.writeAttribute("media-type", resource.getMediaType());
-		}
-		
-		writer.writeEndElement(); // manifest
-
-		writer.writeStartElement(NAMESPACE_OPF, "spine");
-		writer.writeAttribute("toc", writeAction.getNcxId());
-		writeSections(book.getSections(), writer);
-		writer.writeEndElement(); // spine
-
-		writer.writeEndElement(); // package
-		writer.writeEndDocument();
 	}
-		/*
- 
- def writePackage(book) {
-	new File(targetDir + File.separator + contentDir).mkdir()
-	def packageWriter = new FileWriter(new File(targetDir + File.separator + contentDir + File.separator + 'content.opf'))
-	def markupBuilder = new MarkupBuilder(packageWriter)
-	markupBuilder.setDoubleQuotes(true)
-	markupBuilder.'package'(xmlns: "http://www.idpf.org/2007/opf",  'unique-identifier': "BookID",  version: "2.0") {
-		metadata('xmlns:dc': "http://purl.org/dc/elements/1.1/", 'xmlns:opf': "http://www.idpf.org/2007/opf") {
-			'dc:identifier'(id: "BookID", 'opf:scheme': "UUID", book.uid)
-			'dc:title' (book.title)
-			book.authors.each() { author ->
-				'dc:creator' ('opf:role' : "aut", 'opf:file-as': author.lastname + ', ' + author.firstname, author.firstname + ' ' + author.lastname)
-			}
-			book.subjects.each() { subject ->
-				'dc:subject'(subject)
-			}
-			'dc:date' (book.date.format('yyyy-MM-dd'))
-			'dc:language'(book.language)
-			if (book.rights) {
-				'dc:rights' (book.rights)
-			}
-		}
-		manifest {
-			item( id: "ncx", href: "toc.ncx", 'media-type': "application/x-dtbncx+xml")
-			copyAndIndexContentFiles(markupBuilder, new File(inputHtmlDir))
-		}
-		spine (toc: 'ncx') {
-			book.sections.each() {
-				itemref(idref: it.id)
-			}
-		}
-	}
-}
-
- */
 
 	/**
 	 * Recursively list the entire section tree.
 	 */
 	private static void writeSections(List<Section> sections, XMLStreamWriter writer) throws XMLStreamException {
 		for(Section section: sections) {
-			writer.writeEmptyElement(NAMESPACE_OPF, "itemref");
-			writer.writeAttribute("idref", section.getItemId());
+			if(section.isPartOfPageFlow()) {
+				writer.writeEmptyElement(NAMESPACE_OPF, "itemref");
+				writer.writeAttribute("idref", section.getItemId());
+			}
 			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {
 				writeSections(section.getChildren(), writer);
 			}
