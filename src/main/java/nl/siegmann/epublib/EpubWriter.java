@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
  */
 public class EpubWriter {
 	
+	@SuppressWarnings("unused")
 	private final static Logger log = Logger.getLogger(EpubWriter.class); 
 	
 	private HtmlProcessor htmlProcessor;

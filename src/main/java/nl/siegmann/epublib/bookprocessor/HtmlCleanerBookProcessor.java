@@ -26,6 +26,7 @@ import org.htmlcleaner.XmlSerializer;
  */
 public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookProcessor {
 
+	@SuppressWarnings("unused")
 	private final static Logger log = Logger.getLogger(HtmlCleanerBookProcessor.class);
 	
 	public static final String OUTPUT_ENCODING = "UTF-8";
