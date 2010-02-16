@@ -2,15 +2,10 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import nl.siegmann.epublib.ByteArrayResource;
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.EpubWriter;
 import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
@@ -22,9 +17,17 @@ import org.htmlcleaner.SimpleXmlSerializer;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XmlSerializer;
 
-public class HtmlCleanerBookProcessor implements BookProcessor {
+/**
+ * Cleans up regular html into xhtml.
+ * Uses HtmlCleaner to do this.
+ * 
+ * @author paul
+ *
+ */
+public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookProcessor {
 
-	private final static Logger logger = Logger.getLogger(HtmlCleanerBookProcessor.class); 
+	private final static Logger log = Logger.getLogger(HtmlCleanerBookProcessor.class);
+	
 	public static final String OUTPUT_ENCODING = "UTF-8";
 	private HtmlCleaner htmlCleaner;
 	private XmlSerializer newXmlSerializer;
@@ -32,31 +35,6 @@ public class HtmlCleanerBookProcessor implements BookProcessor {
 	public HtmlCleanerBookProcessor() {
 		this.htmlCleaner = createHtmlCleaner();
 		this.newXmlSerializer = new SimpleXmlSerializer(htmlCleaner.getProperties());
-	}
-
-	@Override
-	public Book processBook(Book book, EpubWriter epubWriter) {
-		Collection<Resource> cleanupResources = new ArrayList<Resource>(book.getResources().size());
-		for(Resource resource: book.getResources()) {
-			Resource cleanedUpResource;
-			try {
-				cleanedUpResource = createCleanedUpResource(resource);
-				cleanupResources.add(cleanedUpResource);
-			} catch (IOException e) {
-				logger.error(e);
-			}
-		}
-		book.setResources(cleanupResources);
-		return book;
-	}
-
-	private Resource createCleanedUpResource(Resource resource) throws IOException {
-		Resource result = resource;
-		if(resource.getMediaType().equals(Constants.MediaTypes.xhtml)) {
-			byte[] cleanedHtml = cleanHtml(resource.getInputStream(), resource.getInputEncoding());
-			result = new ByteArrayResource(resource.getId(), cleanedHtml, resource.getHref(), resource.getMediaType(), "UTF-8");
-		}
-		return result;
 	}
 
 	private static HtmlCleaner createHtmlCleaner() {
@@ -67,13 +45,13 @@ public class HtmlCleanerBookProcessor implements BookProcessor {
 	}
 	
 
-	public byte[] cleanHtml(InputStream in, String encoding) throws IOException {
+	public byte[] cleanHtml(Resource resource) throws IOException {
 		byte[] result = null;
 		Reader reader;
-		if(! StringUtils.isEmpty(encoding)) {
-			reader = new InputStreamReader(in, Charset.forName(encoding));
+		if(! StringUtils.isEmpty(resource.getInputEncoding())) {
+			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
 		} else {
-			reader = new InputStreamReader(in);
+			reader = new InputStreamReader(resource.getInputStream());
 		}
 		TagNode node = htmlCleaner.clean(reader);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,5 +59,19 @@ public class HtmlCleanerBookProcessor implements BookProcessor {
 		result = out.toByteArray();
 		return result;
 	}
-
+	
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter) throws IOException {
+		byte[] result = null;
+		Reader reader;
+		if(! StringUtils.isEmpty(resource.getInputEncoding())) {
+			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
+		} else {
+			reader = new InputStreamReader(resource.getInputStream());
+		}
+		TagNode node = htmlCleaner.clean(reader);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		newXmlSerializer.writeXmlToStream(node, out, OUTPUT_ENCODING);
+		result = out.toByteArray();
+		return result;
+	}
 }

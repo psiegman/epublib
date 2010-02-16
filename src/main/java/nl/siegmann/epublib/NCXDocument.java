@@ -14,6 +14,12 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Section;
 
+/**
+ * Writes the ncx document as defined by namespace http://www.daisy.org/z3986/2005/ncx/
+ * 
+ * @author paul
+ *
+ */
 public class NCXDocument {
 	
 	public static final String NAMESPACE_NCX = "http://www.daisy.org/z3986/2005/ncx/";
@@ -77,27 +83,36 @@ public class NCXDocument {
 	private static int writeNavPoints(List<Section> sections, int playOrder,
 			XMLStreamWriter writer) throws XMLStreamException {
 		for(Section section: sections) {
-			writer.writeStartElement(NAMESPACE_NCX, "navPoint");
-			writer.writeAttribute("id", "navPoint-" + playOrder);
-			writer.writeAttribute("playOrder", String.valueOf(playOrder));
-			writer.writeAttribute("class", "chapter");
-			writer.writeStartElement(NAMESPACE_NCX, "navLabel");
-			writer.writeStartElement(NAMESPACE_NCX, "text");
-			writer.writeCharacters(section.getName());
-			writer.writeEndElement(); // text
-			writer.writeEndElement(); // navLabel
-			writer.writeEmptyElement(NAMESPACE_NCX, "content");
-			try {
-			writer.writeAttribute("src", section.getHref());
-			} catch(NullPointerException e) {
-				e.printStackTrace();
+			if(section.isPartOfTableOfContents()) {
+				writeNavPointStart(section, playOrder, writer);
+				playOrder++;
 			}
-			playOrder++;
 			if(! section.getChildren().isEmpty()) {
 				playOrder = writeNavPoints(section.getChildren(), playOrder, writer);
 			}
-			writer.writeEndElement(); // navPoint
+			if(section.isPartOfTableOfContents()) {
+				writeNavPointEnd(section, writer);
+			}
 		}
 		return playOrder;
+	}
+
+
+	private static void writeNavPointStart(Section section, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement(NAMESPACE_NCX, "navPoint");
+		writer.writeAttribute("id", "navPoint-" + playOrder);
+		writer.writeAttribute("playOrder", String.valueOf(playOrder));
+		writer.writeAttribute("class", "chapter");
+		writer.writeStartElement(NAMESPACE_NCX, "navLabel");
+		writer.writeStartElement(NAMESPACE_NCX, "text");
+		writer.writeCharacters(section.getName());
+		writer.writeEndElement(); // text
+		writer.writeEndElement(); // navLabel
+		writer.writeEmptyElement(NAMESPACE_NCX, "content");
+		writer.writeAttribute("src", section.getHref());
+	}
+
+	private static void writeNavPointEnd(Section section, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeEndElement(); // navPoint
 	}
 }

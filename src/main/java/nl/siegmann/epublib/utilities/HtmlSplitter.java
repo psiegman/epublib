@@ -24,7 +24,7 @@ public class HtmlSplitter {
 	private StringWriter currentDoc = new StringWriter();
 	private List<XMLEvent> currentXmlEvents = new ArrayList<XMLEvent>();
 	private XMLEventWriter out;
-	private int maxLength = 440000; // 440K, the max length of a chapter of an epub document
+	private int maxLength = 300000; // 300K, the max length of a chapter of an epub document
 	private List<List<XMLEvent>> result = new ArrayList<List<XMLEvent>>();
 		
 	public List<List<XMLEvent>> splitHtml(Reader reader, int maxLength) throws XMLStreamException {

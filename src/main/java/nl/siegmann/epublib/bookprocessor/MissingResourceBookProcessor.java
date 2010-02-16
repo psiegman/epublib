@@ -1,7 +1,5 @@
 package nl.siegmann.epublib.bookprocessor;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +11,12 @@ import nl.siegmann.epublib.domain.Section;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * For sections with empty or non-existing resources it creates a html file with just the name of the section.
+ * 
+ * @author paul
+ *
+ */
 public class MissingResourceBookProcessor implements BookProcessor {
 
 	private static class ItemIdGenerator {
@@ -26,21 +30,12 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		ItemIdGenerator itemIdGenerator = new ItemIdGenerator();
-		Map<String, Resource> resourceMap = createResourcesByHref(book.getResources());
+		Map<String, Resource> resourceMap = BookProcessorUtil.createResourceByHrefMap(book);
 		matchSectionsAndResources(itemIdGenerator, book.getSections(), resourceMap);
 		book.setResources(resourceMap.values());
 		return book;
 	}
 
-	private static Map<String, Resource> createResourcesByHref(Collection<Resource> resources) {
-		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
-		for(Resource resource: resources) {
-			result.put(resource.getHref(), resource);
-		}
-		return result;
-	}
-	
-	
 	/**
 	 * For every section in the list of sections it finds a resource with a matching href or it creates a new SectionResource and adds it to the sections.
 	 * 

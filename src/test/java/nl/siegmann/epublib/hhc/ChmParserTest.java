@@ -22,11 +22,12 @@ public class ChmParserTest extends TestCase {
 //			String root = "/home/paul/download/python_man";
 //			String root = "/home/paul/download/blender_man_chm";
 			String root = "";
+			String result = "";
 			root = "/home/paul/project/veh/morello/Morello_5.8/smart_client";
-			root = "/home/paul/download/realworld";
-//			root = "/home/paul/download/python_man";
+			root = "/home/paul/download/realworld"; result = "/home/paul/realworld.epub";
+			root = "/home/paul/download/python_man"; result = "/home/paul/pythonman.epub";
 			Book book = ChmParser.parseChm(new File(root));
-			(new EpubWriter()).write(book, new FileOutputStream("/home/paul/realworld.epub"));
+			(new EpubWriter()).write(book, new FileOutputStream(result));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
