@@ -3,11 +3,11 @@ package nl.siegmann.epublib.bookprocessor;
 import java.util.List;
 import java.util.Map;
 
-import nl.siegmann.epublib.EpubWriter;
-import nl.siegmann.epublib.Resource;
-import nl.siegmann.epublib.SectionResource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.SectionResource;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 

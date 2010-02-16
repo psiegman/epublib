@@ -1,4 +1,4 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.epub;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,6 +10,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Section;

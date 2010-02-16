@@ -2,9 +2,9 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.util.List;
 
-import nl.siegmann.epublib.EpubWriter;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 

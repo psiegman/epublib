@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
+import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.hhc.ChmParser;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -28,12 +29,15 @@ public class Chm2Epub {
 			usage();
 		}
 		EpubWriter epubWriter = new EpubWriter();
-		epubWriter.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
+		if(! StringUtils.isBlank(xslFile)) {
+			epubWriter.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
+		}
 		Book book = ChmParser.parseChm(new File(inputDir));
 		epubWriter.write(book, new FileOutputStream(resultFile));
 	}
 
 	private static void usage() {
 		System.out.println(Chm2Epub.class.getName() + " --in [input directory] --result [resulting epub file] --xsl [html post processing file]");
+		System.exit(0);
 	}
 }

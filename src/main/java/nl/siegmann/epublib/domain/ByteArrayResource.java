@@ -1,4 +1,4 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.domain;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

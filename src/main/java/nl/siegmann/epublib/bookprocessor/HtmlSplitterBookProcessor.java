@@ -3,9 +3,9 @@ package nl.siegmann.epublib.bookprocessor;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.siegmann.epublib.EpubWriter;
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 public class HtmlSplitterBookProcessor implements BookProcessor {
 

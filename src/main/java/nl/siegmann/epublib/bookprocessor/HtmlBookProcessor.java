@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.siegmann.epublib.ByteArrayResource;
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.EpubWriter;
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.ByteArrayResource;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.log4j.Logger;
 

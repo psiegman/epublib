@@ -17,9 +17,9 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 
-import nl.siegmann.epublib.EpubWriter;
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor {
 

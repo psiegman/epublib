@@ -6,9 +6,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import nl.siegmann.epublib.EpubWriter;
-import nl.siegmann.epublib.Resource;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -46,23 +46,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	}
 	
 
-	public byte[] cleanHtml(Resource resource) throws IOException {
-		byte[] result = null;
-		Reader reader;
-		if(! StringUtils.isEmpty(resource.getInputEncoding())) {
-			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
-		} else {
-			reader = new InputStreamReader(resource.getInputStream());
-		}
-		TagNode node = htmlCleaner.clean(reader);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		newXmlSerializer.writeXmlToStream(node, out, OUTPUT_ENCODING);
-		result = out.toByteArray();
-		return result;
-	}
-	
 	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter) throws IOException {
-		byte[] result = null;
 		Reader reader;
 		if(! StringUtils.isEmpty(resource.getInputEncoding())) {
 			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
@@ -72,7 +56,6 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 		TagNode node = htmlCleaner.clean(reader);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		newXmlSerializer.writeXmlToStream(node, out, OUTPUT_ENCODING);
-		result = out.toByteArray();
-		return result;
+		return out.toByteArray();
 	}
 }

@@ -1,8 +1,11 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.domain;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.Constants.MediaTypes;
 
 
 public class SectionResource implements Resource {

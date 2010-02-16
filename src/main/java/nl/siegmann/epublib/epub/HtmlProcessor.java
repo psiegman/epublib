@@ -1,6 +1,8 @@
-package nl.siegmann.epublib;
+package nl.siegmann.epublib.epub;
 
 import java.io.OutputStream;
+
+import nl.siegmann.epublib.domain.Resource;
 
 public interface HtmlProcessor {
 	

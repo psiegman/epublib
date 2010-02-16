@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import nl.siegmann.epublib.Resource;
 
 public class Book {
 	private String title = "";
