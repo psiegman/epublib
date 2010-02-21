@@ -52,4 +52,9 @@ public abstract class ResourceBase implements Resource {
 	public void setInputEncoding(String inputEncoding) {
 		this.inputEncoding = inputEncoding;
 	}
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

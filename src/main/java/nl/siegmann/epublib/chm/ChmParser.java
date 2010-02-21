@@ -17,6 +17,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileResource;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.util.MimetypeUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -40,7 +41,7 @@ public class ChmParser {
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
-		result.setTitle(findTitle(chmRootDir));
+		result.getMetadata().setTitle(findTitle(chmRootDir));
 		File hhcFile = findHhcFile(chmRootDir);
 		if(hhcFile == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
@@ -109,39 +110,16 @@ public class ChmParser {
 			if(file.isDirectory()) {
 				continue;
 			}
-			String mediaType = determineMediaType(file.getName());
+			String mediaType = MimetypeUtil.determineMediaType(file.getName());
 			if(StringUtils.isBlank(mediaType)) {
 				continue;
 			}
 			String href = file.getCanonicalPath().substring(rootDir.getCanonicalPath().length() + 1);
 			FileResource fileResource = new FileResource(itemIdGenerator.getNextItemId(), file, href, mediaType);
-			if(mediaType.equals(Constants.MediaTypes.xhtml)) {
+			if(mediaType.equals(Constants.MediaTypes.XHTML)) {
 				fileResource.setInputEncoding(DEFAULT_HTML_INPUT_ENCODING);
 			}
 			result.put(fileResource.getHref(), fileResource);
-		}
-		return result;
-	}
-
-	/**
-	 * Determines the files mediatype based on its file extension.
-	 * 
-	 * @param filename
-	 * @return
-	 */
-	private static String determineMediaType(String filename) {
-		String result = "";
-		filename = filename.toLowerCase();
-		if (filename.endsWith(".html") || filename.endsWith(".htm")) {
-			result = Constants.MediaTypes.xhtml;
-		} else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
-			result = "image/jpeg";
-		} else if (filename.endsWith(".png")) {
-			result = "image/png";
-		} else if (filename.endsWith(".gif")) {
-			result = "image/gif";
-		} else if (filename.endsWith(".css")) {
-			result = "text/css";
 		}
 		return result;
 	}

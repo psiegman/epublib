@@ -23,62 +23,61 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class PackageDocument {
+	public static final String BOOK_ID_ID = "BookId";
 	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
 	public static final String NAMESPACE_DUBLIN_CORE = "http://purl.org/dc/elements/1.1/";
 	public static final String PREFIX_DUBLIN_CORE = "dc";
 	public static final String dateFormat = "yyyy-MM-dd";
 	
-	public static void write(EpubWriter writeAction, XMLStreamWriter writer, Book book) throws XMLStreamException {
-		writer.writeStartDocument(Constants.encoding, "1.0");
+	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
+		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_OPF);
 		writer.writeStartElement(NAMESPACE_OPF, "package");
-		writer.writeNamespace(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
+//		writer.writeNamespace(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
 //		writer.writeNamespace("ncx", NAMESPACE_NCX);
 		writer.writeAttribute("xmlns", NAMESPACE_OPF);
 		writer.writeAttribute("version", "2.0");
-		writer.writeAttribute("unique-identifier", "BookID");
+		writer.writeAttribute("unique-identifier", BOOK_ID_ID);
 
 		writeMetaData(book, writer);
 
-		writer.writeStartElement(NAMESPACE_OPF, "manifest");
+		writeManifest(book, epubWriter, writer);
 
-		writer.writeEmptyElement(NAMESPACE_OPF, "item");
-		writer.writeAttribute("id", writeAction.getNcxId());
-		writer.writeAttribute("href", writeAction.getNcxHref());
-		writer.writeAttribute("media-type", writeAction.getNcxMediaType());
-
-		for(Resource resource: book.getResources()) {
-			writer.writeEmptyElement(NAMESPACE_OPF, "item");
-			writer.writeAttribute("id", resource.getId());
-			writer.writeAttribute("href", resource.getHref());
-			writer.writeAttribute("media-type", resource.getMediaType());
-		}
-		
-		writer.writeEndElement(); // manifest
-
-		writer.writeStartElement(NAMESPACE_OPF, "spine");
-		writer.writeAttribute("toc", writeAction.getNcxId());
-		writeSections(book.getSections(), writer);
-		writer.writeEndElement(); // spine
+		writeSpine(book, epubWriter, writer);
 
 		writer.writeEndElement(); // package
 		writer.writeEndDocument();
 	}
 
+	/**
+	 * Writes the book's metadata.
+	 * 
+	 * @param book
+	 * @param writer
+	 * @throws XMLStreamException
+	 */
 	private static void writeMetaData(Book book, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(NAMESPACE_OPF, "metadata");
+		writer.writeNamespace("dc", NAMESPACE_DUBLIN_CORE);
+		writer.writeNamespace("opf", NAMESPACE_OPF);
 		
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "identifier");
-		writer.writeAttribute(NAMESPACE_DUBLIN_CORE, "id", "BookdID");
+		writer.writeAttribute("id", BOOK_ID_ID);
 		writer.writeAttribute(NAMESPACE_OPF, "scheme", "UUID");
-		writer.writeCharacters(book.getUid());
+		writer.writeCharacters(book.getMetadata().getUid());
 		writer.writeEndElement(); // dc:identifier
 
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "title");
-		writer.writeCharacters(book.getTitle());
+		writer.writeCharacters(book.getMetadata().getTitle());
 		writer.writeEndElement(); // dc:title
 
-		for(Author author: book.getAuthors()) {
+		if(book.getCoverPage() != null) { // write the cover image
+			writer.writeEmptyElement(NAMESPACE_OPF, "meta");
+			writer.writeAttribute("name", "cover");
+			writer.writeAttribute("content", book.getCoverPage().getHref());
+		}
+		
+		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "creator");
 			writer.writeAttribute(NAMESPACE_OPF, "role", "aut");
 			writer.writeAttribute(NAMESPACE_OPF, "file-as", author.getLastname() + ", " + author.getFirstname());
@@ -93,23 +92,23 @@ public class PackageDocument {
 		}
 
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "date");
-		writer.writeCharacters((new SimpleDateFormat(dateFormat)).format(book.getDate()));
+		writer.writeCharacters((new SimpleDateFormat(dateFormat)).format(book.getMetadata().getDate()));
 		writer.writeEndElement(); // dc:date
 
-		if(StringUtils.isNotEmpty(book.getLanguage())) {
+		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "language");
-			writer.writeCharacters(book.getLanguage());
+			writer.writeCharacters(book.getMetadata().getLanguage());
 			writer.writeEndElement(); // dc:date
 		}
 
-		if(StringUtils.isNotEmpty(book.getRights())) {
+		if(StringUtils.isNotEmpty(book.getMetadata().getRights())) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "rights");
-			writer.writeCharacters(book.getRights());
+			writer.writeCharacters(book.getMetadata().getRights());
 			writer.writeEndElement(); // dc:rights
 		}
 
-		if(book.getMetadataProperties() != null) {
-			for(Map.Entry<QName, String> mapEntry: book.getMetadataProperties().entrySet()) {
+		if(book.getMetadata().getOtherProperties() != null) {
+			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
 				writer.writeStartElement(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
 				writer.writeCharacters(mapEntry.getValue());
 				writer.writeEndElement();
@@ -119,13 +118,81 @@ public class PackageDocument {
 		writer.writeEndElement(); // dc:metadata
 	}
 
+
+	/**
+	 * Writes the package's spine.
+	 * 
+	 * @param book
+	 * @param epubWriter
+	 * @param writer
+	 * @throws XMLStreamException
+	 */
+	private static void writeSpine(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement("spine");
+		writer.writeAttribute("toc", epubWriter.getNcxId());
+
+		if(book.getCoverPage() != null) { // write the cover html file
+			writer.writeEmptyElement("itemref");
+			writer.writeAttribute("idref", book.getCoverPage().getId());
+			writer.writeAttribute("linear", "no");
+		}
+		writeSections(book.getSections(), writer);
+		writer.writeEndElement(); // spine
+	}
+
+	private static void writeManifest(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement("manifest");
+
+		writer.writeEmptyElement("item");
+		writer.writeAttribute("id", epubWriter.getNcxId());
+		writer.writeAttribute("href", epubWriter.getNcxHref());
+		writer.writeAttribute("media-type", epubWriter.getNcxMediaType());
+
+		writeCoverResources(book, writer);
+		
+		for(Resource resource: book.getResources()) {
+			writeItem(resource, writer);
+		}
+		
+		writer.writeEndElement(); // manifest
+	}
+
+	/**
+	 * Writes a resources as an item element
+	 * @param resource
+	 * @param writer
+	 * @throws XMLStreamException
+	 */
+	private static void writeItem(Resource resource, XMLStreamWriter writer)
+			throws XMLStreamException {
+		if(resource == null) {
+			return;
+		}
+		writer.writeEmptyElement("item");
+		writer.writeAttribute("id", resource.getId());
+		writer.writeAttribute("href", resource.getHref());
+		writer.writeAttribute("media-type", resource.getMediaType());
+	}
+
+	/**
+	 * Writes the cover resource items.
+	 * 
+	 * @param book
+	 * @param writer
+	 * @throws XMLStreamException
+	 */
+	private static void writeCoverResources(Book book, XMLStreamWriter writer) throws XMLStreamException {
+		writeItem(book.getCoverImage(), writer);
+		writeItem(book.getCoverPage(), writer);
+	}
+
 	/**
 	 * Recursively list the entire section tree.
 	 */
 	private static void writeSections(List<Section> sections, XMLStreamWriter writer) throws XMLStreamException {
 		for(Section section: sections) {
 			if(section.isPartOfPageFlow()) {
-				writer.writeEmptyElement(NAMESPACE_OPF, "itemref");
+				writer.writeEmptyElement("itemref");
 				writer.writeAttribute("idref", section.getItemId());
 			}
 			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {

@@ -5,10 +5,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import nl.siegmann.epublib.util.MimetypeUtil;
+
 
 public class FileResource extends ResourceBase implements Resource {
 
 	private File file;
+	
+	public FileResource(File file) {
+		super(null, null, MimetypeUtil.determineMediaType(file.getName()));
+		this.file = file;
+	}
 	
 	public FileResource(String id, File file, String href, String mediaType) {
 		super(id, href, mediaType);

@@ -37,7 +37,7 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 			Map<String, Resource> resources) {
 		Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
 		List<Section> result = Arrays.asList(new Section[] {section});
-		if(resource == null || (! resource.getMediaType().equals(Constants.MediaTypes.xhtml))) {
+		if(resource == null || (! resource.getMediaType().equals(Constants.MediaTypes.XHTML))) {
 			return result;
 		}
 		List<Resource> splitResources = splitHtml(resource);
