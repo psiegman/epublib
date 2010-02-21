@@ -32,6 +32,7 @@ public class PackageDocument {
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_OPF);
+		writer.writeCharacters("\n");
 		writer.writeStartElement(NAMESPACE_OPF, "package");
 //		writer.writeNamespace(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
 //		writer.writeNamespace("ncx", NAMESPACE_NCX);
@@ -45,6 +46,8 @@ public class PackageDocument {
 
 		writeSpine(book, epubWriter, writer);
 
+		writeGuide(book, epubWriter, writer);
+		
 		writer.writeEndElement(); // package
 		writer.writeEndDocument();
 	}
@@ -70,12 +73,6 @@ public class PackageDocument {
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "title");
 		writer.writeCharacters(book.getMetadata().getTitle());
 		writer.writeEndElement(); // dc:title
-
-		if(book.getCoverPage() != null) { // write the cover image
-			writer.writeEmptyElement(NAMESPACE_OPF, "meta");
-			writer.writeAttribute("name", "cover");
-			writer.writeAttribute("content", book.getCoverPage().getHref());
-		}
 		
 		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "creator");
@@ -98,7 +95,7 @@ public class PackageDocument {
 		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "language");
 			writer.writeCharacters(book.getMetadata().getLanguage());
-			writer.writeEndElement(); // dc:date
+			writer.writeEndElement(); // dc:language
 		}
 
 		if(StringUtils.isNotEmpty(book.getMetadata().getRights())) {
@@ -114,6 +111,12 @@ public class PackageDocument {
 				writer.writeEndElement();
 				
 			}
+		}
+
+		if(book.getCoverPage() != null) { // write the cover image
+			writer.writeEmptyElement("meta");
+			writer.writeAttribute("name", "cover");
+			writer.writeAttribute("content", book.getCoverPage().getHref());
 		}
 		writer.writeEndElement(); // dc:metadata
 	}
@@ -199,5 +202,16 @@ public class PackageDocument {
 				writeSections(section.getChildren(), writer);
 			}
 		}
+	}
+
+	private static void writeGuide(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
+		if(book.getCoverPage() == null) {
+			return;
+		}
+		writer.writeStartElement("guide");
+		writer.writeEmptyElement("reference");
+		writer.writeAttribute("type", "cover");
+		writer.writeAttribute("href", book.getCoverPage().getHref());
+		writer.writeEndElement(); // guide
 	}
 }
