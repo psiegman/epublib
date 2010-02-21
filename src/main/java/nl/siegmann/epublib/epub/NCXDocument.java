@@ -35,7 +35,7 @@ public class NCXDocument {
 	
 	
 	public static void write(XMLStreamWriter writer, Book book) throws XMLStreamException {
-		writer.writeStartDocument(Constants.encoding, "1.0");
+		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_NCX);
 		writer.writeStartElement(NAMESPACE_NCX, "ncx");
 //		writer.writeNamespace("ncx", NAMESPACE_NCX);
@@ -45,7 +45,7 @@ public class NCXDocument {
 
 		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
 		writer.writeAttribute("name", "dtb:uid");
-		writer.writeAttribute("content", book.getUid());
+		writer.writeAttribute("content", book.getMetadata().getUid());
 
 		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
 		writer.writeAttribute("name", "dtb:depth");
@@ -63,10 +63,10 @@ public class NCXDocument {
 		
 		writer.writeStartElement(NAMESPACE_NCX, "docTitle");
 		writer.writeStartElement(NAMESPACE_NCX, "text");
-		writer.writeCharacters(book.getTitle());
+		writer.writeCharacters(book.getMetadata().getTitle());
 		writer.writeEndElement();
 		writer.writeEndElement();
-		for(Author author: book.getAuthors()) {
+		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_NCX, "docAuthor");
 			writer.writeStartElement(NAMESPACE_NCX, "text");
 			writer.writeCharacters(author.getLastname() + ", " + author.getFirstname());

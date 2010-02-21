@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.Constants.MediaTypes;
 
 
 public class SectionResource implements Resource {
@@ -42,10 +41,18 @@ public class SectionResource implements Resource {
 
 	@Override
 	public String getMediaType() {
-		return Constants.MediaTypes.xhtml;
+		return Constants.MediaTypes.XHTML;
 	}
 	
 	private String getContent() {
 		return "<html><head><title>" + sectionName + "</title></head><body><h1>" + sectionName + "</h1></body></html>";
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setHref(String href) {
+		this.href = href;
 	}
 }

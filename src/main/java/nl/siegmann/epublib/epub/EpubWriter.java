@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -79,13 +80,35 @@ public class EpubWriter {
 
 	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
 		for(Resource resource: book.getResources()) {
-			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
-			InputStream inputStream = resource.getInputStream();
-			IOUtils.copy(inputStream, resultStream);
-			inputStream.close();
+			writeResource(resource, resultStream);
 		}
+		writeCoverResources(book, resultStream);
+	}
+
+	/**
+	 * Writes the resource to the resultStream.
+	 * 
+	 * @param resource
+	 * @param resultStream
+	 * @throws IOException
+	 */
+	private void writeResource(Resource resource, ZipOutputStream resultStream)
+			throws IOException {
+		if(resource == null) {
+			return;
+		}
+		resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
+		InputStream inputStream = resource.getInputStream();
+		IOUtils.copy(inputStream, resultStream);
+		inputStream.close();
 	}
 	
+	private void writeCoverResources(Book book, ZipOutputStream resultStream) throws IOException {
+		writeResource(book.getCoverImage(), resultStream);
+		writeResource(book.getCoverPage(), resultStream);
+	}
+
+
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
 		XMLOutputFactory xmlOutputFactory = createXMLOutputFactory();
@@ -111,11 +134,28 @@ public class EpubWriter {
 		out.flush();
 	}
 
+	/**
+	 * Stores the mimetype as an uncompressed file in the ZipOutputStream.
+	 * 
+	 * @param resultStream
+	 * @throws IOException
+	 */
 	private void writeMimeType(ZipOutputStream resultStream) throws IOException {
-		resultStream.putNextEntry(new ZipEntry("mimetype"));
-		resultStream.write((Constants.MediaTypes.epub).getBytes());
+		ZipEntry mimetypeZipEntry = new ZipEntry("mimetype");
+		mimetypeZipEntry.setMethod(ZipEntry.STORED);
+		byte[] mimetypeBytes = Constants.MediaTypes.EPUB.getBytes();
+		mimetypeZipEntry.setSize(mimetypeBytes.length);
+		mimetypeZipEntry.setCrc(calculateCrc(mimetypeBytes));
+		resultStream.putNextEntry(mimetypeZipEntry);
+		resultStream.write(mimetypeBytes);
 	}
 
+	private long calculateCrc(byte[] data) {
+		CRC32 crc = new CRC32();
+		crc.update(data);
+		return crc.getValue();
+	}
+	
 	XMLEventFactory createXMLEventFactory() {
 		return XMLEventFactory.newInstance();
 	}

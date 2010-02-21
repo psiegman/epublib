@@ -45,7 +45,7 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 
 	private Resource createCleanedUpResource(Resource resource, Book book, EpubWriter epubWriter) throws IOException {
 		Resource result = resource;
-		if(resource.getMediaType().equals(Constants.MediaTypes.xhtml)) {
+		if(resource.getMediaType().equals(Constants.MediaTypes.XHTML)) {
 			byte[] cleanedHtml = processHtml(resource, book, epubWriter);
 			result = new ByteArrayResource(resource.getId(), cleanedHtml, resource.getHref(), resource.getMediaType(), "UTF-8");
 		}
