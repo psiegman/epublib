@@ -45,7 +45,7 @@ public class NCXDocument {
 
 		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
 		writer.writeAttribute("name", "dtb:uid");
-		writer.writeAttribute("content", book.getMetadata().getUid());
+		writer.writeAttribute("content", book.getMetadata().getIdentifier().getValue());
 
 		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
 		writer.writeAttribute("name", "dtb:depth");
