@@ -24,7 +24,7 @@ public class Identifier {
 	 * Creates an Identifier with as value a random UUID and scheme "UUID"
 	 */
 	public Identifier() {
-		this(UUID.randomUUID().toString(), Scheme.UUID);
+		this(Scheme.UUID, UUID.randomUUID().toString());
 	}
 	
 	
