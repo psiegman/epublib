@@ -66,8 +66,8 @@ public class PackageDocument {
 		
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "identifier");
 		writer.writeAttribute("id", BOOK_ID_ID);
-		writer.writeAttribute(NAMESPACE_OPF, "scheme", "UUID");
-		writer.writeCharacters(book.getMetadata().getUid());
+		writer.writeAttribute(NAMESPACE_OPF, "scheme", book.getMetadata().getIdentifier().getScheme());
+		writer.writeCharacters(book.getMetadata().getIdentifier().getValue());
 		writer.writeEndElement(); // dc:identifier
 
 		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "title");

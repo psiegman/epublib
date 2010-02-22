@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -18,7 +17,7 @@ public class Metadata {
 	private Map<QName, String> otherProperties = new HashMap<QName, String>();
 	private String rights = "";
 	private String title = "";
-	private String uid = UUID.randomUUID().toString();
+	private Identifier identifier = new Identifier();
 
 	/**
 	 * Metadata properties not hard-coded like the author, title, etc.
@@ -61,10 +60,10 @@ public class Metadata {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getUid() {
-		return uid;
+	public Identifier getIdentifier() {
+		return identifier;
 	}
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setIdentifier(Identifier identifier) {
+		this.identifier = identifier;
 	}
 }
