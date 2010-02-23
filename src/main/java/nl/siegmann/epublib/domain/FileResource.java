@@ -13,7 +13,7 @@ public class FileResource extends ResourceBase implements Resource {
 	private File file;
 	
 	public FileResource(File file) {
-		super(null, null, MimetypeUtil.determineMediaType(file.getName()));
+		super(null, file.getName(), MimetypeUtil.determineMediaType(file.getName()));
 		this.file = file;
 	}
 	
