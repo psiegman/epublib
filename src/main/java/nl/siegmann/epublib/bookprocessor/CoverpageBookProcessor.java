@@ -10,12 +10,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
-import nl.siegmann.epublib.util.MimetypeUtil;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +47,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 					coverImage.setHref(getCoverImageHref(coverImage));
 				}
 				String coverPageHtml = createCoverpageHtml(book.getMetadata().getTitle(), coverImage.getHref());
-				coverPage = new ByteArrayResource("cover", coverPageHtml.getBytes(), "cover.html", Constants.MediaTypes.XHTML);
+				coverPage = new ByteArrayResource("cover", coverPageHtml.getBytes(), "cover.html", MediatypeService.XHTML);
 			}
 		} else { // coverPage != null
 			if(book.getCoverImage() == null) {
@@ -65,7 +64,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 	}
 
 	private String getCoverImageHref(Resource coverImageResource) {
-		return "cover" + MimetypeUtil.getDefaultExtensionForMimetype(coverImageResource.getMediaType());
+		return "cover" + coverImageResource.getMediaType().getDefaultExtension();
 	}
 	
 	private void setCoverResourceIds(Book book) {

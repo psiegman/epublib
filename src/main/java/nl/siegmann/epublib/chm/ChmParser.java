@@ -12,12 +12,12 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileResource;
+import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
-import nl.siegmann.epublib.util.MimetypeUtil;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -29,14 +29,6 @@ public class ChmParser {
 //	private String htmlInputEncoding = DEFAULT_HTML_ENCODING;
 	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
-	private static class ItemIdGenerator {
-		private int itemCounter = 1;
-		
-		public String getNextItemId() {
-			return "item_" + itemCounter++;
-		}
-	}
-	
 	public static Book parseChm(File chmRootDir)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
@@ -46,8 +38,7 @@ public class ChmParser {
 		if(hhcFile == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
 		}
-		ItemIdGenerator itemIdGenerator = new ItemIdGenerator();
-		Map<String, Resource> resources = findResources(itemIdGenerator, chmRootDir);
+		Map<String, Resource> resources = findResources(chmRootDir);
 		List<Section> sections = HHCParser.parseHhc(new FileInputStream(hhcFile));
 		result.setSections(sections);
 		result.setResources(resources.values());
@@ -101,7 +92,7 @@ public class ChmParser {
 	
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Resource> findResources(ItemIdGenerator itemIdGenerator, File rootDir) throws IOException {
+	private static Map<String, Resource> findResources(File rootDir) throws IOException {
 		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
 		Iterator<File> fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		while(fileIter.hasNext()) {
@@ -110,13 +101,13 @@ public class ChmParser {
 			if(file.isDirectory()) {
 				continue;
 			}
-			String mediaType = MimetypeUtil.determineMediaType(file.getName());
-			if(StringUtils.isBlank(mediaType)) {
+			MediaType mediaType = MediatypeService.determineMediaType(file.getName()); 
+			if(mediaType == null) {
 				continue;
 			}
 			String href = file.getCanonicalPath().substring(rootDir.getCanonicalPath().length() + 1);
-			FileResource fileResource = new FileResource(itemIdGenerator.getNextItemId(), file, href, mediaType);
-			if(mediaType.equals(Constants.MediaTypes.XHTML)) {
+			FileResource fileResource = new FileResource(null, file, href, mediaType);
+			if(mediaType == MediatypeService.XHTML) {
 				fileResource.setInputEncoding(DEFAULT_HTML_INPUT_ENCODING);
 			}
 			result.put(fileResource.getHref(), fileResource);

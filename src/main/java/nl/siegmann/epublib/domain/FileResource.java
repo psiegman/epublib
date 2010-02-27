@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import nl.siegmann.epublib.util.MimetypeUtil;
+import nl.siegmann.epublib.service.MediatypeService;
 
 
 public class FileResource extends ResourceBase implements Resource {
@@ -13,11 +13,11 @@ public class FileResource extends ResourceBase implements Resource {
 	private File file;
 	
 	public FileResource(File file) {
-		super(null, file.getName(), MimetypeUtil.determineMediaType(file.getName()));
+		super(null, file.getName(), MediatypeService.determineMediaType(file.getName()));
 		this.file = file;
 	}
 	
-	public FileResource(String id, File file, String href, String mediaType) {
+	public FileResource(String id, File file, String href, MediaType mediaType) {
 		super(id, href, mediaType);
 		this.file = file;
 	}

@@ -174,7 +174,7 @@ public class PackageDocument {
 		writer.writeEmptyElement("item");
 		writer.writeAttribute("id", resource.getId());
 		writer.writeAttribute("href", resource.getHref());
-		writer.writeAttribute("media-type", resource.getMediaType());
+		writer.writeAttribute("media-type", resource.getMediaType().getName());
 	}
 
 	/**

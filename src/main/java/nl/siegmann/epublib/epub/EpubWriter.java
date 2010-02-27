@@ -18,13 +18,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
 import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -42,6 +42,7 @@ public class EpubWriter {
 	
 	private HtmlProcessor htmlProcessor;
 	private List<BookProcessor> bookProcessingPipeline;
+	private MediatypeService mediatypeService = new MediatypeService();
 	
 	public EpubWriter() {
 		this.bookProcessingPipeline = setupBookProcessingPipeline();
@@ -143,7 +144,7 @@ public class EpubWriter {
 	private void writeMimeType(ZipOutputStream resultStream) throws IOException {
 		ZipEntry mimetypeZipEntry = new ZipEntry("mimetype");
 		mimetypeZipEntry.setMethod(ZipEntry.STORED);
-		byte[] mimetypeBytes = Constants.MediaTypes.EPUB.getBytes();
+		byte[] mimetypeBytes = MediatypeService.EPUB.getName().getBytes();
 		mimetypeZipEntry.setSize(mimetypeBytes.length);
 		mimetypeZipEntry.setCrc(calculateCrc(mimetypeBytes));
 		resultStream.putNextEntry(mimetypeZipEntry);
@@ -195,5 +196,10 @@ public class EpubWriter {
 
 	public void setBookProcessingPipeline(List<BookProcessor> bookProcessingPipeline) {
 		this.bookProcessingPipeline = bookProcessingPipeline;
+	}
+
+
+	public MediatypeService getMediatypeService() {
+		return mediatypeService;
 	}
 }

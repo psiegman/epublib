@@ -79,7 +79,10 @@
                 <executions>
                     <execution>
                         <configuration>
+                            <mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
+							<!--
                             <mainClass>nl.siegmann.epublib.Chm2Epub</mainClass>
+							-->
                         </configuration>
                         <goals>
                             <goal>one-jar</goal>
