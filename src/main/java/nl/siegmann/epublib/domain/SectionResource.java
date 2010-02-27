@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.service.MediatypeService;
 
 
 public class SectionResource implements Resource {
@@ -40,8 +40,8 @@ public class SectionResource implements Resource {
 	}
 
 	@Override
-	public String getMediaType() {
-		return Constants.MediaTypes.XHTML;
+	public MediaType getMediaType() {
+		return MediatypeService.XHTML;
 	}
 	
 	private String getContent() {

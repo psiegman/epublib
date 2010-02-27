@@ -9,6 +9,6 @@ public interface Resource {
 	String getInputEncoding();
 	String getHref();
 	void setHref(String href);
-	String getMediaType();
+	MediaType getMediaType();
 	InputStream getInputStream() throws IOException;
 }

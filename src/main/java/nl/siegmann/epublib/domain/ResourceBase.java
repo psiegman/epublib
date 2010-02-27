@@ -7,15 +7,15 @@ public abstract class ResourceBase implements Resource {
 	
 	private String id;
 	private String href;
-	private String mediaType;
+	private MediaType mediaType;
 	private String inputEncoding;
 
-	public ResourceBase(String id, String href, String mediaType) {
+	public ResourceBase(String id, String href, MediaType mediaType) {
 		this(id, href, mediaType, null);
 	}
 	
 	
-	public ResourceBase(String id, String href, String mediaType, String inputEncoding) {
+	public ResourceBase(String id, String href, MediaType mediaType, String inputEncoding) {
 		super();
 		this.id = id;
 		this.href = href;
@@ -35,13 +35,6 @@ public abstract class ResourceBase implements Resource {
 		this.href = href;
 	}
 	
-	public String getMediaType() {
-		return mediaType;
-	}
-	public void setMediaType(String mediaType) {
-		this.mediaType = mediaType;
-	}
-
 	@Override
 	public abstract InputStream getInputStream() throws IOException;
 
@@ -56,5 +49,15 @@ public abstract class ResourceBase implements Resource {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+
+	public MediaType getMediaType() {
+		return mediaType;
+	}
+
+
+	public void setMediaType(MediaType mediaType) {
+		this.mediaType = mediaType;
 	}
 }

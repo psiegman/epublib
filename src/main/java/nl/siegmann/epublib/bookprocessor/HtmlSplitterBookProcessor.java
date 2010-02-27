@@ -10,6 +10,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.service.MediatypeService;
 
 public class HtmlSplitterBookProcessor implements BookProcessor {
 
@@ -37,7 +38,7 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 			Map<String, Resource> resources) {
 		Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
 		List<Section> result = Arrays.asList(new Section[] {section});
-		if(resource == null || (! resource.getMediaType().equals(Constants.MediaTypes.XHTML))) {
+		if(resource == null || (resource.getMediaType() != MediatypeService.XHTML)) {
 			return result;
 		}
 		List<Resource> splitResources = splitHtml(resource);
