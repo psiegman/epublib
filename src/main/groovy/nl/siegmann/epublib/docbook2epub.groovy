@@ -19,6 +19,7 @@ import groovy.xml.*
 import org.apache.commons.io.FileUtils 
 import java.util.zip.*
 import nl.siegmann.epublib.*
+import nl.siegmann.epublib.domain.*
 
 // the directory where the userguide xml files are located:
 inputXmlDir = '/home/paul/project/private/gradledoc/foo/gradle-0.8/src/docs/userguide'

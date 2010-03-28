@@ -3,6 +3,8 @@ package nl.siegmann.epublib.domain;
 import java.io.IOException;
 import java.io.InputStream;
 
+import nl.siegmann.epublib.service.MediatypeService;
+
 public abstract class ResourceBase implements Resource {
 	
 	private String id;
@@ -10,6 +12,10 @@ public abstract class ResourceBase implements Resource {
 	private MediaType mediaType;
 	private String inputEncoding;
 
+	public ResourceBase(String href) {
+		this(null, href, MediatypeService.determineMediaType(href));
+	}
+	
 	public ResourceBase(String id, String href, MediaType mediaType) {
 		this(id, href, mediaType, null);
 	}

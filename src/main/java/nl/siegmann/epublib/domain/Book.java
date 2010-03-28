@@ -8,11 +8,13 @@ import java.util.List;
 public class Book {
 	private Resource coverPage;
 	private Resource coverImage;
+	private Resource ncxResource;
 	private Metadata metadata = new Metadata();
 	private List<String> subjects = new ArrayList<String>();
 	private List<Section> sections = new ArrayList<Section>();
 	private Collection<Resource> resources = new ArrayList<Resource>();
 
+	
 	public List<Section> getSections() {
 		return sections;
 	}
@@ -29,7 +31,18 @@ public class Book {
 		return resources;
 	}
 	public void setResources(Collection<Resource> resources) {
-		this.resources = resources;
+		this.resources = new ArrayList<Resource>(resources);
+	}
+	public void addResource(Resource resource) {
+		this.resources.add(resource);
+	}
+	public Resource getResourceByHref(String href) {
+		for(Resource resource: resources) {
+			if(href.equals(resource.getHref())) {
+				return resource;
+			}
+		}
+		return null;
 	}
 	public Metadata getMetadata() {
 		return metadata;
@@ -48,6 +61,12 @@ public class Book {
 	}
 	public void setCoverImage(Resource coverImage) {
 		this.coverImage = coverImage;
+	}
+	public Resource getNcxResource() {
+		return ncxResource;
+	}
+	public void setNcxResource(Resource ncxResource) {
+		this.ncxResource = ncxResource;
 	}
 	
 }

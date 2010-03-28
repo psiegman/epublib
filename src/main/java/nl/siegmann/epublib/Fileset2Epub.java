@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
 import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
+import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileResource;
@@ -23,6 +24,7 @@ public class Fileset2Epub {
 		String coverImage = "";
 		String title = "";
 		String author = "";
+		String type = "";
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equals("--in")) {
 				inputDir = args[++i];
@@ -36,6 +38,8 @@ public class Fileset2Epub {
 				author = args[++i];
 			} else if(args[i].equals("--title")) {
 				title = args[++i];
+			} else if(args[i].equals("--type")) {
+				type = args[++i];
 			}
 		}
 		if(StringUtils.isBlank(inputDir) || StringUtils.isBlank(resultFile)) {
@@ -47,7 +51,13 @@ public class Fileset2Epub {
 			epubWriter.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
 		}
 		
-		Book book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
+		Book book;
+		if("chm".equals(type)) {
+			book = ChmParser.parseChm(new File(inputDir));
+		} else {
+			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
+		}
+		
 		if(! StringUtils.isBlank(coverImage)) {
 			book.setCoverImage(new FileResource(new File(coverImage)));
 			epubWriter.getBookProcessingPipeline().add(new CoverpageBookProcessor());
@@ -67,7 +77,7 @@ public class Fileset2Epub {
 	}
 
 	private static void usage() {
-		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover]");
+		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
 		System.exit(0);
 	}
 }

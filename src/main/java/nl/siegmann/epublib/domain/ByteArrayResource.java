@@ -8,6 +8,11 @@ public class ByteArrayResource extends ResourceBase implements Resource {
 
 	private byte[] data;
 	
+	public ByteArrayResource(String href, byte[] data) {
+		super(href);
+		this.data = data;
+	}
+	
 	public ByteArrayResource(String id, byte[] data, String href, MediaType mediaType) {
 		this(id, data, href, mediaType, null);
 	}

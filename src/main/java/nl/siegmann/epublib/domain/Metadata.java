@@ -19,6 +19,29 @@ public class Metadata {
 	private String title = "";
 	private Identifier identifier = new Identifier();
 
+	/*
+	 * 
+	 
+	 Contributor  	An entity responsible for making contributions to the content of the resource
+Coverage 	The extent or scope of the content of the resource
+Creator 	An entity primarily responsible for making the content of the resource
+Format 	The physical or digital manifestation of the resource
+Date 	A date of an event in the lifecycle of the resource
+Description 	An account of the content of the resource
+Identifier 	An unambiguous reference to the resource within a given context
+Language 	A language of the intellectual content of the resource
+Publisher 	An entity responsible for making the resource available
+Relation 	A reference to a related resource
+Rights 	Information about rights held in and over the resource
+Source 	A Reference to a resource from which the present resource is derived
+Subject 	A topic of the content of the resource
+Title 	A name given to the resource
+Type 	The nature or genre of the content of the resource
+	 
+	 
+	 */
+	
+	
 	/**
 	 * Metadata properties not hard-coded like the author, title, etc.
 	 * 
