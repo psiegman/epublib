@@ -10,5 +10,6 @@ public interface Resource {
 	String getHref();
 	void setHref(String href);
 	MediaType getMediaType();
+	void setMediaType(MediaType mediaType);
 	InputStream getInputStream() throws IOException;
 }

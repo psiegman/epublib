@@ -16,7 +16,7 @@
         <dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.13</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy.maven.runtime</groupId>
@@ -43,11 +43,13 @@
 		  <artifactId>commons-io</artifactId>
 		  <version>1.4</version>
 		</dependency>
+		<!--
 		<dependency>
 		  <groupId>org.ccil.cowan.tagsoup</groupId>
 		  <artifactId>tagsoup</artifactId>
 		  <version>1.2</version>
 		</dependency>
+		-->
 			
         <dependency>
             <groupId>junit</groupId>

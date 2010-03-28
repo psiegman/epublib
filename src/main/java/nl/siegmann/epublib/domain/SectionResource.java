@@ -13,6 +13,7 @@ public class SectionResource implements Resource {
 	private String inputEncoding = "UTF-8";
 	private String sectionName;
 	private String href;
+	private MediaType mediaType = MediatypeService.XHTML;
 	
 	public SectionResource(String id, String sectionName, String href) {
 		this.id = id;
@@ -41,7 +42,7 @@ public class SectionResource implements Resource {
 
 	@Override
 	public MediaType getMediaType() {
-		return MediatypeService.XHTML;
+		return mediaType;
 	}
 	
 	private String getContent() {
@@ -54,5 +55,9 @@ public class SectionResource implements Resource {
 
 	public void setHref(String href) {
 		this.href = href;
+	}
+
+	public void setMediaType(MediaType mediaType) {
+		this.mediaType = mediaType;
 	}
 }

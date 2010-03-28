@@ -65,8 +65,9 @@ public class EpubWriter {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
+		book.setNcxResource(NCXDocument.createNCXResource(book));
 		writeResources(book, resultStream);
-		writeNcxDocument(book, resultStream);
+//		writeNcxDocument(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
 	}
@@ -84,6 +85,7 @@ public class EpubWriter {
 			writeResource(resource, resultStream);
 		}
 		writeCoverResources(book, resultStream);
+		writeResource(book.getNcxResource(), resultStream);
 	}
 
 	/**
@@ -117,10 +119,6 @@ public class EpubWriter {
 		XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(out);
 		PackageDocument.write(this, xmlStreamWriter, book);
 		xmlStreamWriter.flush();
-	}
-
-	private void writeNcxDocument(Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
-		NCXDocument.write(book, resultStream);
 	}
 
 	private void writeContainer(ZipOutputStream resultStream) throws IOException {

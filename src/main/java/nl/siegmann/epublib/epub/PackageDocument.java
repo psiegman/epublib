@@ -1,20 +1,32 @@
 package nl.siegmann.epublib.epub;
 
+
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -29,6 +41,42 @@ public class PackageDocument {
 	public static final String PREFIX_DUBLIN_CORE = "dc";
 	public static final String dateFormat = "yyyy-MM-dd";
 	
+	public static void read(Resource packageResource, EpubReader epubReader, Book book, Map<String, Resource> resources) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
+		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.getDocumentBuilderFactory());
+		String packageHref = packageResource.getHref();
+		Element manifestElement = (Element) packageDocument.getDocumentElement().getElementsByTagName("manifest").item(0);
+		readManifest(manifestElement, packageHref, epubReader, book, resources);
+	}
+	
+	
+	private static void readManifest(Element manifestElement, String packageHref,
+			EpubReader epubReader, Book book, Map<String, Resource> resources) {
+		NodeList itemElements = manifestElement.getElementsByTagName("item");
+		String hrefPrefix = packageHref.substring(0, packageHref.lastIndexOf('/') + 1);
+		for(int i = 0; i < itemElements.getLength(); i++) {
+			Element itemElement = (Element) itemElements.item(i);
+			String mediaTypeName = itemElement.getAttribute("media-type");
+			String href = itemElement.getAttribute("href");
+			href = hrefPrefix + href;
+			Resource resource = resources.remove(href);
+			if(resource == null) {
+				System.err.println("resource not found:" + href);
+				continue;
+			}
+			resource.setHref(resource.getHref().substring(hrefPrefix.length()));
+			MediaType mediaType = MediatypeService.getMediaTypeByName(mediaTypeName);
+			if(mediaType != null) {
+				resource.setMediaType(mediaType);
+			}
+			if(resource.getMediaType() == MediatypeService.NCX) {
+				book.setNcxResource(resource);
+			} else {
+				book.addResource(resource);
+			}
+		}
+	}
+
+
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_OPF);
@@ -152,7 +200,7 @@ public class PackageDocument {
 		writer.writeAttribute("media-type", epubWriter.getNcxMediaType());
 
 		writeCoverResources(book, writer);
-		
+		writeItem(book.getNcxResource(), writer);
 		for(Resource resource: book.getResources()) {
 			writeItem(resource, writer);
 		}

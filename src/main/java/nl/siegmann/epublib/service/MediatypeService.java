@@ -1,5 +1,8 @@
 package nl.siegmann.epublib.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import nl.siegmann.epublib.domain.MediaType;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,11 +18,22 @@ public class MediatypeService {
 	public static MediaType CSS = new MediaType("text/css", ".css", new String[] {".css"});
 	public static MediaType SVG = new MediaType("image/svg+xml", ".svg", new String[] {".svg"});
 	public static MediaType TTF = new MediaType("application/x-truetype-font", ".ttf", new String[] {".ttf"});
+	public static MediaType NCX = new MediaType("application/x-dtbncx+xml", ".ncx", new String[] {".ncx"});
 	
 	public static MediaType[] mediatypes = new MediaType[] {
-		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF
+		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX
 	};
 	
+	public static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();
+	static {
+		for(int i = 0; i < mediatypes.length; i++) {
+			mediaTypesByName.put(mediatypes[i].getName(), mediatypes[i]);
+		}
+	}
+	
+	public static boolean isBitmapImage(MediaType mediaType) {
+		return mediaType == JPG || mediaType == PNG || mediaType == GIF;
+	}
 	
 	/**
 	 * Gets the MediaType based on the file extension.
@@ -40,4 +54,7 @@ public class MediatypeService {
 		return null;
 	}
 
+	public static MediaType getMediaTypeByName(String mediaTypeName) {
+		return mediaTypesByName.get(mediaTypeName);
+	}
 }

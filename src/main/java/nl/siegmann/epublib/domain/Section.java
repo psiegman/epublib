@@ -11,6 +11,9 @@ public class Section {
 	private String itemId;
 	private List<Section> children;
 	
+	public Section() {
+		this(null, null);
+	}
 	public Section(String name, String href) {
 		this(name, href, new ArrayList<Section>());
 	}
@@ -43,6 +46,10 @@ public class Section {
 		return children;
 	}
 
+	public void addChildSection(Section childSection) {
+		this.children.add(childSection);
+	}
+	
 	public void setChildren(List<Section> children) {
 		this.children = children;
 	}
