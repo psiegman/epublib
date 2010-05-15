@@ -45,11 +45,15 @@ public class EpubWriter {
 	private MediatypeService mediatypeService = new MediatypeService();
 	
 	public EpubWriter() {
-		this.bookProcessingPipeline = setupBookProcessingPipeline();
+		this(createDefaultBookProcessingPipeline());
+	}
+	
+	public EpubWriter(List<BookProcessor> bookProcessingPipeline) {
+		this.bookProcessingPipeline = bookProcessingPipeline;
 	}
 	
 	
-	private List<BookProcessor> setupBookProcessingPipeline() {
+	private static List<BookProcessor> createDefaultBookProcessingPipeline() {
 		List<BookProcessor> result = new ArrayList<BookProcessor>();
 		result.addAll(Arrays.asList(new BookProcessor[] {
 			new SectionHrefSanityCheckBookProcessor(),

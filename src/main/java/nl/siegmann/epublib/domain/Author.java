@@ -1,5 +1,11 @@
 package nl.siegmann.epublib.domain;
 
+/**
+ * Represents one of the authors of the book
+ * 
+ * @author paul
+ *
+ */
 public class Author {
 	private String firstname;
 	private String lastname;

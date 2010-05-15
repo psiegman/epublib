@@ -130,7 +130,7 @@ public class PackageDocument {
 			writer.writeEndElement(); // dc:creator
 		}
 
-		for(String subject: book.getSubjects()) {
+		for(String subject: book.getMetadata().getSubjects()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "subject");
 			writer.writeCharacters(subject);
 			writer.writeEndElement(); // dc:subject
