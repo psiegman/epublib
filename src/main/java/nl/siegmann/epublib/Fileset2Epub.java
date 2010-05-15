@@ -10,6 +10,7 @@ import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileResource;
+import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
 
@@ -71,6 +72,10 @@ public class Fileset2Epub {
 			book.getMetadata().setTitle(title);
 		}
 		
+		if(StringUtils.isNotBlank(isbn)) {
+			book.getMetadata().setIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
+		}
+		
 		if(StringUtils.isNotBlank(author)) {
 			String[] authorNameParts = author.split(",");
 			Author authorObject = null;
@@ -88,7 +93,7 @@ public class Fileset2Epub {
 	}
 
 	private static void usage() {
-		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
+		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --isbn [isbn number] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
 		System.exit(0);
 	}
 }
