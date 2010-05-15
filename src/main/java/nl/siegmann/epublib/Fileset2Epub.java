@@ -25,20 +25,24 @@ public class Fileset2Epub {
 		String title = "";
 		String author = "";
 		String type = "";
+		String isbn = "";
+		
 		for(int i = 0; i < args.length; i++) {
-			if(args[i].equals("--in")) {
+			if(args[i].equalsIgnoreCase("--in")) {
 				inputDir = args[++i];
-			} else if(args[i].equals("--result")) {
+			} else if(args[i].equalsIgnoreCase("--result")) {
 				resultFile = args[++i];
-			} else if(args[i].equals("--xsl")) {
+			} else if(args[i].equalsIgnoreCase("--xsl")) {
 				xslFile = args[++i];
-			} else if(args[i].equals("--cover-image")) {
+			} else if(args[i].equalsIgnoreCase("--cover-image")) {
 				coverImage = args[++i];
-			} else if(args[i].equals("--author")) {
+			} else if(args[i].equalsIgnoreCase("--author")) {
 				author = args[++i];
-			} else if(args[i].equals("--title")) {
+			} else if(args[i].equalsIgnoreCase("--title")) {
 				title = args[++i];
-			} else if(args[i].equals("--type")) {
+			} else if(args[i].equalsIgnoreCase("--isbn")) {
+				isbn = args[++i];
+			} else if(args[i].equalsIgnoreCase("--type")) {
 				type = args[++i];
 			}
 		}
@@ -58,26 +62,33 @@ public class Fileset2Epub {
 			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
 		}
 		
-		if(! StringUtils.isBlank(coverImage)) {
+		if(StringUtils.isNotBlank(coverImage)) {
 			book.setCoverImage(new FileResource(new File(coverImage)));
 			epubWriter.getBookProcessingPipeline().add(new CoverpageBookProcessor());
 		}
 		
-		if(! StringUtils.isBlank(title)) {
+		if(StringUtils.isNotBlank(title)) {
 			book.getMetadata().setTitle(title);
 		}
-
-		if(! StringUtils.isBlank(author)) {
+		
+		if(StringUtils.isNotBlank(author)) {
 			String[] authorNameParts = author.split(",");
-			Author authorObject = new Author(authorNameParts[1], authorNameParts[0]);
-			book.getMetadata().setAuthors(Arrays.asList(new Author[] {authorObject}));
+			Author authorObject = null;
+			if(authorNameParts.length > 1) {
+				authorObject = new Author(authorNameParts[1], authorNameParts[0]);
+			} else if(authorNameParts.length > 0) {
+				authorObject = new Author(authorNameParts[0]);
+			}
+			
+			if(authorObject != null) {
+				book.getMetadata().setAuthors(Arrays.asList(new Author[] {authorObject}));
+			}
 		}
-
 		epubWriter.write(book, new FileOutputStream(resultFile));
 	}
 
 	private static void usage() {
-		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
+		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
 		System.exit(0);
 	}
 }
