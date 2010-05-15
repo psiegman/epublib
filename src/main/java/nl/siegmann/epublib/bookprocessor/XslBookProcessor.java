@@ -24,6 +24,7 @@ import nl.siegmann.epublib.epub.EpubWriter;
 
 /**
  * Uses the given xslFile to process all html resources of a Book.
+ * 
  * @author paul
  *
  */

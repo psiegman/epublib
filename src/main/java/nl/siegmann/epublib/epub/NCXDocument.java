@@ -10,7 +10,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerFactory;
@@ -92,17 +91,17 @@ public class NCXDocument {
 		return result;
 	}
 
-	public static void write(Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
+	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/toc.ncx"));
-		XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter(resultStream);
+		XMLStreamWriter out = epubWriter.createXMLStreamWriter(resultStream);
 		write(out, book);
 		out.flush();
 	}
 	
 
-	public static Resource createNCXResource(Book book) throws XMLStreamException, FactoryConfigurationError {
+	public static Resource createNCXResource(EpubWriter epubWriter, Book book) throws XMLStreamException, FactoryConfigurationError {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter(data);
+		XMLStreamWriter out = epubWriter.createXMLStreamWriter(data);
 		write(out, book);
 		Resource resource = new ByteArrayResource(NCX_ITEM_ID, data.toByteArray(), NCX_HREF, MediatypeService.NCX);
 		return resource;

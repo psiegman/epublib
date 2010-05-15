@@ -18,6 +18,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
@@ -43,6 +44,7 @@ public class EpubWriter {
 	private HtmlProcessor htmlProcessor;
 	private List<BookProcessor> bookProcessingPipeline;
 	private MediatypeService mediatypeService = new MediatypeService();
+	private XMLOutputFactory xmlOutputFactory;
 	
 	public EpubWriter() {
 		this(createDefaultBookProcessingPipeline());
@@ -50,6 +52,13 @@ public class EpubWriter {
 	
 	public EpubWriter(List<BookProcessor> bookProcessingPipeline) {
 		this.bookProcessingPipeline = bookProcessingPipeline;
+		this.xmlOutputFactory = createXMLOutputFactory();
+	}
+	
+	private static XMLOutputFactory createXMLOutputFactory() {
+		XMLOutputFactory result = XMLOutputFactory.newInstance();
+//		result.setProperty(name, value)
+		return result;
 	}
 	
 	
@@ -69,7 +78,7 @@ public class EpubWriter {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
-		book.setNcxResource(NCXDocument.createNCXResource(book));
+		book.setNcxResource(NCXDocument.createNCXResource(this, book));
 		writeResources(book, resultStream);
 //		writeNcxDocument(book, resultStream);
 		writePackageDocument(book, resultStream);
@@ -118,9 +127,7 @@ public class EpubWriter {
 
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
-		XMLOutputFactory xmlOutputFactory = createXMLOutputFactory();
-		Writer out = new OutputStreamWriter(resultStream);
-		XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(out);
+		XMLStreamWriter xmlStreamWriter = createXMLStreamWriter(resultStream);
 		PackageDocument.write(this, xmlStreamWriter, book);
 		xmlStreamWriter.flush();
 	}
@@ -163,12 +170,10 @@ public class EpubWriter {
 		return XMLEventFactory.newInstance();
 	}
 	
-	XMLOutputFactory createXMLOutputFactory() {
-		XMLOutputFactory result = XMLOutputFactory.newInstance();
-//		result.setProperty(name, value)
-		return result;
+	XMLStreamWriter createXMLStreamWriter(OutputStream out) throws XMLStreamException {
+		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING);
 	}
-	
+
 	String getNcxId() {
 		return "ncx";
 	}
