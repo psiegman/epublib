@@ -5,12 +5,17 @@ import java.util.Collection;
 import java.util.List;
 
 
+/**
+ * Representation of a Book.
+ * 
+ * @author paul
+ *
+ */
 public class Book {
 	private Resource coverPage;
 	private Resource coverImage;
 	private Resource ncxResource;
 	private Metadata metadata = new Metadata();
-	private List<String> subjects = new ArrayList<String>();
 	private List<Section> sections = new ArrayList<Section>();
 	private Collection<Resource> resources = new ArrayList<Resource>();
 
@@ -20,12 +25,6 @@ public class Book {
 	}
 	public void setSections(List<Section> sections) {
 		this.sections = sections;
-	}
-	public List<String> getSubjects() {
-		return subjects;
-	}
-	public void setSubjects(List<String> subjects) {
-		this.subjects = subjects;
 	}
 	public Collection<Resource> getResources() {
 		return resources;

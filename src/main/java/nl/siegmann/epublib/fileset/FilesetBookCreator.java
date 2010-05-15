@@ -15,7 +15,12 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
 
-
+/**
+ * Creates a Book from a collection of html and image files.
+ * 
+ * @author paul
+ *
+ */
 public class FilesetBookCreator {
 	
 	private static Comparator<File> fileComparator = new Comparator<File>(){
@@ -25,6 +30,14 @@ public class FilesetBookCreator {
 		}
 	};
 	
+	/**
+	 * Recursively adds all files that are allowed to be part of an epub to the Book.
+	 * 
+	 * @see nl.siegmann.epublib.domain.MediaTypeService
+	 * @param rootDirectory
+	 * @return
+	 * @throws IOException
+	 */
 	public static Book createBookFromDirectory(File rootDirectory) throws IOException {
 		Book result = new Book();
 		List<Section> sections = new ArrayList<Section>();

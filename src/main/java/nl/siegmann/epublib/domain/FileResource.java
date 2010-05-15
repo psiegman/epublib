@@ -7,7 +7,12 @@ import java.io.InputStream;
 
 import nl.siegmann.epublib.service.MediatypeService;
 
-
+/**
+ * Wraps the Resource interface around a file on disk.
+ * 
+ * @author paul
+ *
+ */
 public class FileResource extends ResourceBase implements Resource {
 
 	private File file;

@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Parses the windows help .hhc file.
+ * Parses the windows help index (.hhc) file.
  * 
  * @author paul
  *

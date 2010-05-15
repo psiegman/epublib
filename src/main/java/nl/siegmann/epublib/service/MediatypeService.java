@@ -8,6 +8,12 @@ import nl.siegmann.epublib.domain.MediaType;
 import org.apache.commons.lang.StringUtils;
 
 
+/**
+ * Manages mediatypes that are used by epubs
+ * 
+ * @author paul
+ *
+ */
 public class MediatypeService {
 
 	public static MediaType XHTML = new MediaType("application/xhtml+xml", ".xhtml", new String[] {".htm", ".html", ".xhtml"});

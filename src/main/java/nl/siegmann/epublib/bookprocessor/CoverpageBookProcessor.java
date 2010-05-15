@@ -20,7 +20,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * If the book contains a cover imaget then this will add a cover page to the book.
+ * If the book contains a cover image then this will add a cover page to the book.
+ * 
  * FIXME:
  *  only handles the case of a given cover image
  *  will overwrite any "cover.jpg" or "cover.html" that are already there.

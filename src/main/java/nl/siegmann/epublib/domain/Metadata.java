@@ -8,6 +8,13 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+/**
+ * A Book's collection of Metadata.
+ * In the future it should contain all Dublin Core attributes, for now it contains a set of often-used ones.
+ * 
+ * @author paul
+ *
+ */
 public class Metadata {
 
 	public static final String DEFAULT_LANGUAGE = "en";
@@ -18,6 +25,7 @@ public class Metadata {
 	private String rights = "";
 	private String title = "";
 	private Identifier identifier = new Identifier();
+	private List<String> subjects = new ArrayList<String>();
 
 	/*
 	 * 
@@ -88,5 +96,11 @@ Type 	The nature or genre of the content of the resource
 	}
 	public void setIdentifier(Identifier identifier) {
 		this.identifier = identifier;
+	}
+	public List<String> getSubjects() {
+		return subjects;
+	}
+	public void setSubjects(List<String> subjects) {
+		this.subjects = subjects;
 	}
 }

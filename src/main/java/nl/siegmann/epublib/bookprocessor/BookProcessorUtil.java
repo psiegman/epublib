@@ -8,6 +8,12 @@ import org.apache.commons.lang.StringUtils;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
+/**
+ * Utility methods shared by various BookProcessors.
+ * 
+ * @author paul
+ *
+ */
 public class BookProcessorUtil {
 
 	/**

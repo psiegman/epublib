@@ -3,6 +3,13 @@ package nl.siegmann.epublib.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Section of a book.
+ * Represents both an item in the package document and a item in the index.
+ * 
+ * @author paul
+ *
+ */
 public class Section {
 	private boolean partOfTableOfContents = true;
 	private boolean partOfPageFlow = true;

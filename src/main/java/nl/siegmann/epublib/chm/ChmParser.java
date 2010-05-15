@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +23,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Reads the files that are extracted from a windows help ('.chm') file and creates a epublib Book out of it.
+ * 
+ * @author paul
+ *
+ */
 public class ChmParser {
 
 	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
@@ -49,6 +54,7 @@ public class ChmParser {
 
 	/**
 	 * Finds in the '#SYSTEM' file the 3rd set of characters that have ascii value >= 32 and <= 126 and is more than 3 characters long.
+	 * Assumes that that is then the title of the book.
 	 * 
 	 * @param chmRootDir
 	 * @return

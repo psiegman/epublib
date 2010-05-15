@@ -15,8 +15,23 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * Various resource utility methods
+ * @author paul
+ *
+ */
 public class ResourceUtil {
 	
+	/**
+	 * Reads the given resources inputstream, parses the xml therein and returns the result as a Document
+	 * @param resource
+	 * @param documentBuilderFactory
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 */
 	public static Document getAsDocument(Resource resource, DocumentBuilderFactory documentBuilderFactory) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
 		InputSource inputSource;
 		if(StringUtils.isBlank(resource.getInputEncoding())) {

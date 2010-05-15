@@ -21,6 +21,12 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
+
+/**
+ * Uses the given xslFile to process all html resources of a Book.
+ * @author paul
+ *
+ */
 public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor {
 
 	private final static Logger log = Logger.getLogger(XslBookProcessor.class); 

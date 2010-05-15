@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,6 +23,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+/**
+ * Reads an epub file.
+ * <b>Unfinished</b>
+ * 
+ * @author paul
+ *
+ */
 public class EpubReader {
 
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(EpubReader.class);

@@ -6,7 +6,12 @@ import java.io.InputStream;
 
 import nl.siegmann.epublib.service.MediatypeService;
 
-
+/**
+ * A Section resource that is used to generate new Sections from scratch.
+ * 
+ * @author paul
+ *
+ */
 public class SectionResource implements Resource {
 
 	private String id;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Resource;
@@ -15,7 +14,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import org.apache.log4j.Logger;
 
 /**
- * Helper class for BookProcessor that only manipulate the html resources.
+ * Helper class for BookProcessors that only manipulate html type resources.
  * 
  * @author paul
  *

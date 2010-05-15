@@ -4,7 +4,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 /**
- * Post-processes a book. Intended to be called before writing it.
+ * Post-processes a book. Intended to be on a Book before writing the Book as an epub.
  * 
  * @author paul
  *

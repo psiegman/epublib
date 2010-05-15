@@ -5,6 +5,12 @@ import java.io.InputStream;
 
 import nl.siegmann.epublib.service.MediatypeService;
 
+/**
+ * Utility base class for several types of resources.
+ * 
+ * @author paul
+ *
+ */
 public abstract class ResourceBase implements Resource {
 	
 	private String id;
