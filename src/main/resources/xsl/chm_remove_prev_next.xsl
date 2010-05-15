@@ -14,6 +14,10 @@
 <xsl:template match="/html/body/br">
 </xsl:template>
 
+<xsl:template match="/html/body/div[@class = 'chapter']">
+    <xsl:apply-templates select="@*|node()"/>
+</xsl:template>
+
 <xsl:template match="/html/body/a">
 </xsl:template>
 
