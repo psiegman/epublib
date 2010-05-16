@@ -27,12 +27,15 @@ public class Fileset2Epub {
 		String author = "";
 		String type = "";
 		String isbn = "";
-		
+		String encoding = "";
+
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
 				inputDir = args[++i];
 			} else if(args[i].equalsIgnoreCase("--result")) {
 				resultFile = args[++i];
+			} else if(args[i].equalsIgnoreCase("--encoding")) {
+				encoding = args[++i];
 			} else if(args[i].equalsIgnoreCase("--xsl")) {
 				xslFile = args[++i];
 			} else if(args[i].equalsIgnoreCase("--cover-image")) {
@@ -58,7 +61,7 @@ public class Fileset2Epub {
 		
 		Book book;
 		if("chm".equals(type)) {
-			book = ChmParser.parseChm(new File(inputDir));
+			book = ChmParser.parseChm(new File(inputDir), encoding);
 		} else {
 			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
 		}
