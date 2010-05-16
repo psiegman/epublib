@@ -191,6 +191,7 @@ public class PackageDocument {
 		writer.writeEndElement(); // spine
 	}
 
+	
 	private static void writeManifest(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement("manifest");
 
@@ -200,9 +201,9 @@ public class PackageDocument {
 		writer.writeAttribute("media-type", epubWriter.getNcxMediaType());
 
 		writeCoverResources(book, writer);
-		writeItem(book.getNcxResource(), writer);
+		writeItem(book, book.getNcxResource(), writer);
 		for(Resource resource: book.getResources()) {
-			writeItem(resource, writer);
+			writeItem(book, resource, writer);
 		}
 		
 		writer.writeEndElement(); // manifest
@@ -214,9 +215,11 @@ public class PackageDocument {
 	 * @param writer
 	 * @throws XMLStreamException
 	 */
-	private static void writeItem(Resource resource, XMLStreamWriter writer)
+	private static void writeItem(Book book, Resource resource, XMLStreamWriter writer)
 			throws XMLStreamException {
-		if(resource == null) {
+		if(resource == null ||
+				(resource.getMediaType() == MediatypeService.NCX
+				&& book.getNcxResource() != null)) {
 			return;
 		}
 		writer.writeEmptyElement("item");
@@ -233,8 +236,8 @@ public class PackageDocument {
 	 * @throws XMLStreamException
 	 */
 	private static void writeCoverResources(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writeItem(book.getCoverImage(), writer);
-		writeItem(book.getCoverPage(), writer);
+		writeItem(book, book.getCoverImage(), writer);
+		writeItem(book, book.getCoverPage(), writer);
 	}
 
 	/**
