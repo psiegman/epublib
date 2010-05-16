@@ -18,7 +18,7 @@ public class MediatypeService {
 
 	public static MediaType XHTML = new MediaType("application/xhtml+xml", ".xhtml", new String[] {".htm", ".html", ".xhtml"});
 	public static MediaType EPUB = new MediaType("application/epub+zip", ".epub", new String[] {".epub"});
-	public static MediaType JPG = new MediaType("image/jpg", ".jpg", new String[] {".jpg", ".jpeg"});
+	public static MediaType JPG = new MediaType("image/jpeg", ".jpg", new String[] {".jpg", ".jpeg"});
 	public static MediaType PNG = new MediaType("image/png", ".png", new String[] {".png"});
 	public static MediaType GIF = new MediaType("image/gif", ".gif", new String[] {".gif"});
 	public static MediaType CSS = new MediaType("text/css", ".css", new String[] {".css"});
