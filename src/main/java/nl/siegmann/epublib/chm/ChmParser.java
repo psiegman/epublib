@@ -31,11 +31,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ChmParser {
 
-	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
-//	private String htmlInputEncoding = DEFAULT_HTML_ENCODING;
+	public static final String DEFAULT_CHM_HTML_INPUT_ENCODING = "Windows-1251";
 	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
-	public static Book parseChm(File chmRootDir)
+	public static Book parseChm(File chmRootDir) throws XPathExpressionException, IOException, ParserConfigurationException {
+		return parseChm(chmRootDir, DEFAULT_CHM_HTML_INPUT_ENCODING);
+	}
+
+	public static Book parseChm(File chmRootDir, String htmlEncoding)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
@@ -44,7 +47,10 @@ public class ChmParser {
 		if(hhcFile == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
 		}
-		Map<String, Resource> resources = findResources(chmRootDir);
+		if(StringUtils.isBlank(htmlEncoding)) {
+			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
+		}
+		Map<String, Resource> resources = findResources(chmRootDir, htmlEncoding);
 		List<Section> sections = HHCParser.parseHhc(new FileInputStream(hhcFile));
 		result.setSections(sections);
 		result.setResources(resources.values());
@@ -99,7 +105,7 @@ public class ChmParser {
 	
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Resource> findResources(File rootDir) throws IOException {
+	private static Map<String, Resource> findResources(File rootDir, String defaultEncoding) throws IOException {
 		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
 		Iterator<File> fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		while(fileIter.hasNext()) {
@@ -115,7 +121,7 @@ public class ChmParser {
 			String href = file.getCanonicalPath().substring(rootDir.getCanonicalPath().length() + 1);
 			FileResource fileResource = new FileResource(null, file, href, mediaType);
 			if(mediaType == MediatypeService.XHTML) {
-				fileResource.setInputEncoding(DEFAULT_HTML_INPUT_ENCODING);
+				fileResource.setInputEncoding(defaultEncoding);
 			}
 			result.put(fileResource.getHref(), fileResource);
 		}
