@@ -20,11 +20,19 @@
   -->
   
 <xsl:template match="xhtml:a[@target = '_parent']">
-    <xsl:apply-templates select="*"/>
+    <xsl:apply-templates select="@*|node()"/>
 </xsl:template>
 
 <xsl:template match="xhtml:a[string(@href) = '']">
-    <xsl:apply-templates select="*"/>
+    <xsl:apply-templates select="@*|node()"/>
+</xsl:template>
+
+<xsl:template match="xhtml:font">
+    <xsl:apply-templates select="@*|node()"/>
+</xsl:template>
+
+<xsl:template match="xhtml:center">
+    <xsl:apply-templates select="@*|node()"/>
 </xsl:template>
 
 <xsl:template match="@border|@name|@width|@height|@align|@valign|@linktabletoexcel|@bgcolor|@type"/>
