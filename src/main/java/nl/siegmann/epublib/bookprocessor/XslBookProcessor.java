@@ -1,9 +1,11 @@
 package nl.siegmann.epublib.bookprocessor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 import javax.xml.transform.Result;
@@ -15,11 +17,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
-
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
+
+import org.apache.log4j.Logger;
 
 
 /**
@@ -41,16 +43,18 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 	}
 
 	@Override
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String encoding) throws IOException {
 		Source htmlSource = new StreamSource(new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding())));
-		StringWriter out = new StringWriter();
-		Result result = new StreamResult(out);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Writer writer = new OutputStreamWriter(out,encoding);
+		Result streamResult = new StreamResult(writer);
 		try {
-			transformer.transform(htmlSource, result);
+			transformer.transform(htmlSource, streamResult);
 		} catch (TransformerException e) {
 			log.error(e);
 			throw new IOException(e);
 		}
-		return out.toString().getBytes();
+		byte[] result = out.toByteArray();
+		return result;
 	}
 }
