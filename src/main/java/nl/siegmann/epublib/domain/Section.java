@@ -53,8 +53,9 @@ public class Section {
 		return children;
 	}
 
-	public void addChildSection(Section childSection) {
+	public Section addChildSection(Section childSection) {
 		this.children.add(childSection);
+		return childSection;
 	}
 	
 	public void setChildren(List<Section> children) {

@@ -19,6 +19,10 @@ public class Book {
 	private List<Section> sections = new ArrayList<Section>();
 	private Collection<Resource> resources = new ArrayList<Resource>();
 
+	public Section addSection(Section section) {
+		sections.add(section);
+		return section;
+	}
 	
 	public List<Section> getSections() {
 		return sections;
@@ -32,9 +36,22 @@ public class Book {
 	public void setResources(Collection<Resource> resources) {
 		this.resources = new ArrayList<Resource>(resources);
 	}
-	public void addResource(Resource resource) {
-		this.resources.add(resource);
+
+	public Section addResourceAsSection(String title, Resource resource) {
+		addResource(resource);
+		return addSection(new Section(title, resource.getHref()));
 	}
+	
+	public Section addResourceAsSubSection(Section parentSection, String sectionTitle,
+			Resource resource) {
+		addResource(resource);
+		return parentSection.addChildSection(new Section(sectionTitle, resource.getHref()));
+	}
+	public Resource addResource(Resource resource) {
+		this.resources.add(resource);
+		return resource;
+	}
+	
 	public Resource getResourceByHref(String href) {
 		for(Resource resource: resources) {
 			if(href.equals(resource.getHref())) {
@@ -67,5 +84,6 @@ public class Book {
 	public void setNcxResource(Resource ncxResource) {
 		this.ncxResource = ncxResource;
 	}
+
 	
 }
