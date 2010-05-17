@@ -2,3 +2,4 @@ Epublib is a java library for creating epub files.
 Its focus is on creating epubs from existing html files using the command line or a java program.
 Another intended use is to generate documentation as part of a build process.
 text added for git testing
+
