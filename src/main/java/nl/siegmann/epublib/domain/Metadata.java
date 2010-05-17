@@ -61,6 +61,12 @@ Type 	The nature or genre of the content of the resource
 	public void setOtherProperties(Map<QName, String> otherProperties) {
 		this.otherProperties = otherProperties;
 	}
+	
+	public Author addAuthor(Author author) {
+		authors.add(author);
+		return author;
+	}
+	
 	public List<Author> getAuthors() {
 		return authors;
 	}
