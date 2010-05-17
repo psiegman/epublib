@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.bookprocessor.BookProcessor;
+import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
 import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
@@ -67,7 +68,8 @@ public class EpubWriter {
 		result.addAll(Arrays.asList(new BookProcessor[] {
 			new SectionHrefSanityCheckBookProcessor(),
 			new HtmlCleanerBookProcessor(),
-			new MissingResourceBookProcessor()
+			new MissingResourceBookProcessor(),
+			new CoverpageBookProcessor()
 		}));
 		return result;
 	}
