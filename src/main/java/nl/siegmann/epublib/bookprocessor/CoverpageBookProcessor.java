@@ -15,6 +15,7 @@ import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.CollectionUtil;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +48,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 				if(StringUtils.isBlank(coverImage.getHref())) {
 					coverImage.setHref(getCoverImageHref(coverImage));
 				}
-				String coverPageHtml = createCoverpageHtml(book.getMetadata().getTitle(), coverImage.getHref());
+				String coverPageHtml = createCoverpageHtml(CollectionUtil.first(book.getMetadata().getTitles()), coverImage.getHref());
 				coverPage = new ByteArrayResource("cover", coverPageHtml.getBytes(), "cover.html", MediatypeService.XHTML);
 			}
 		} else { // coverPage != null
