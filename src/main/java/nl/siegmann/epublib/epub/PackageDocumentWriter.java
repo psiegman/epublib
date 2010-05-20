@@ -115,7 +115,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 		if(book.getCoverPage() != null) { // write the cover image
 			writer.writeEmptyElement(OPFTags.meta);
-			writer.writeAttribute(OPFAttributes.name, "cover");
+			writer.writeAttribute(OPFAttributes.name, OPFValues.meta_cover);
 			writer.writeAttribute(OPFAttributes.content, book.getCoverPage().getHref());
 		}
 
@@ -248,10 +248,10 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		if(book.getCoverPage() == null) {
 			return;
 		}
-		writer.writeStartElement("guide");
-		writer.writeEmptyElement("reference");
-		writer.writeAttribute("type", "cover");
-		writer.writeAttribute("href", book.getCoverPage().getHref());
+		writer.writeStartElement(OPFTags.guide);
+		writer.writeEmptyElement(OPFTags.reference);
+		writer.writeAttribute(OPFAttributes.type, OPFValues.reference_cover);
+		writer.writeAttribute(OPFAttributes.href, book.getCoverPage().getHref());
 		writer.writeEndElement(); // guide
 	}
 }
