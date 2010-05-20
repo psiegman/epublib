@@ -26,9 +26,6 @@ public class EpubWriterTest extends TestCase {
 			// Set the title
 			book.getMetadata().addTitle("Epublib test book 1");
 			
-			// Set the title
-			book.getMetadata().addTitle("A simple test");
-			
 			// Add an Author
 			book.getMetadata().addAuthor(new Author("Joe", "Tester"));
 
