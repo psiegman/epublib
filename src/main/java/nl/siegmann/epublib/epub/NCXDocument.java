@@ -64,7 +64,7 @@ public class NCXDocument {
 		    NodeList navmapNodes = (NodeList) xPath.evaluate("ncx/navMap/navPoint", ncxDocument, XPathConstants.NODESET);
 		    System.out.println("found " + navmapNodes.getLength() + " toplevel navpoints");
 			List<Section> sections = readSections(navmapNodes, xPath);
-			book.setSections(sections);
+			book.setTocSections(sections);
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -151,8 +151,9 @@ public class NCXDocument {
 			writer.writeEndElement();
 			writer.writeEndElement();
 		}
+		
 		writer.writeStartElement(NAMESPACE_NCX, "navMap");
-		writeNavPoints(book.getSections(), 1, writer);
+		writeNavPoints(book.getTocSections(), 1, writer);
 		writer.writeEndElement();
 		writer.writeEndElement();
 		writer.writeEndDocument();

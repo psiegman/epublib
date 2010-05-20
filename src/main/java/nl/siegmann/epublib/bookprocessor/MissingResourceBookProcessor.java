@@ -36,7 +36,8 @@ public class MissingResourceBookProcessor implements BookProcessor {
 			}
 		}
 		Map<String, Resource> resourceMap = BookProcessorUtil.createResourceByHrefMap(book);
-		matchSectionsAndResources(itemIdGenerator, book.getSections(), resourceMap);
+		matchSectionsAndResources(itemIdGenerator, book.getSpineSections(), resourceMap);
+		matchSectionsAndResources(itemIdGenerator, book.getTocSections(), resourceMap);
 		book.setResources(resourceMap.values());
 		return book;
 	}

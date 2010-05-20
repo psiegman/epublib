@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
@@ -16,7 +15,7 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		processSections(book, book.getSections(), BookProcessorUtil.createResourceByHrefMap(book));
+		processSections(book, book.getSpineSections(), BookProcessorUtil.createResourceByHrefMap(book));
 		return book;
 	}
 

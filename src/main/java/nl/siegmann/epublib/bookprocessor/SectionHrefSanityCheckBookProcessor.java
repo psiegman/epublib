@@ -18,7 +18,7 @@ public class SectionHrefSanityCheckBookProcessor implements BookProcessor {
 
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		checkSections(book.getSections(), null);
+		checkSections(book.getSpineSections(), null);
 		return book;
 	}
 
