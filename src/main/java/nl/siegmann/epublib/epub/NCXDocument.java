@@ -117,10 +117,12 @@ public class NCXDocument {
 		writer.writeAttribute("version", "2005-1");
 		writer.writeStartElement(NAMESPACE_NCX, "head");
 
-		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
-		writer.writeAttribute("name", "dtb:uid");
-		writer.writeAttribute("content", book.getMetadata().getIdentifier().getValue());
-
+		for(Identifier identifier: book.getMetadata().getIdentifiers()) {
+			writer.writeEmptyElement(NAMESPACE_NCX, "meta");
+			writer.writeAttribute("name", "dtb:uid");
+			writer.writeAttribute("content", identifier.getValue());
+		}
+		
 		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
 		writer.writeAttribute("name", "dtb:depth");
 		writer.writeAttribute("content", "1");
@@ -137,9 +139,11 @@ public class NCXDocument {
 		
 		writer.writeStartElement(NAMESPACE_NCX, "docTitle");
 		writer.writeStartElement(NAMESPACE_NCX, "text");
-		writer.writeCharacters(book.getMetadata().getTitle());
-		writer.writeEndElement();
-		writer.writeEndElement();
+		// write the first title
+		writer.writeCharacters(StringUtils.defaultString(CollectionUtil.first(book.getMetadata().getTitles())));
+		writer.writeEndElement(); // text
+		writer.writeEndElement(); // docTitle
+		
 		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_NCX, "docAuthor");
 			writer.writeStartElement(NAMESPACE_NCX, "text");

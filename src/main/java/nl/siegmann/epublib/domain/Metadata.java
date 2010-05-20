@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import nl.siegmann.epublib.service.MediatypeService;
+
 /**
  * A Book's collection of Metadata.
  * In the future it should contain all Dublin Core attributes, for now it contains a set of often-used ones.
@@ -22,11 +24,12 @@ public class Metadata {
 	private Date date = new Date();
 	private String language = DEFAULT_LANGUAGE;
 	private Map<QName, String> otherProperties = new HashMap<QName, String>();
-	private String rights = "";
-	private String title = "";
-	private Identifier identifier = new Identifier();
+	private List<String> rights = new ArrayList<String>();
+	private List<String> titles = new ArrayList<String>();
+	private List<Identifier> identifiers = new ArrayList<Identifier>();
 	private List<String> subjects = new ArrayList<String>();
-
+	private String format = MediatypeService.EPUB.getName();
+	
 	/*
 	 * 
 	 
@@ -85,28 +88,42 @@ Type 	The nature or genre of the content of the resource
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	public String getRights() {
-		return rights;
-	}
-	public void setRights(String rights) {
-		this.rights = rights;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public Identifier getIdentifier() {
-		return identifier;
-	}
-	public void setIdentifier(Identifier identifier) {
-		this.identifier = identifier;
-	}
 	public List<String> getSubjects() {
 		return subjects;
 	}
 	public void setSubjects(List<String> subjects) {
 		this.subjects = subjects;
+	}
+	public void setRights(List<String> rights) {
+		this.rights = rights;
+	}
+	public List<String> getRights() {
+		return rights;
+	}
+	public String addTitle(String title) {
+		this.titles.add(title);
+		return title;
+	}
+	public void setTitles(List<String> titles) {
+		this.titles = titles;
+	}
+	public List<String> getTitles() {
+		return titles;
+	}
+	public Identifier addIdentifier(Identifier identifier) {
+		this.identifiers.add(identifier);
+		return identifier;
+	}
+	public void setIdentifiers(List<Identifier> identifiers) {
+		this.identifiers = identifiers;
+	}
+	public List<Identifier> getIdentifiers() {
+		return identifiers;
+	}
+	public void setFormat(String format) {
+		this.format = format;
+	}
+	public String getFormat() {
+		return format;
 	}
 }

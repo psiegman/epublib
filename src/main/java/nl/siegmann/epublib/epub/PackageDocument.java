@@ -108,19 +108,17 @@ public class PackageDocument {
 	 * @throws XMLStreamException
 	 */
 	private static void writeMetaData(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement(NAMESPACE_OPF, "metadata");
+		writer.writeStartElement(NAMESPACE_OPF, OPFTags.metadata);
 		writer.writeNamespace("dc", NAMESPACE_DUBLIN_CORE);
 		writer.writeNamespace("opf", NAMESPACE_OPF);
 		
-		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "identifier");
-		writer.writeAttribute("id", BOOK_ID_ID);
-		writer.writeAttribute(NAMESPACE_OPF, "scheme", book.getMetadata().getIdentifier().getScheme());
-		writer.writeCharacters(book.getMetadata().getIdentifier().getValue());
-		writer.writeEndElement(); // dc:identifier
-
-		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "title");
-		writer.writeCharacters(book.getMetadata().getTitle());
-		writer.writeEndElement(); // dc:title
+		writeIdentifiers(book.getMetadata().getIdentifiers(), writer);
+		
+		for(String title: book.getMetadata().getTitles()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.title);
+			writer.writeCharacters(title);
+			writer.writeEndElement(); // dc:title
+		}
 		
 		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "creator");
@@ -146,12 +144,15 @@ public class PackageDocument {
 			writer.writeEndElement(); // dc:language
 		}
 
-		if(StringUtils.isNotEmpty(book.getMetadata().getRights())) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "rights");
-			writer.writeCharacters(book.getMetadata().getRights());
-			writer.writeEndElement(); // dc:rights
+		for(String right: book.getMetadata().getRights()) {
+			if(StringUtils.isNotEmpty(right)) {
+				writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "rights");
+				writer.writeCharacters(right);
+				writer.writeEndElement(); // dc:rights
+			}
 		}
-
+		
+		
 		if(book.getMetadata().getOtherProperties() != null) {
 			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
 				writer.writeStartElement(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
@@ -166,9 +167,46 @@ public class PackageDocument {
 			writer.writeAttribute("name", "cover");
 			writer.writeAttribute("content", book.getCoverPage().getHref());
 		}
+
+		writer.writeEmptyElement("meta");
+		writer.writeAttribute("name", "generator");
+		writer.writeAttribute("content", Constants.EPUBLIB_GENERATOR_NAME);
+		
 		writer.writeEndElement(); // dc:metadata
 	}
 
+
+	/**
+	 * Writes out the complete list of Identifiers to the package document.
+	 * The first identifier for which the bookId is true is made the bookId identifier.
+	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
+	 * 
+	 * @param identifiers
+	 * @param writer
+	 * @throws XMLStreamException
+	 */
+	private static void writeIdentifiers(List<Identifier> identifiers, XMLStreamWriter writer) throws XMLStreamException {
+		Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);
+		if(bookIdIdentifier == null) {
+			return;
+		}
+		
+		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
+		writer.writeAttribute("id", BOOK_ID_ID);
+		writer.writeAttribute(NAMESPACE_OPF, "scheme", bookIdIdentifier.getScheme());
+		writer.writeCharacters(bookIdIdentifier.getValue());
+		writer.writeEndElement(); // dc:identifier
+
+		for(Identifier identifier: identifiers.subList(1, identifiers.size())) {
+			if(identifier == bookIdIdentifier) {
+				continue;
+			}
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
+			writer.writeAttribute(NAMESPACE_OPF, "scheme", identifier.getScheme());
+			writer.writeCharacters(identifier.getValue());
+			writer.writeEndElement(); // dc:identifier
+		}
+	}
 
 	/**
 	 * Writes the package's spine.

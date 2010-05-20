@@ -54,7 +54,7 @@ public class Chm2Epub {
 		}
 		
 		if(! StringUtils.isBlank(title)) {
-			book.getMetadata().setTitle(title);
+			book.getMetadata().addTitle(title);
 		}
 
 		if(! StringUtils.isBlank(author)) {

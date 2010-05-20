@@ -72,11 +72,11 @@ public class Fileset2Epub {
 		}
 		
 		if(StringUtils.isNotBlank(title)) {
-			book.getMetadata().setTitle(title);
+			book.getMetadata().addTitle(title);
 		}
 		
 		if(StringUtils.isNotBlank(isbn)) {
-			book.getMetadata().setIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
+			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
 		}
 		
 		if(StringUtils.isNotBlank(author)) {
