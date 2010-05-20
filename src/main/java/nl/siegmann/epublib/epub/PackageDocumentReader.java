@@ -70,6 +70,36 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		return result;
 	}
+	
+	/**
+	 * Search for the cover page in the meta tags and the guide references
+	 * @param packageDocument
+	 * @return
+	 */
+	private static String findCoverHref(Document packageDocument) {
+		
+		// First try and find a meta tag with name = 'cover' and href is not blank
+		NodeList metaTags = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.meta);
+		for(int i = 0; i < metaTags.getLength(); i++) {
+			Element metaElement = (Element) metaTags.item(i);
+			if(OPFValues.meta_cover.equalsIgnoreCase(metaElement.getAttribute(OPFAttributes.name)) 
+				&& StringUtils.isNotBlank(metaElement.getAttribute(OPFAttributes.content))) {
+				return metaElement.getAttribute(OPFAttributes.content);
+			}
+		}
+		
+		// now try and find a reference tag with type is 'cover' and reference is not blank
+		NodeList referenceTags = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.reference);
+		for(int i = 0; i < referenceTags.getLength(); i++) {
+			Element referenceElement = (Element) referenceTags.item(i);
+			if(OPFValues.reference_cover.equalsIgnoreCase(referenceElement.getAttribute(OPFAttributes.type)) 
+				&& StringUtils.isNotBlank(referenceElement.getAttribute(OPFAttributes.href))) {
+				return referenceElement.getAttribute(OPFAttributes.href);
+			}
+		}
+		
+		return null;
+	}
 
 	private static Element getFirstElementByTagNameNS(Element parentElement, String namespace, String tagName) {
 		NodeList nodes = parentElement.getElementsByTagNameNS(namespace, tagName);
@@ -191,6 +221,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		NodeList itemElements = manifestElement.getElementsByTagName("item");
 		String hrefPrefix = packageHref.substring(0, packageHref.lastIndexOf('/') + 1);
+		String coverHref = findCoverHref(packageDocument);
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
@@ -210,6 +241,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			}
 			if(resource.getMediaType() == MediatypeService.NCX) {
 				book.setNcxResource(resource);
+			} else if(StringUtils.isNotBlank(coverHref) && coverHref.equals(resource.getHref())) {
+				book.setCoverPage(resource);
 			} else {
 				book.addResource(resource);
 				result.put(id, resource);
