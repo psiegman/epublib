@@ -8,20 +8,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.siegmann.epublib</groupId>
-    <artifactId>epublib</artifactId>
-    <name>Example Project</name>
+    <artifactId>EPUBLib</artifactId>
+    <name>epublib</name>
     <version>1.0-SNAPSHOT</version>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 
     <dependencies>
+		<dependency>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>1.9.14</version>
+		</dependency>
         <dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy.maven.runtime</groupId>
-            <artifactId>gmaven-runtime-default</artifactId>
-            <version>1.0-rc-3</version>
         </dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlcleaner</groupId>
@@ -70,10 +74,23 @@
 			<name>Hosts htmlcleaner</name>
 			<url>http://repository.hippocms.org/maven2/</url>
 		</repository>
+		<repository>
+			<id>xwiki</id>
+			<name>Also hosts htmlcleaner</name>
+			<url>http://maven.xwiki.org/externals/</url>
+		</repository>
 	</repositories>
 
     <build>
         <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
             <plugin>
                 <groupId>org.dstovall</groupId>
                 <artifactId>onejar-maven-plugin</artifactId>
@@ -88,23 +105,6 @@
                         </configuration>
                         <goals>
                             <goal>one-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.0-rc-3</version>
-                <executions>
-                    <execution>
-                        <goals>
-<!-- 
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>testCompile</goal>
--->                            
                         </goals>
                     </execution>
                 </executions>
