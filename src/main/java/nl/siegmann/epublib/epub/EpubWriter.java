@@ -130,7 +130,7 @@ public class EpubWriter {
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
 		XMLStreamWriter xmlStreamWriter = createXMLStreamWriter(resultStream);
-		PackageDocument.write(this, xmlStreamWriter, book);
+		PackageDocumentWriter.write(this, xmlStreamWriter, book);
 		xmlStreamWriter.flush();
 	}
 
