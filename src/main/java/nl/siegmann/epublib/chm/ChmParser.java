@@ -42,7 +42,7 @@ public class ChmParser {
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
-		result.getMetadata().setTitle(findTitle(chmRootDir));
+		result.getMetadata().addTitle(findTitle(chmRootDir));
 		File hhcFile = findHhcFile(chmRootDir);
 		if(hhcFile == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
