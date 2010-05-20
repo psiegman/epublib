@@ -64,7 +64,7 @@ public class EpubReader {
 	private Resource processPackageResource(String packageResourceHref, Book book, Map<String, Resource> resources) {
 		Resource packageResource = resources.remove(packageResourceHref);
 		try {
-			PackageDocument.read(packageResource, this, book, resources);
+			PackageDocumentReader.read(packageResource, this, book, resources);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
