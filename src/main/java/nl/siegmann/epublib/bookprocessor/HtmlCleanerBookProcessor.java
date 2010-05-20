@@ -42,9 +42,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	private static HtmlCleaner createHtmlCleaner() {
 		HtmlCleaner result = new HtmlCleaner();
 		CleanerProperties cleanerProperties = result.getProperties();
-//		cleanerProperties.setTranslateSpecialEntities(false);
-		cleanerProperties.setNamespacesAware(true);
-		cleanerProperties.setOmitDoctypeDeclaration(false);
+		cleanerProperties.setOmitXmlDeclaration(true);
 		return result;
 	}
 	
