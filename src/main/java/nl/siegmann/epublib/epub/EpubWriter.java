@@ -80,9 +80,9 @@ public class EpubWriter {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
+		// create an NCX/table of contents document and add it as a resources to the book.
 		book.setNcxResource(NCXDocument.createNCXResource(this, book));
 		writeResources(book, resultStream);
-//		writeNcxDocument(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
 	}
