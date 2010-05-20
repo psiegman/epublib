@@ -16,20 +16,16 @@ public class Book {
 	private Resource coverImage;
 	private Resource ncxResource;
 	private Metadata metadata = new Metadata();
-	private List<Section> sections = new ArrayList<Section>();
+	private List<Section> spineSections = new ArrayList<Section>();
+	private List<Section> tocSections = new ArrayList<Section>();
 	private Collection<Resource> resources = new ArrayList<Resource>();
 
 	public Section addSection(Section section) {
-		sections.add(section);
+		spineSections.add(section);
+		tocSections.add(section);
 		return section;
 	}
 	
-	public List<Section> getSections() {
-		return sections;
-	}
-	public void setSections(List<Section> sections) {
-		this.sections = sections;
-	}
 	public Collection<Resource> getResources() {
 		return resources;
 	}
@@ -85,5 +81,24 @@ public class Book {
 		this.ncxResource = ncxResource;
 	}
 
+	public void setSections(List<Section> sections) {
+		setSpineSections(sections);
+		setTocSections(sections);
+	}
 	
+	public List<Section> getSpineSections() {
+		return spineSections;
+	}
+	
+	public void setSpineSections(List<Section> spineSections) {
+		this.spineSections = spineSections;
+	}
+	
+	public List<Section> getTocSections() {
+		return tocSections;
+	}
+	
+	public void setTocSections(List<Section> tocSections) {
+		this.tocSections = tocSections;
+	}
 }

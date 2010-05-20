@@ -22,7 +22,7 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		Map<String, Resource> resources = BookProcessorUtil.createResourceByHrefMap(book);
 		XPath xpath = createXPathExpression();
-		processSections(book.getSections(), resources, xpath);
+		processSections(book.getTocSections(), resources, xpath);
 		return book;
 	}
 
@@ -33,6 +33,7 @@ public class SectionTitleBookProcessor implements BookProcessor {
 			}
 			try {
 				String title = getTitle(section, resources, xpath);
+				section.setName(title);
 			} catch (XPathExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
