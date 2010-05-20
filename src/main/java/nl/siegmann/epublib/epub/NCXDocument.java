@@ -51,6 +51,10 @@ public class NCXDocument {
 	public static final String NCX_HREF = "toc.ncx";
 	
 	private static Logger log = Logger.getLogger(NCXDocument.class);
+
+	private interface NCXTags {
+		String meta = "meta";
+	}
 	
 	public static void read(Book book, EpubReader epubReader) {
 		if(book.getNcxResource() == null) {
@@ -123,20 +127,24 @@ public class NCXDocument {
 		writer.writeStartElement(NAMESPACE_NCX, "head");
 
 		for(Identifier identifier: book.getMetadata().getIdentifiers()) {
-			writer.writeEmptyElement(NAMESPACE_NCX, "meta");
-			writer.writeAttribute("name", "dtb:uid");
+			writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
+			writer.writeAttribute("name", "dtb:" + identifier.getScheme());
 			writer.writeAttribute("content", identifier.getValue());
 		}
 		
-		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
+		writer.writeAttribute("name", "dtb:generator");
+		writer.writeAttribute("content", Constants.EPUBLIB_GENERATOR_NAME);
+
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
 		writer.writeAttribute("name", "dtb:depth");
 		writer.writeAttribute("content", "1");
 
-		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
 		writer.writeAttribute("name", "dtb:totalPageCount");
 		writer.writeAttribute("content", "0");
 
-		writer.writeEmptyElement(NAMESPACE_NCX, "meta");
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
 		writer.writeAttribute("name", "dtb:maxPageNumber");
 		writer.writeAttribute("content", "0");
 
