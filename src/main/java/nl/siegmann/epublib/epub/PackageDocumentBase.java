@@ -43,6 +43,8 @@ public class PackageDocumentBase {
 		String manifest = "manifest";
 		String packageTag = "package";
 		String itemref = "itemref";
+		String reference = "reference";
+		String guide = "guide";
 	}
 	
 	protected interface OPFAttributes {
@@ -50,5 +52,12 @@ public class PackageDocumentBase {
 		String idref = "idref";
 		String name = "name";
 		String content = "content";
+		String type = "type";
+		String href = "href";
+	}
+	
+	protected interface OPFValues {
+		String meta_cover = "cover";
+		String reference_cover = "cover";
 	}
 }
