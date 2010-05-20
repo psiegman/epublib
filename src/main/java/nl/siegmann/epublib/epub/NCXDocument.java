@@ -23,11 +23,15 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
+import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.CollectionUtil;
+import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -109,6 +113,7 @@ public class NCXDocument {
 	
 	
 	public static void write(XMLStreamWriter writer, Book book) throws XMLStreamException {
+		writer = new IndentingXMLStreamWriter(writer);
 		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_NCX);
 		writer.writeStartElement(NAMESPACE_NCX, "ncx");
