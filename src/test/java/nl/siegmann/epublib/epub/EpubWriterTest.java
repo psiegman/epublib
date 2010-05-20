@@ -77,6 +77,7 @@ public class EpubWriterTest extends TestCase {
 			Book book = new Book();
 
 			book.getMetadata().addTitle("Epublib test book 1");
+			book.getMetadata().addTitle("test2");
 			
 			String isbn = "987654321";
 			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
@@ -85,7 +86,7 @@ public class EpubWriterTest extends TestCase {
 			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 			book.addResourceAsSection("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.addResource(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
-			Section chapter2 = book.addResourceAsSection("Chapter 2", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
+			Section chapter2 = book.addResourceAsSection("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
 			book.addResource(new InputStreamResource(this.getClass().getResourceAsStream("/book1/flowers_320x240.jpg"), "flowers.jpg"));
 			book.addResourceAsSubSection(chapter2, "Chapter 2 section 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2_1.html"), "chapter2_1.html"));
 			book.addResourceAsSection("Chapter 3", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter3.html"), "chapter3.html"));
@@ -94,6 +95,7 @@ public class EpubWriterTest extends TestCase {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			writer.write(book, out);
 			byte[] epubData = out.toByteArray();
+			new FileOutputStream("test2_book1.epub").write(epubData);
 
 			assertNotNull(epubData);
 			assertTrue(epubData.length > 0);
@@ -107,7 +109,7 @@ public class EpubWriterTest extends TestCase {
 			writer.write(readBook, out2);
 			byte[] epubData2 = out2.toByteArray();
 
-			new FileOutputStream("test2_book1.epub").write(epubData2);
+			new FileOutputStream("test2_book2.epub").write(epubData2);
 //			assertTrue(Arrays.equals(epubData, epubData2));
 		
 		} catch (IOException e) {
