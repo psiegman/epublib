@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents one of the authors of the book
  * 
@@ -31,5 +33,17 @@ public class Author {
 	}
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+	
+	public String toString() {
+		return lastname + ", " + firstname;
+	}
+	public boolean equals(Object authorObject) {
+		if(! (authorObject instanceof Author)) {
+			return false;
+		}
+		Author other = (Author) authorObject;
+		return StringUtils.equals(firstname, other.firstname)
+		 && StringUtils.equals(lastname, other.lastname);
 	}
 }
