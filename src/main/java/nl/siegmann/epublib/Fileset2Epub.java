@@ -62,6 +62,8 @@ public class Fileset2Epub {
 		Book book;
 		if("chm".equals(type)) {
 			book = ChmParser.parseChm(new File(inputDir), encoding);
+		} else if ("epub".equals(type)) {
+			book = new EpubReader().readEpub(new FileInputStream(inputDir));
 		} else {
 			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
 		}
