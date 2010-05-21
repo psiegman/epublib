@@ -1,20 +1,20 @@
 package nl.siegmann.epublib.epub;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -28,9 +28,9 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
+import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -55,22 +55,56 @@ public class NCXDocument {
 	private interface NCXTags {
 		String meta = "meta";
 	}
+
+	private static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
+
+		private final Map<String, List<String>> prefixes = new HashMap<String, List<String>>();
+		
+		{
+			prefixes.put(NAMESPACE_NCX, new ArrayList<String>() {{ add(PREFIX_NCX);}});
+		}
+		
+		@Override
+		public String getNamespaceURI(String prefix) {
+			if(PREFIX_NCX.equals(prefix)) {
+				return NAMESPACE_NCX;
+			}
+			return null;
+		}
+
+		@Override
+		public String getPrefix(String namespace) {
+			if(NAMESPACE_NCX.equals(namespace)) {
+				return PREFIX_NCX;
+			}
+			return null;
+		}
+
+		@Override
+		public Iterator getPrefixes(String namespace) {
+			List<String> prefixList = prefixes.get(namespace);
+			if(prefixList == null) {
+				return Collections.<String>emptyList().iterator();
+			}
+			return prefixList.iterator();
+		}
+		
+	};
+	
 	
 	public static void read(Book book, EpubReader epubReader) {
 		if(book.getNcxResource() == null) {
 			return;
 		}
 		try {
-//			Resource oldNcxResource = book.getNcxResource();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			IOUtils.copy(book.getNcxResource().getInputStream(), out);
-			out.close();
-			Document ncxDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(out.toByteArray()));
+			Resource ncxResource = book.getNcxResource();
+			if(ncxResource == null) {
+				return;
+			}
+			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader.getDocumentBuilderFactory());
 			XPath xPath = epubReader.getXpathFactory().newXPath();
-			TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ncxDocument), new StreamResult(System.out));
-			System.out.println();
-		    NodeList navmapNodes = (NodeList) xPath.evaluate("ncx/navMap/navPoint", ncxDocument, XPathConstants.NODESET);
-		    System.out.println("found " + navmapNodes.getLength() + " toplevel navpoints");
+			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
+		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":navMap/" + PREFIX_NCX + ":navPoint", ncxDocument, XPathConstants.NODESET);
 			List<Section> sections = readSections(navmapNodes, xPath);
 			book.setTocSections(sections);
 		} catch (Exception e) {
@@ -91,10 +125,10 @@ public class NCXDocument {
 	}
 
 	private static Section readSection(Element navpointElement, XPath xPath) throws XPathExpressionException {
-		String name = xPath.evaluate("navLabel/text", navpointElement);
-		String href = xPath.evaluate("content/@src", navpointElement);
+		String name = xPath.evaluate(PREFIX_NCX + ":navLabel/" + PREFIX_NCX + ":text", navpointElement);
+		String href = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
 		Section result = new Section(name, href);
-		NodeList childNavpoints = (NodeList) xPath.evaluate("navPoint", navpointElement, XPathConstants.NODESET);
+		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":navPoint", navpointElement, XPathConstants.NODESET);
 		result.setChildren(readSections(childNavpoints, xPath));
 		return result;
 	}
