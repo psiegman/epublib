@@ -104,6 +104,8 @@ public class Fileset2Epub {
 	}
 
 	private static void usage() {
+		// --encoding # The encoding of the input html files. If funny characters show up in the result try 'iso-8859-1', 'windows-1252' or 'utf-8'.
+		//            # If that doesn't work try to find an appropriate one from this list: http://en.wikipedia.org/wiki/Character_encoding
 		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --isbn [isbn number] --out [output epub file] --xsl [html post processing file] --cover-image [image to use as cover] --ecoding [text encoding] --type [input type, can be 'epub', 'chm' or empty]");
 		System.exit(0);
 	}
