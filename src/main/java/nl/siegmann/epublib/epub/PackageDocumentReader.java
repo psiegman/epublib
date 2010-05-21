@@ -43,12 +43,13 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.getDocumentBuilderFactory());
 		String packageHref = packageResource.getHref();
 		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resources);
+		String coverHref = readCover(packageDocument, book, resources);
 		readMetadata(packageDocument, epubReader, book);
-		List<Section> spineSections = readSpine(packageDocument, epubReader, book, resourcesById);
+		List<Section> spineSections = readSpine(coverHref, packageDocument, epubReader, book, resourcesById);
 		book.setSpineSections(spineSections);
 	}
 	
-	private static List<Section> readSpine(Document packageDocument,
+	private static List<Section> readSpine(String coverHref, Document packageDocument,
 			EpubReader epubReader, Book book, Map<String, Resource> resourcesById) {
 
 		NodeList spineNodes = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.itemref);
@@ -63,6 +64,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			Resource resource = resourcesById.get(itemref);
 			if(resource == null) {
 				log.error("resource with id \'" + itemref + "\' not found");
+				continue;
+			}
+			if("no".equals(spineElement.getAttribute(OPFAttributes.linear))
+					&& StringUtils.isNotBlank(coverHref) 
+					&& resource.getHref().equals(coverHref)) {
 				continue;
 			}
 			Section section = new Section(null, resource.getHref());
@@ -204,6 +210,25 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	}
 
 	/**
+	 * Finds the cover resource in the packageDocument and adds it to the book if found.
+	 * Keeps the cover resource in the resources map
+	 * @param packageDocument
+	 * @param book
+	 * @param resources
+	 * @return
+	 */
+	private static String readCover(Document packageDocument, Book book, Map<String, Resource> resources) {
+		
+		String coverHref = findCoverHref(packageDocument);
+
+		if(StringUtils.isNotBlank(coverHref) && resources.containsKey(coverHref)) {
+			book.setCoverPage(resources.get(coverHref));
+		}
+		return coverHref;
+	}
+	
+	
+	/**
 	 * 
 	 * @param packageDocument
 	 * @param packageHref
@@ -221,7 +246,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		NodeList itemElements = manifestElement.getElementsByTagName("item");
 		String hrefPrefix = packageHref.substring(0, packageHref.lastIndexOf('/') + 1);
-		String coverHref = findCoverHref(packageDocument);
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
@@ -241,8 +265,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			}
 			if(resource.getMediaType() == MediatypeService.NCX) {
 				book.setNcxResource(resource);
-			} else if(StringUtils.isNotBlank(coverHref) && coverHref.equals(resource.getHref())) {
-				book.setCoverPage(resource);
 			} else {
 				book.addResource(resource);
 				result.put(id, resource);
