@@ -25,9 +25,10 @@ public class MediatypeService {
 	public static MediaType SVG = new MediaType("image/svg+xml", ".svg", new String[] {".svg"});
 	public static MediaType TTF = new MediaType("application/x-truetype-font", ".ttf", new String[] {".ttf"});
 	public static MediaType NCX = new MediaType("application/x-dtbncx+xml", ".ncx", new String[] {".ncx"});
+	public static MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt", new String[] {".xpgt"});
 	
 	public static MediaType[] mediatypes = new MediaType[] {
-		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX
+		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT
 	};
 	
 	public static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();
