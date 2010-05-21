@@ -33,7 +33,8 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	
 	private HtmlCleaner htmlCleaner;
 	private XmlSerializer newXmlSerializer;
-
+	private boolean addXmlNamespace = true;
+	
 	public HtmlCleanerBookProcessor() {
 		this.htmlCleaner = createHtmlCleaner();
 		this.newXmlSerializer = new SimpleXmlSerializer(htmlCleaner.getProperties());
@@ -48,7 +49,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	
 
 	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String encoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String outputEncoding) throws IOException {
 		Reader reader;
 		if(StringUtils.isNotBlank(resource.getInputEncoding())) {
 			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
@@ -56,9 +57,19 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 			reader = new InputStreamReader(resource.getInputStream());
 		}
 		TagNode node = htmlCleaner.clean(reader);
-		node.getAttributes().put("xmlns", Constants.NAMESPACE_XHTML);
+		if(isAddXmlNamespace()) {
+			node.getAttributes().put("xmlns", Constants.NAMESPACE_XHTML);
+		}
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		newXmlSerializer.writeXmlToStream(node, out, encoding);
+		newXmlSerializer.writeXmlToStream(node, out, outputEncoding);
 		return out.toByteArray();
+	}
+
+	public void setAddXmlNamespace(boolean addXmlNamespace) {
+		this.addXmlNamespace = addXmlNamespace;
+	}
+
+	public boolean isAddXmlNamespace() {
+		return addXmlNamespace;
 	}
 }
