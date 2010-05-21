@@ -1,8 +1,11 @@
 package nl.siegmann.epublib;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
 import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
@@ -11,6 +14,7 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileResource;
 import nl.siegmann.epublib.domain.Identifier;
+import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
 
@@ -20,7 +24,7 @@ public class Fileset2Epub {
 
 	public static void main(String[] args) throws Exception {
 		String inputDir = "";
-		String resultFile = "";
+		String outFile = "";
 		String xslFile = "";
 		String coverImage = "";
 		String title = "";
@@ -32,8 +36,8 @@ public class Fileset2Epub {
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
 				inputDir = args[++i];
-			} else if(args[i].equalsIgnoreCase("--result")) {
-				resultFile = args[++i];
+			} else if(args[i].equalsIgnoreCase("--out")) {
+				outFile = args[++i];
 			} else if(args[i].equalsIgnoreCase("--encoding")) {
 				encoding = args[++i];
 			} else if(args[i].equalsIgnoreCase("--xsl")) {
@@ -50,7 +54,7 @@ public class Fileset2Epub {
 				type = args[++i];
 			}
 		}
-		if(StringUtils.isBlank(inputDir) || StringUtils.isBlank(resultFile)) {
+		if(StringUtils.isBlank(inputDir) || StringUtils.isBlank(outFile)) {
 			usage();
 		}
 		EpubWriter epubWriter = new EpubWriter();
@@ -96,11 +100,11 @@ public class Fileset2Epub {
 				book.getMetadata().setAuthors(Arrays.asList(new Author[] {authorObject}));
 			}
 		}
-		epubWriter.write(book, new FileOutputStream(resultFile));
+		epubWriter.write(book, new FileOutputStream(outFile));
 	}
 
 	private static void usage() {
-		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --isbn [isbn number] --result [resulting epub file] --xsl [html post processing file] --cover-image [image to use as cover] --type [input type, can be 'chm' or empty]");
+		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --isbn [isbn number] --out [output epub file] --xsl [html post processing file] --cover-image [image to use as cover] --ecoding [text encoding] --type [input type, can be 'epub', 'chm' or empty]");
 		System.exit(0);
 	}
 }
