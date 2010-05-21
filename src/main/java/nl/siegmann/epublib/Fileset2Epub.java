@@ -72,7 +72,9 @@ public class Fileset2Epub {
 		}
 		
 		if(StringUtils.isNotBlank(title)) {
-			book.getMetadata().addTitle(title);
+			List<String> titles = new ArrayList<String>();
+			titles.add(title);
+			book.getMetadata().setTitles(titles);
 		}
 		
 		if(StringUtils.isNotBlank(isbn)) {
