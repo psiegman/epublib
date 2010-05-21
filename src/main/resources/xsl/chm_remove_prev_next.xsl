@@ -35,7 +35,7 @@
     <xsl:apply-templates select="@*|node()"/>
 </xsl:template>
 
-<xsl:template match="@border|@name|@width|@height|@align|@valign|@linktabletoexcel|@bgcolor|@type"/>
+<xsl:template match="@border|@name|@width|@height|@align|@valign|@linktabletoexcel|@bgcolor|@type|@color"/>
 
 <xsl:template match="/xhtml:html/xhtml:head/xhtml:META[@http-equiv='Content-Type']"/>
 
