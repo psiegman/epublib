@@ -18,6 +18,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -26,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class PackageDocumentWriter extends PackageDocumentBase {
+
+	private static final Logger log = Logger.getLogger(PackageDocumentWriter.class);
 
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);
@@ -209,6 +212,18 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		if(resource == null ||
 				(resource.getMediaType() == MediatypeService.NCX
 				&& book.getNcxResource() != null)) {
+			return;
+		}
+		if(StringUtils.isBlank(resource.getId())) {
+			log.error("resource id must not be empty (href: " + resource.getHref() + ", mediatype:" + resource.getMediaType() + ")");
+			return;
+		}
+		if(StringUtils.isBlank(resource.getHref())) {
+			log.error("resource href must not be empty (id: " + resource.getId() + ", mediatype:" + resource.getMediaType() + ")");
+			return;
+		}
+		if(resource.getMediaType() == null) {
+			log.error("resource mediatype must not be empty (id: " + resource.getId() + ", href:" + resource.getHref() + ")");
 			return;
 		}
 		writer.writeEmptyElement("item");
