@@ -1,6 +1,5 @@
 package nl.siegmann.epublib.epub;
 
-import org.apache.log4j.Logger;
 
 /**
  * Functionality shared by the PackageDocumentReader and the PackageDocumentWriter
@@ -54,6 +53,7 @@ public class PackageDocumentBase {
 		String content = "content";
 		String type = "type";
 		String href = "href";
+		String linear = "linear";
 	}
 	
 	protected interface OPFValues {
