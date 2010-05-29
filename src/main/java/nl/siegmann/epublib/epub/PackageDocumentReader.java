@@ -39,17 +39,45 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	private static final Logger log = Logger.getLogger(PackageDocumentReader.class);
 	
 	
-	public static void read(Resource packageResource, EpubReader epubReader, Book book, Map<String, Resource> resources) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
+	public static void read(Resource packageResource, EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
 		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.getDocumentBuilderFactory());
 		String packageHref = packageResource.getHref();
-		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resources);
-		String coverHref = readCover(packageDocument, book, resources);
+		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
+		String coverHref = readCover(packageDocument, book, resourcesByHref);
+		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref, coverHref);
 		readMetadata(packageDocument, epubReader, book);
-		List<Section> spineSections = readSpine(coverHref, packageDocument, epubReader, book, resourcesById);
+		List<Section> spineSections = readSpine(packageDocument, epubReader, book, resourcesById);
 		book.setSpineSections(spineSections);
 	}
 	
-	private static List<Section> readSpine(String coverHref, Document packageDocument,
+	
+	/**
+	 * Strips off the package prefixes up to the href of the packageHref.
+	 * Example:
+	 * If the packageHref is "OEBPS/content.opf" then a resource href like "OEBPS/foo/bar.html" will be turned into "foo/bar.html"
+	 * 
+	 * @param packageHref
+	 * @param resourcesByHref
+	 * @return
+	 */
+	private static Map<String, Resource> fixHrefs(String packageHref,
+			Map<String, Resource> resourcesByHref) {
+		int lastSlashPos = packageHref.lastIndexOf('/');
+		if(lastSlashPos < 0) {
+			return resourcesByHref;
+		}
+		Map<String, Resource> result = new HashMap<String, Resource>();
+		for(Resource resource: resourcesByHref.values()) {
+			if(StringUtils.isNotBlank(resource.getHref())
+					|| resource.getHref().length() > lastSlashPos) {
+				resource.setHref(resource.getHref().substring(lastSlashPos + 1));
+			}
+			result.put(resource.getHref(), resource);
+		}
+		return result;
+	}
+
+	private static List<Section> readSpine(Document packageDocument,
 			EpubReader epubReader, Book book, Map<String, Resource> resourcesById) {
 
 		NodeList spineNodes = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.itemref);
@@ -66,9 +94,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				log.error("resource with id \'" + itemref + "\' not found");
 				continue;
 			}
-			if("no".equals(spineElement.getAttribute(OPFAttributes.linear))
-					&& StringUtils.isNotBlank(coverHref) 
-					&& resource.getHref().equals(coverHref)) {
+			if(resource == Resource.NULL_RESOURCE) {
 				continue;
 			}
 			Section section = new Section(null, resource.getHref());
@@ -82,31 +108,52 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param packageDocument
 	 * @return
 	 */
-	private static String findCoverHref(Document packageDocument) {
+	// package
+	static String findCoverHref(Document packageDocument) {
 		
-		// First try and find a meta tag with name = 'cover' and href is not blank
-		NodeList metaTags = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.meta);
+		// try and find a meta tag with name = 'cover' and href is not blank
+		String result = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
+											OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover,
+											OPFAttributes.content);
+
+		if(StringUtils.isBlank(result)) {
+			// try and find a reference tag with type is 'cover' and reference is not blank
+			result = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
+											OPFTags.reference, OPFAttributes.type, OPFValues.reference_cover,
+											OPFAttributes.href);
+		}
+
+		if(StringUtils.isBlank(result)) {
+			result = null;
+		}
+		return result;
+	}
+
+	/**
+	 * Finds in the current document the first element with the given namespace and elementName and with the given findAttributeName and findAttributeValue.
+	 * It then returns the value of the given resultAttributeName.
+	 * 
+	 * @param document
+	 * @param namespace
+	 * @param elementName
+	 * @param findAttributeName
+	 * @param findAttributeValue
+	 * @param resultAttributeName
+	 * @return
+	 */
+	private static String getFindAttributeValue(Document document, String namespace, String elementName, String findAttributeName, String findAttributeValue, String resultAttributeName) {
+		NodeList metaTags = document.getElementsByTagNameNS(namespace, elementName);
 		for(int i = 0; i < metaTags.getLength(); i++) {
 			Element metaElement = (Element) metaTags.item(i);
-			if(OPFValues.meta_cover.equalsIgnoreCase(metaElement.getAttribute(OPFAttributes.name)) 
-				&& StringUtils.isNotBlank(metaElement.getAttribute(OPFAttributes.content))) {
-				return metaElement.getAttribute(OPFAttributes.content);
+			if(findAttributeValue.equalsIgnoreCase(metaElement.getAttribute(findAttributeName)) 
+				&& StringUtils.isNotBlank(metaElement.getAttribute(resultAttributeName))) {
+				return metaElement.getAttribute(resultAttributeName);
 			}
 		}
-		
-		// now try and find a reference tag with type is 'cover' and reference is not blank
-		NodeList referenceTags = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.reference);
-		for(int i = 0; i < referenceTags.getLength(); i++) {
-			Element referenceElement = (Element) referenceTags.item(i);
-			if(OPFValues.reference_cover.equalsIgnoreCase(referenceElement.getAttribute(OPFAttributes.type)) 
-				&& StringUtils.isNotBlank(referenceElement.getAttribute(OPFAttributes.href))) {
-				return referenceElement.getAttribute(OPFAttributes.href);
-			}
-		}
-		
 		return null;
 	}
 
+	
 	private static Element getFirstElementByTagNameNS(Element parentElement, String namespace, String tagName) {
 		NodeList nodes = parentElement.getElementsByTagNameNS(namespace, tagName);
 		if(nodes.getLength() == 0) {
@@ -234,37 +281,37 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param packageHref
 	 * @param epubReader
 	 * @param book
-	 * @param resources
+	 * @param resourcesByHref
 	 * @return a Map with resources, with their id's as key.
 	 */
 	private static Map<String, Resource> readManifest(Document packageDocument, String packageHref,
-			EpubReader epubReader, Book book, Map<String, Resource> resources) {
+			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref, String coverHref) {
 		Element manifestElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, "manifest");
 		if(manifestElement == null) {
 			log.error("Package document does not contain element manifest");
 			return Collections.<String, Resource>emptyMap();
 		}
 		NodeList itemElements = manifestElement.getElementsByTagName("item");
-		String hrefPrefix = packageHref.substring(0, packageHref.lastIndexOf('/') + 1);
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
 			String mediaTypeName = itemElement.getAttribute("media-type");
 			String href = itemElement.getAttribute("href");
 			String id = itemElement.getAttribute("id");
-			href = hrefPrefix + href;
-			Resource resource = resources.remove(href);
+			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
 				System.err.println("resource not found:" + href);
 				continue;
 			}
-			resource.setHref(resource.getHref().substring(hrefPrefix.length()));
 			MediaType mediaType = MediatypeService.getMediaTypeByName(mediaTypeName);
 			if(mediaType != null) {
 				resource.setMediaType(mediaType);
 			}
 			if(resource.getMediaType() == MediatypeService.NCX) {
 				book.setNcxResource(resource);
+			} else if(StringUtils.isNotBlank(coverHref)
+				&& coverHref.equals(href)) {
+				result.put(id, Resource.NULL_RESOURCE);
 			} else {
 				book.addResource(resource);
 				result.put(id, resource);
