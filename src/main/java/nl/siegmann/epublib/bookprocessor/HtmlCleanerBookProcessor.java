@@ -44,6 +44,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 		HtmlCleaner result = new HtmlCleaner();
 		CleanerProperties cleanerProperties = result.getProperties();
 		cleanerProperties.setOmitXmlDeclaration(true);
+		cleanerProperties.setIgnoreQuestAndExclam(true);
 		return result;
 	}
 	
