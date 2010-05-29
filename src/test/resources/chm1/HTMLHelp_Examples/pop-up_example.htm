@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>How to create PopUp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="download, internet connection">
+<meta name="MS-HKWD" content="garden">
+<meta name="MS-HKWD" content="news">
+<meta name="MS-HKWD" content="server">
+<link href="../design.css" rel="stylesheet" type="text/css" />
+<OBJECT id=hhctrl type="application/x-oleobject" 
+classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11"> 
+</OBJECT> 
+</head>
+
+<body> <a name="top" id="top"></a> 
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>PopUp Example</h1>
+<p>Code see below!</p>
+<p> (not working for all browsers/browser versions - see your systems security 
+  updates).</p>
+<p><a class=popupspot
+href="JavaScript:hhctrl.TextPopup
+('This is a standard HTMLHelp text-only popup. See the nice flowers below.','Arial,8',10,10,00000000,0xffffff)"> 
+  Click here to see example information (PopUp).</a></p>
+
+<p> <img onmouseover="(src='../images/wintertree.jpg')" onmouseout="(src='../images/insekt.jpg')" src="../images/insekt.jpg" alt="" border="0"> 
+</p>
+<p>To <strong>change the flower picture</strong> hoover with your mouse pointer!</p>
+<hr />
+<p><a class=popupspot
+href="JavaScript:hhctrl.TextPopup
+('This is a standard HTMLHelp text-only popup. See the nice flowers below.','Verdana,8',10,10,00000000,0x66ffff)">Click 
+  here to change the background color (PopUp).</a></p>
+
+
+<p> <img onmouseover="(src='../images/wintertree.jpg')" onmouseout="(src='../images/insekt.jpg')" src="../images/insekt.jpg" alt="" border="0"> 
+</p>
+<p>To <strong>change the flower picture</strong> hoover with your mouse pointer!</p>
+<hr />
+<p>Another example to enlarge a screenshot (hoover with mouse pointer):</p>
+<p> <img src="../images/screenshot_small.png" alt="See what happens .." border="0" onmouseover="(src='../images/screenshot_big.png')" onmouseout="(src='../images/screenshot_small.png')"> 
+</p>
+<p>To <strong>enlarge the screenshot</strong> hoover with your mouse pointer!</p>
+<hr />
+<p>Another example to enlarge a screenshot (click to screenshot):</p>
+<p>
+ <img src="../images/screenshot_small.png" alt="" onclick="this.src='../images/screenshot_big.png'" /> 
+</p>
+<hr />
+<p>This is the code for the second text link:</p>
+<pre>&lt;p&gt;
+&lt;a class=popupspot<br />href=&quot;JavaScript:hhctrl.TextPopup<br />('This is a standard HTMLHelp text-only popup.
+  See the nice flowers below.','Verdana,8',10,10,00000000,0x66ffff)&quot;&gt; <br />  Click here to change the background color.&lt;/a&gt;
+&lt;/p&gt;
+</pre>
+<p>This is the code to change the flower picture:</p>
+<pre>
+&lt;p&gt;
+&lt;img
+ onmouseover=&quot;(src='../images/wintertree.jpg')&quot;
+ onmouseout=&quot;(src='../images/insekt.jpg')&quot;
+ src=&quot;../images/insekt.jpg&quot; alt=&quot;&quot; border=&quot;0&quot;&gt; <br />&lt;/p&gt;
+</pre>
+<p>This is the code to enlarge the screenshot (hoover):</p>
+<pre>&lt;p&gt;<br /> &lt;img
+ src=&quot;../images/screenshot_small.png&quot; alt=&quot;&quot; border=&quot;0&quot;
+ onmouseover=&quot;(src='../images/screenshot_big.png')&quot;
+ onmouseout=&quot;(src='../images/screenshot_small.png')&quot;&gt;
+&lt;/p&gt;</pre>
+<p>This is the code to enlarge the screenshot (click):</p>
+<pre>&lt;p&gt;<br /> &lt;img src=&quot;../images/screenshot_small.png&quot; alt=&quot;&quot;
+ onclick=&quot;this.src='../images/screenshot_big.png'&quot; /&gt; <br />&lt;/p&gt;</pre>
+<p>&nbsp;</p>
+<p><b>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam<br />
+  </b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy 
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, 
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+<p><b>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam<br />
+  </b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy 
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, 
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+<p>&nbsp;</p>
+</body>
+</html>

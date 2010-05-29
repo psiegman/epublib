@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Using CHM shortcut links</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="Shortcut, Link" />
+<meta name="MS-HKWD" content="Shortcut" />
+<meta name="MS-HKWD" content="Link" />
+<link href="../design.css" rel="stylesheet" type="text/css" />
+
+<OBJECT id=MyUniqueID type="application/x-oleobject"
+classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11">
+  <PARAM name="Command" value="ShortCut">
+  <PARAM name="Item1" value=",http://www.help-info.de/index_e.htm,">
+  <PARAM name="Item2" value=",,">
+  <!-- second item parameter seems to be required when downloaded from web with "Open/Save Dialog" -->
+</OBJECT>
+
+</head>
+
+<body>
+<a name="top" id="top"></a>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>Using CHM shortcut links</h1>
+<p>This is a simple example how to use shortcut links from a CHM file and jump 
+  to a URL with the users default browser.</p>
+<p>Example:</p>
+<p><a href="javascript:MyUniqueID.Click()">Click me to go to www-help-info.de</a></p>
+<p>Note:</p>
+<ul>
+  <li> Wont work on the web</li>
+  <li> Only works in compressed CHM file.</li>
+  <li>Dosn't work with &quot;Open dialog&quot;. You have to save to local disc.</li>
+  <li> MyUniqueID must be a unique name for each shortcut you create in a HTML 
+    file.</li>
+</ul>
+<p>Put this code in your &lt;head&gt; section:</p>
+<p>&lt;OBJECT id=MyUniqueID type=&quot;application/x-oleobject&quot;<br />
+  classid=&quot;clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11&quot;&gt;<br />
+  &lt;PARAM name=&quot;Command&quot; value=&quot;ShortCut&quot;&gt;<br />
+  &lt;PARAM name=&quot;Item1&quot; value=&quot;,http://www.help-info.de/index_e.htm,&quot;&gt;<br />
+  &lt;/OBJECT&gt;</p>
+<p>Put this code in your &lt;body&gt; section:</p>
+<p>&lt;p&gt;&lt;a href=&quot;javascript:MyUniqueID.Click()&quot;&gt;Click me to 
+  go to www-help-info.de&lt;/a&gt;&lt;/p&gt; </p>
+
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<html>
+<head>
+<meta name="generator" content="Help Information&reg; Keyword Index Tool (KIT) 0.6.1">
+<!-- Sitemap 1.0 -->
+</head>
+<body>
+<object type="text/site properties">
+  <param name="FrameName" value="right">
+  <param name="Font" value="Verdana,8,0">
+</object>
+<ul>
+<li><object type="text/sitemap">
+    <param name="Name" value="10000">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="10010">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="20000">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="20010">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="alias">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="anchor">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="AnchorSample InnerText Headline">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm#AnchorSample">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="AnchorSample">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm#AnchorSample">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Attention">
+    <param name="Name" value="Attention (!) - Close Window automatically">
+    <param name="Local" value="HTMLHelp_Examples/CloseWindowAutomatically.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="automatically">
+    <param name="Name" value="Attention (!) - Close Window automatically">
+    <param name="Local" value="HTMLHelp_Examples/CloseWindowAutomatically.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Bookmark">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Boxes">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Check">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="CHM">
+    <param name="Name" value="Linking to PDF from CHM">
+    <param name="Local" value="HTMLHelp_Examples/LinkPDFfromCHM.htm">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    <param name="Name" value="Linking from CHM with standard HTML">
+    <param name="Local" value="HTMLHelp_Examples/simple_link_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Close">
+    <param name="Name" value="Attention (!) - Close Window automatically">
+    <param name="Local" value="HTMLHelp_Examples/CloseWindowAutomatically.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="content">
+    <param name="Name" value="External Topic">
+    <param name="Local" value="external_files/external_topic.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Contents">
+    <param name="Name" value="Welcome">
+    <param name="Local" value="index.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Context">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="contextID">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="download">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+    <param name="Name" value="Topic split example">
+    <param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Example">
+    <param name="Name" value="Example load PDF from TOC">
+    <param name="Local" value="HTMLHelp_Examples/example-external-pdf.htm">
+    <param name="Name" value="Topic split example">
+    <param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="External">
+    <param name="Name" value="External Topic">
+    <param name="Local" value="external_files/external_topic.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="flowers">
+    <param name="Name" value="Flowers">
+    <param name="Local" value="Garden/flowers.htm">
+    <param name="Name" value="Flowers">
+    <param name="Local" value="Garden/flowers.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="garden">
+    <param name="Name" value="Flowers">
+    <param name="Local" value="Garden/flowers.htm">
+    <param name="Name" value="Garden">
+    <param name="Local" value="Garden/garden.htm">
+    <param name="Name" value="Garden">
+    <param name="Local" value="Garden/garden.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="grows">
+    <param name="Name" value="How one grows trees">
+    <param name="Local" value="Garden/tree.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Headline">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm#AnchorSample">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="help">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="hole">
+    <param name="Name" value="How one grows trees">
+    <param name="Local" value="Garden/tree.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="home">
+    <param name="Name" value="Garden">
+    <param name="Local" value="Garden/garden.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="How">
+    <param name="Name" value="How one grows trees">
+    <param name="Local" value="Garden/tree.htm">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="HTML">
+    <param name="Name" value="Linking from CHM with standard HTML">
+    <param name="Local" value="HTMLHelp_Examples/simple_link_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Index">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="InnerText">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm#AnchorSample">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="internet connection">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+    <param name="Name" value="Topic split example">
+    <param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="jump">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Link">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    <param name="Name" value="Using window.open">
+    <param name="Local" value="HTMLHelp_Examples/using_window_open.htm">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Linking">
+    <param name="Name" value="Linking to PDF from CHM">
+    <param name="Local" value="HTMLHelp_Examples/LinkPDFfromCHM.htm">
+    <param name="Name" value="Linking from CHM with standard HTML">
+    <param name="Local" value="HTMLHelp_Examples/simple_link_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="links">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="load">
+    <param name="Name" value="Example load PDF from TOC">
+    <param name="Local" value="HTMLHelp_Examples/example-external-pdf.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="map">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="open">
+    <param name="Name" value="Using window.open">
+    <param name="Local" value="HTMLHelp_Examples/using_window_open.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="PDF">
+    <param name="Name" value="Example load PDF from TOC">
+    <param name="Local" value="HTMLHelp_Examples/example-external-pdf.htm">
+    <param name="Name" value="Linking to PDF from CHM">
+    <param name="Local" value="HTMLHelp_Examples/LinkPDFfromCHM.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="plant">
+    <param name="Name" value="Garden">
+    <param name="Local" value="Garden/garden.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="RadioButton">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="SecondAnchor">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm#SecondAnchor">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="sensitive">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Shortcut">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    <param name="Name" value="Using window.open">
+    <param name="Local" value="HTMLHelp_Examples/using_window_open.htm">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="split">
+    <param name="Name" value="Topic split example">
+    <param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="standard">
+    <param name="Name" value="Linking from CHM with standard HTML">
+    <param name="Local" value="HTMLHelp_Examples/simple_link_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Style">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="TOC">
+    <param name="Name" value="Example load PDF from TOC">
+    <param name="Local" value="HTMLHelp_Examples/example-external-pdf.htm">
+    <param name="Name" value="How to jump to a anchor">
+    <param name="Local" value="HTMLHelp_Examples/jump_to_anchor.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="topic">
+    <param name="Name" value="Context sensitive help topic 10000">
+    <param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+    <param name="Name" value="Context sensitive help topic 10010">
+    <param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+    <param name="Name" value="Context sensitive help topic 20000">
+    <param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+    <param name="Name" value="Context sensitive help topic 20010">
+    <param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+    <param name="Name" value="External Topic">
+    <param name="Local" value="external_files/external_topic.htm">
+    <param name="Name" value="Topic split example">
+    <param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="tree">
+    <param name="Name" value="How one grows trees">
+    <param name="Local" value="Garden/tree.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="trees">
+    <param name="Name" value="How one grows trees">
+    <param name="Local" value="Garden/tree.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Using">
+    <param name="Name" value="Using CHM shortcut links">
+    <param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+    <param name="Name" value="Using window.open">
+    <param name="Local" value="HTMLHelp_Examples/using_window_open.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Welcome">
+    <param name="Name" value="Welcome">
+    <param name="Local" value="index.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="windmill">
+    <param name="Name" value="Linking from CHM with standard HTML">
+    <param name="Local" value="HTMLHelp_Examples/simple_link_example.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="Window">
+    <param name="Name" value="Attention (!) - Close Window automatically">
+    <param name="Local" value="HTMLHelp_Examples/CloseWindowAutomatically.htm">
+    <param name="Name" value="Using window.open">
+    <param name="Local" value="HTMLHelp_Examples/using_window_open.htm">
+    </object>
+    </li>
+<li><object type="text/sitemap">
+    <param name="Name" value="XP">
+    <param name="Name" value="XP Style for RadioButton and Check Boxes">
+    <param name="Local" value="HTMLHelp_Examples/xp-style_radio-button_check-boxes.htm">
+    </object>
+    </li>
+</ul>
+</body>
+</html>
