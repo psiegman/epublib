@@ -3,6 +3,8 @@ package nl.siegmann.epublib.domain;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A Book's identifier.
  * Defaults to a random UUID and scheme "UUID"
@@ -91,5 +93,13 @@ public class Identifier {
 	 */
 	public boolean isBookId() {
 		return bookId;
+	}
+
+	public boolean equals(Object otherIdentifier) {
+		if(! (otherIdentifier instanceof Identifier)) {
+			return false;
+		}
+		return StringUtils.equals(scheme, ((Identifier) otherIdentifier).scheme)
+		&& StringUtils.equals(value, ((Identifier) otherIdentifier).value);
 	}
 }
