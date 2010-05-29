@@ -56,7 +56,8 @@ public class NCXDocument {
 		String meta = "meta";
 	}
 
-	private static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
+	// package
+	static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
 
 		private final Map<String, List<String>> prefixes = new HashMap<String, List<String>>();
 		
