@@ -59,5 +59,6 @@ public class PackageDocumentBase {
 	protected interface OPFValues {
 		String meta_cover = "cover";
 		String reference_cover = "cover";
+		String no = "no";
 	}
 }
