@@ -8,14 +8,15 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathFactory;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.ZipEntryResource;
+import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,11 +49,10 @@ public class EpubReader {
 	
 	public Book readEpub(ZipInputStream in) throws IOException {
 		Book result = new Book();
-		Map<String, Resource> resources = readResources(in);
+		Map<String, Resource> resources = readResources(in, Constants.ENCODING);
 		handleMimeType(result, resources);
 		String packageResourceHref = getPackageResourceHref(result, resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
-		String resourcePathPrefix = packageResourceHref.substring(packageResourceHref.lastIndexOf('/'));
 		processNcxResource(packageResource, result);
 		return result;
 	}
@@ -89,7 +89,6 @@ public class EpubReader {
 		if(containerResource == null) {
 			return result;
 		}
-		DocumentBuilder documentBuilder;
 		try {
 			Document document = ResourceUtil.getAsDocument(containerResource, documentBuilderFactory);
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
@@ -107,7 +106,7 @@ public class EpubReader {
 		resources.remove("mimetype");
 	}
 
-	private Map<String, Resource> readResources(ZipInputStream in) throws IOException {
+	private Map<String, Resource> readResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
 //			System.out.println(zipEntry.getName());
@@ -115,6 +114,10 @@ public class EpubReader {
 				continue;
 			}
 			Resource resource = new ZipEntryResource(zipEntry, in);
+			if(resource.getMediaType() == MediatypeService.XHTML
+					&& StringUtils.isBlank(resource.getInputEncoding())) {
+				resource.setInputEncoding(defaultHtmlEncoding);
+			}
 			result.put(resource.getHref(), resource);
 		}
 		return result;
