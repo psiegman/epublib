@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
@@ -18,6 +17,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class Fileset2Epub {
@@ -28,10 +28,10 @@ public class Fileset2Epub {
 		String xslFile = "";
 		String coverImage = "";
 		String title = "";
-		String author = "";
+		List<String> authorNames = new ArrayList<String>();
 		String type = "";
 		String isbn = "";
-		String encoding = "";
+		String encoding = Constants.ENCODING;
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
@@ -45,7 +45,7 @@ public class Fileset2Epub {
 			} else if(args[i].equalsIgnoreCase("--cover-image")) {
 				coverImage = args[++i];
 			} else if(args[i].equalsIgnoreCase("--author")) {
-				author = args[++i];
+				authorNames.add(args[++i]);
 			} else if(args[i].equalsIgnoreCase("--title")) {
 				title = args[++i];
 			} else if(args[i].equalsIgnoreCase("--isbn")) {
@@ -87,26 +87,45 @@ public class Fileset2Epub {
 			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
 		}
 		
-		if(StringUtils.isNotBlank(author)) {
-			String[] authorNameParts = author.split(",");
+		initAuthors(authorNames, book);
+		
+		epubWriter.write(book, new FileOutputStream(outFile));
+	}
+
+	private static void initAuthors(List<String> authorNames, Book book) {
+		if(CollectionUtils.isEmpty(authorNames)) {
+			return;
+		}
+		List<Author> authorObjects = new ArrayList<Author>();
+		for(String authorName: authorNames) {
+			String[] authorNameParts = authorName.split(",");
 			Author authorObject = null;
 			if(authorNameParts.length > 1) {
 				authorObject = new Author(authorNameParts[1], authorNameParts[0]);
 			} else if(authorNameParts.length > 0) {
 				authorObject = new Author(authorNameParts[0]);
 			}
-			
-			if(authorObject != null) {
-				book.getMetadata().setAuthors(Arrays.asList(new Author[] {authorObject}));
-			}
+			authorObjects.add(authorObject);
 		}
-		epubWriter.write(book, new FileOutputStream(outFile));
+		book.getMetadata().setAuthors(authorObjects);
 	}
 
+	
 	private static void usage() {
-		// --encoding # The encoding of the input html files. If funny characters show up in the result try 'iso-8859-1', 'windows-1252' or 'utf-8'.
-		//            # If that doesn't work try to find an appropriate one from this list: http://en.wikipedia.org/wiki/Character_encoding
-		System.out.println(Fileset2Epub.class.getName() + " --in [input directory] --title [book title] --author [lastname,firstname] --isbn [isbn number] --out [output epub file] --xsl [html post processing file] --cover-image [image to use as cover] --ecoding [text encoding] --type [input type, can be 'epub', 'chm' or empty]");
+		System.out.println("usage: " + Fileset2Epub.class.getName() 
+				+ "\n  --author [lastname,firstname]"
+				+ "\n  --cover-image [image to use as cover]"
+				+ "\n  --ecoding [text encoding]  # The encoding of the input html files. If funny characters show"
+				+ "\n                             # up in the result try 'iso-8859-1', 'windows-1252' or 'utf-8'"
+				+ "\n                             # If that doesn't work try to find an appropriate one from"
+				+ "\n                             # this list: http://en.wikipedia.org/wiki/Character_encoding"
+				+ "\n  --in [input directory]"
+				+ "\n  --isbn [isbn number]"
+				+ "\n  --out [output epub file]"
+				+ "\n  --title [book title]"
+				+ "\n  --type [input type, can be 'epub', 'chm' or empty]"
+				+ "\n  --xsl [html post processing file]"
+				);
 		System.exit(0);
 	}
 }
