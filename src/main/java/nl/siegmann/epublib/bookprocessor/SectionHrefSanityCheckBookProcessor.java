@@ -6,6 +6,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.epub.EpubWriter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -24,13 +25,17 @@ public class SectionHrefSanityCheckBookProcessor implements BookProcessor {
 
 	private static void checkSections(List<Section> sections, String previousSectionHref) {
 		for(Section section: sections) {
-			String href = StringUtils.substringBefore(section.getHref(), "#");
-			if(href.equals(previousSectionHref)) {
+			if(StringUtils.isBlank(section.getHref())) {
 				section.setPartOfPageFlow(false);
 			} else {
-				previousSectionHref = href;
+				String href = StringUtils.substringBefore(section.getHref(), "#");
+				if(href.equals(previousSectionHref)) {
+					section.setPartOfPageFlow(false);
+				} else {
+					previousSectionHref = href;
+				}
 			}
-			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {
+			if(CollectionUtils.isNotEmpty(section.getChildren())) {
 				checkSections(section.getChildren(), previousSectionHref);
 			}
 		}
