@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.siegmann.epublib</groupId>
-    <artifactId>EPUBLib</artifactId>
+    <artifactId>epublib</artifactId>
     <name>epublib</name>
     <version>1.0-SNAPSHOT</version>
 	<properties>
