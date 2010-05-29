@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
 /**
@@ -15,7 +16,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 public class SectionResource implements Resource {
 
 	private String id;
-	private String inputEncoding = "UTF-8";
+	private String inputEncoding = Constants.ENCODING;
 	private String sectionName;
 	private String href;
 	private MediaType mediaType = MediatypeService.XHTML;
@@ -40,6 +41,11 @@ public class SectionResource implements Resource {
 		return inputEncoding;
 	}
 
+	@Override
+	public void setInputEncoding(String inputEncoding) {
+		this.inputEncoding = inputEncoding;
+	}
+	
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return new ByteArrayInputStream(getContent().getBytes(inputEncoding));
