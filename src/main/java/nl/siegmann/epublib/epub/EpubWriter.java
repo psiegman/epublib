@@ -117,10 +117,14 @@ public class EpubWriter {
 		if(resource == null) {
 			return;
 		}
-		resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
-		InputStream inputStream = resource.getInputStream();
-		IOUtils.copy(inputStream, resultStream);
-		inputStream.close();
+		try {
+			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
+			InputStream inputStream = resource.getInputStream();
+			IOUtils.copy(inputStream, resultStream);
+			inputStream.close();
+		} catch(Exception e) {
+			log.error(e);
+		}
 	}
 	
 	private void writeCoverResources(Book book, ZipOutputStream resultStream) throws IOException {
