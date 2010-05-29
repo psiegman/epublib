@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Topic split example</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="download, internet connection">
+<meta name="MS-HKWD" content="garden">
+<meta name="MS-HKWD" content="news">
+<meta name="MS-HKWD" content="server">
+<link href="../design.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<a name="top" id="top"></a>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>Split example - Main Topic 1</h1>
+<p>It's possible to have one mega HTML file splitting into several files by using 
+  a HHCTRL.OCX split file object tag in your HTML. This instructs the HTML Help 
+  compiler to split the HTML file at the specific points where it finds this tag. 
+  The object tag has the following format: </p>
+<pre>  &lt;object type=&quot;application/x-oleobject&quot;
+     classid=&quot;clsid:1e2a7bd0-dab9-1&shy;1d0-b93a-00c04fc99f9
+     &lt;param name=&quot;New HTML file&quot; value=&quot;a_new_file.htm&quot;&gt;       e.g &quot;topic-04.htm&quot;
+     &lt;param name=&quot;New HTML title&quot; value=&quot;My new topic title&quot;&gt;  e.g. &quot;Topic 4&quot;
+  &lt;/object&gt;</pre>
+<p> The first value - &quot;file&quot; - specifies the name you want to give to 
+  the file that would be created for this topic. The second value - &quot;title&quot; 
+  - specifies what you would want in the &lt;TITLE&gt; tag for the document. You 
+  shouldn't change any details apart from the <strong>value</strong> parameter. 
+</p>
+<p> The file then gets created within the .chm file at compile time, though you'll 
+  never see it on disk. A pretty neat feature.</p>
+<p> The trick of course is that if you have links in your .chm file, whether from 
+  the contents/index or from topic to topic, you'll need to reference the file 
+  name that you specify in the tag above.</p>
+<p>If you are using HTML Help Workshop, you can use the Split File command on 
+  the Edit menu to insert the &lt;object&gt; tags.</p>
+<p>The following hyperlink displays a topic file in popup-type window: </p>
+<p><a href="#" onclick="window.open('topic-04.htm','Sample','toolbar=no,width=200,height=200,left=500,top=400,status=no,scrollbars=no,resize=no');return 
+false">Link from this main to topic 4</a> (only working in the compiled help CHM 
+  and for a locally saved CHM)</p>
+<pre>&lt;a href=&quot;#&quot;
+ onClick=&quot;window.open('topic-04.htm','Sample',
+ 'toolbar=no,width=200,height=200,left=500,top=400,
+ status=no,scrollbars=no,resize=no');return false&quot;&gt;
+ Link from this main to topic 4&lt;/a&gt;</pre>
+<p><img src="../images/blume.jpg" width="150" height="98" /></p>
+<p><b>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam<br />
+  </b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy 
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, 
+  no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr> 
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+
+</body>
+</html>

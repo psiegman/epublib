@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Window Styles" value="0x800025">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Welcome">
+		<param name="Local" value="index.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Context-sensitive example">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Context sensitive help topic 10000">
+			<param name="Local" value="Context-sensitive_example/contextID-10000.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Context sensitive help topic 10010">
+			<param name="Local" value="Context-sensitive_example/contextID-10010.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Context sensitive help topic 20000">
+			<param name="Local" value="Context-sensitive_example/contextID-20000.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Context sensitive help topic 20010">
+			<param name="Local" value="Context-sensitive_example/contextID-20010.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Garden">
+		<param name="Local" value="Garden/Garden.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Flowers">
+			<param name="Local" value="Garden/flowers.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How one grows trees">
+			<param name="Local" value="Garden/tree.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="HTMLHelp Examples">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Attention (!) - Close CHM Window automatically">
+			<param name="Local" value="HTMLHelp_Examples/CloseWindowAutomatically.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to split HTML topics">
+			<param name="Local" value="HTMLHelp_Examples/topic_split_example.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to use shortcut links">
+			<param name="Local" value="HTMLHelp_Examples/shortcut_link.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to jump to a anchor">
+			<param name="Local" value="HTMLHelp_Examples/Jump_to_anchor.htm#AnchorSample">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to jump to a second anchor">
+			<param name="Local" value="HTMLHelp_Examples/Jump_to_anchor.htm#SecondAnchor">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to use HTMLHelp PopUp's">
+			<param name="Local" value="HTMLHelp_Examples/pop-up_example.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to link to HTML files (not embedded)">
+			<param name="Local" value="HTMLHelp_Examples/Simple_link_example.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to link to PDF (embedded) from topic">
+			<param name="Local" value="HTMLHelp_Examples/LinkPDFfromCHM.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to link to PDF (local not embedded)">
+			<param name="Local" value="HTMLHelp_Examples/example-external-pdf.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to link to PDF (server)">
+			<param name="Local" value="http://www.help-info.de/download/pdf/example.pdf">
+			<param name="ImageNumber" value="13">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to jump directly from here (e.g. VW)">
+			<param name="Local" value="http://www.volkswagen.co.uk/home">
+			<param name="ImageNumber" value="13">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to open a second window (e.g. VW)">
+			<param name="Local" value="http://www.volkswagen.co.uk/home">
+			<param name="WindowName" value="wndTopic">
+			<param name="ImageNumber" value="13">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>

@@ -1,0 +1,18 @@
+;-------------------------------------------------
+; topic.h file example for HTMLHelp (CHM)
+; www.help-info.de
+;
+;
+; This is a file including the ID and PopUp text
+;-------------------------------------------------
+.topic 900;nohelp
+Sorry, no help available!
+
+.topic 100;PopUp_AddressData_btnOK
+This is context sensitive help text for a button (ID: IDH_100).
+
+.topic 110;PopUp_AddressData_txtFirstName
+This is context sensitive help text for a text box (ID: IDH_110).
+
+.topic 120;PopUp_AddressData_txtLastName
+This is context sensitive help text for a text box (ID: IDH_120).
