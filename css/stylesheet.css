@@ -1,0 +1,166 @@
+html {
+	background: #1e1e1e;
+}
+body {
+/*  background: transparent url("http://macromates.com/images/site/bg_body") repeat-y 50% 0px;*/
+/* font: 0.72em/170% "Lucida Grande", Verdana, Helvetica, sans-serif;*/
+	font: 12px "Lucida Grande", Verdana, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+a[href] {
+	color: #525151;
+}
+
+#wrapper { /* IE workaround */
+	margin: 0 auto;
+	padding: 0;
+	width: 750px;
+}
+html>body #wrapper {
+	margin: 0 auto;
+	padding: 0;
+	width: auto;
+	max-width: 750px;
+}
+
+#header {
+	position: relative;
+	background: #4D606C;
+	height: 113px;
+}
+#header h1 {
+	position: absolute;
+	left: 60px;
+	top: 40px;
+	width: 380px;
+	height: 50px;
+	cursor: pointer;
+	color: white;
+}
+
+#navigation {
+	background: #232323;
+	border-bottom: 1px solid #171717;
+	margin: 0;
+	padding: 0.5em 0;
+	width: 100%;
+}
+#navigation ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#navigation li {
+	display: inline;
+	margin: 0;
+	padding: 0 0 0 25px;
+	text-shadow: 0px 2px 4px #000;
+}
+#navigation li a {
+	color: #5b5b5b;
+	text-decoration: none;
+}
+
+#intro		#navi_intro			a,
+#blog			#navi_blog			a,
+#toc			#navi_manual		a,
+#chapter		#navi_manual		a,
+#wiki			#navi_wiki			a,
+#community	#navi_community	a,
+#contact		#navi_contact		a,
+#navigation li a:hover {
+	color: #fff;
+}
+
+#page_body {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	overflow: hidden;
+}
+
+#content { /* IE workaround */
+	margin: 0;
+	padding: 25px;
+	width: 430px;
+	height: 584px; /* (64+2*20+2)*6 - 2 - 2*25 */
+	background: #fff;
+}
+html>body #content {
+	margin: 0;
+	padding: 25px;
+	width: auto;
+	height: auto;
+	max-width: 430px;
+	min-height: 584px; /* (64+2*20+2)*6 - 2 - 2*25 */
+	background: #fff;
+}
+#content :first-child {
+	margin-top: 0px;
+}
+#content :first-child + h1 {
+	margin-top: 0px;
+}
+
+#sidebar {
+	margin: 0;
+	padding: 0;
+	top: 0px;
+	left: 480px;
+	width: 270px;
+	background-color: #e8eaea;
+	position: absolute;
+}
+#sidebar .item {
+	color: #5b5b5b;
+	border-bottom: 2px solid #fff;
+	padding: 20px;
+	min-height: 64px;
+}
+#sidebar .item * {
+	margin: 0px;
+}
+#sidebar .item h4 {
+	margin-bottom: 1em;
+	font-size: 120%;
+}
+#sidebar .item p {
+	font-size: 90%;
+}
+#sidebar .item a {
+	text-decoration: none;
+}		  
+#sidebar .item a:hover {
+	text-decoration: underline;
+}
+
+#footer {
+	position: relative;
+	margin: 0;
+	padding: 0.75em 25px 0.75em 25px;
+	min-height: 1em;
+	clear: both;
+	color: #b5b5b5;
+	background: #2E2E2E;
+}
+#footer * {
+	margin: 0;
+	padding: 0;
+}
+#footer a {
+	color: #b5b5b5;
+	text-decoration: none;
+}
+#footer a:hover {
+	color: #2E2E2E;
+	background: #b5b5b5;
+	text-decoration: none;
+}
+#footer .left {
+	float: left;
+}
+#footer .right {
+	float: right;
+}
+
