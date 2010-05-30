@@ -20,12 +20,24 @@ public class Book {
 	private List<Section> tocSections = new ArrayList<Section>();
 	private Collection<Resource> resources = new ArrayList<Resource>();
 
+	/**
+	 * Adds a section to both the spine and the toc sections.
+	 * 
+	 * @param section
+	 * @return
+	 */
 	public Section addSection(Section section) {
 		spineSections.add(section);
 		tocSections.add(section);
 		return section;
 	}
 	
+	/**
+	 * The resources that make up this book.
+	 * Resources can be xhtml pages, images, xml documents, etc.
+	 * 
+	 * @return
+	 */
 	public Collection<Resource> getResources() {
 		return resources;
 	}
@@ -33,11 +45,26 @@ public class Book {
 		this.resources = new ArrayList<Resource>(resources);
 	}
 
+	/**
+	 * Adds a resource to the book and creates both a spine and a toc section to point to it.
+	 * 
+	 * @param title
+	 * @param resource
+	 * @return
+	 */
 	public Section addResourceAsSection(String title, Resource resource) {
 		addResource(resource);
 		return addSection(new Section(title, resource.getHref()));
 	}
 	
+	/**
+	 * Adds the resource to the book and creates a subsection of the given parentSection pointing to the new resource.
+	 * 
+	 * @param parentSection
+	 * @param sectionTitle
+	 * @param resource
+	 * @return
+	 */
 	public Section addResourceAsSubSection(Section parentSection, String sectionTitle,
 			Resource resource) {
 		addResource(resource);
@@ -56,24 +83,49 @@ public class Book {
 		}
 		return null;
 	}
+	
+	/**
+	 * The Book's metadata (titles, authors, etc)
+	 * 
+	 * @return
+	 */
 	public Metadata getMetadata() {
 		return metadata;
 	}
 	public void setMetadata(Metadata metadata) {
 		this.metadata = metadata;
 	}
+	
+	/**
+	 * The coverpage of the book.
+	 * 
+	 * @return
+	 */
 	public Resource getCoverPage() {
 		return coverPage;
 	}
 	public void setCoverPage(Resource coverPage) {
 		this.coverPage = coverPage;
 	}
+	
+	/**
+	 * The main image used by the cover page.
+	 * 
+	 * @return
+	 */
 	public Resource getCoverImage() {
 		return coverImage;
 	}
 	public void setCoverImage(Resource coverImage) {
 		this.coverImage = coverImage;
 	}
+	
+	
+	/**
+	 * The NCX resource of the Book (contains the table of contents)
+	 * 
+	 * @return
+	 */
 	public Resource getNcxResource() {
 		return ncxResource;
 	}
@@ -86,6 +138,12 @@ public class Book {
 		setTocSections(sections);
 	}
 	
+	/**
+	 * The spine sections are the sections of the book in the order in which the book should be read.
+	 * This contrasts with the Table of Contents sections which is an index into the Book's sections.
+	 * 
+	 * @return
+	 */
 	public List<Section> getSpineSections() {
 		return spineSections;
 	}
@@ -94,6 +152,11 @@ public class Book {
 		this.spineSections = spineSections;
 	}
 	
+	/**
+	 * The Book's table of contents.
+	 * 
+	 * @return
+	 */
 	public List<Section> getTocSections() {
 		return tocSections;
 	}

@@ -13,6 +13,12 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+/**
+ * Splits up a xhtml document into pieces that are all valid xhtml documents.
+ * 
+ * @author paul
+ *
+ */
 public class HtmlSplitter {
 
 	private XMLEventFactory xmlEventFactory = XMLEventFactory.newInstance();
