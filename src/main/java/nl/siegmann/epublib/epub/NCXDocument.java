@@ -57,6 +57,7 @@ public class NCXDocument {
 	}
 
 	// package
+	@SuppressWarnings("serial")
 	static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
 
 		private final Map<String, List<String>> prefixes = new HashMap<String, List<String>>();
@@ -82,7 +83,7 @@ public class NCXDocument {
 		}
 
 		@Override
-		public Iterator getPrefixes(String namespace) {
+		public Iterator<String> getPrefixes(String namespace) {
 			List<String> prefixList = prefixes.get(namespace);
 			if(prefixList == null) {
 				return Collections.<String>emptyList().iterator();
