@@ -11,10 +11,42 @@
     <artifactId>epublib</artifactId>
     <name>epublib</name>
     <version>1.0-SNAPSHOT</version>
+	<description>A java library for reading/writing/manipulating epub files</description>
+	<url>http://github.com/psiegman/epublib</url>
+	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<licenses>
+	  <license>
+		<name>Apache 2</name>
+		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		<distribution>repo</distribution>
+		<comments>A business-friendly OSS license</comments>
+	  </license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>paul</id>
+			<name>Paul Siegmann</name>
+			<email>paul.siegmann+epublib@gmail.com</email>
+			<url>http://www.siegmann.nl/</url>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<system>github</system>
+		<url>http://github.com/psiegman/epublib/issues</url>
+	</issueManagement>
+
+	<scm>
+		<url>http://github.com/psiegman/epublib</url>
+		<connection>scm:git:https://psiegman@github.com/psiegman/epublib.git</connection>
+		<developerConnection>scm:git:https://psiegman@github.com/psiegman/epublib.git</developerConnection>
+	</scm>
 
     <dependencies>
 		<dependency>
@@ -124,7 +156,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 	<pluginRepositories>
         <pluginRepository>
             <id>onejar-maven-plugin.googlecode.com</id>
