@@ -11,8 +11,6 @@ import java.util.List;
  *
  */
 public class Section {
-	private boolean partOfTableOfContents = true;
-	private boolean partOfPageFlow = true;
 	private String name;
 	private String href;
 	private String itemId;
@@ -64,21 +62,5 @@ public class Section {
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
-	}
-
-	public boolean isPartOfTableOfContents() {
-		return partOfTableOfContents;
-	}
-
-	public void setPartOfTableOfContents(boolean partOfTableOfContents) {
-		this.partOfTableOfContents = partOfTableOfContents;
-	}
-
-	public boolean isPartOfPageFlow() {
-		return partOfPageFlow;
-	}
-
-	public void setPartOfPageFlow(boolean partOfPageFlow) {
-		this.partOfPageFlow = partOfPageFlow;
 	}
 }

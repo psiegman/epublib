@@ -212,16 +212,12 @@ public class NCXDocument {
 	private static int writeNavPoints(List<Section> sections, int playOrder,
 			XMLStreamWriter writer) throws XMLStreamException {
 		for(Section section: sections) {
-			if(section.isPartOfTableOfContents()) {
-				writeNavPointStart(section, playOrder, writer);
-				playOrder++;
-			}
+			writeNavPointStart(section, playOrder, writer);
+			playOrder++;
 			if(! section.getChildren().isEmpty()) {
 				playOrder = writeNavPoints(section.getChildren(), playOrder, writer);
 			}
-			if(section.isPartOfTableOfContents()) {
-				writeNavPointEnd(section, writer);
-			}
+			writeNavPointEnd(section, writer);
 		}
 		return playOrder;
 	}

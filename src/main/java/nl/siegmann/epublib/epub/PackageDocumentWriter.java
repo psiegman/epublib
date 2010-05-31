@@ -249,10 +249,8 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	 */
 	private static void writeSections(List<Section> sections, XMLStreamWriter writer) throws XMLStreamException {
 		for(Section section: sections) {
-			if(section.isPartOfPageFlow()) {
-				writer.writeEmptyElement(OPFTags.itemref);
-				writer.writeAttribute(OPFAttributes.idref, section.getItemId());
-			}
+			writer.writeEmptyElement(OPFTags.itemref);
+			writer.writeAttribute(OPFAttributes.idref, section.getItemId());
 			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {
 				writeSections(section.getChildren(), writer);
 			}
