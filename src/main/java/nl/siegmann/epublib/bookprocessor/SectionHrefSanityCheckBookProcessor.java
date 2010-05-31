@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.bookprocessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
@@ -19,25 +20,25 @@ public class SectionHrefSanityCheckBookProcessor implements BookProcessor {
 
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		checkSections(book.getSpineSections(), null);
+		book.setSpineSections(checkSections(book.getSpineSections(), null));
 		return book;
 	}
 
-	private static void checkSections(List<Section> sections, String previousSectionHref) {
+	private static List<Section> checkSections(List<Section> sections, String previousSectionHref) {
+		List<Section> result = new ArrayList<Section>(sections.size());
 		for(Section section: sections) {
 			if(StringUtils.isBlank(section.getHref())) {
-				section.setPartOfPageFlow(false);
-			} else {
-				String href = StringUtils.substringBefore(section.getHref(), "#");
-				if(href.equals(previousSectionHref)) {
-					section.setPartOfPageFlow(false);
-				} else {
-					previousSectionHref = href;
-				}
+				continue;
 			}
+			String href = StringUtils.substringBefore(section.getHref(), "#");
+			if(! (href.equals(previousSectionHref))) {
+				result.add(section);
+			}
+			previousSectionHref = href;
 			if(CollectionUtils.isNotEmpty(section.getChildren())) {
-				checkSections(section.getChildren(), previousSectionHref);
+				section.setChildren(checkSections(section.getChildren(), previousSectionHref));
 			}
 		}
+		return result;
 	}
 }
