@@ -2,7 +2,9 @@ package nl.siegmann.epublib.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -18,7 +20,7 @@ public class Book {
 	private Metadata metadata = new Metadata();
 	private List<Section> spineSections = new ArrayList<Section>();
 	private List<Section> tocSections = new ArrayList<Section>();
-	private Collection<Resource> resources = new ArrayList<Resource>();
+	private Map<String, Resource> resources = new HashMap<String, Resource>();
 
 	/**
 	 * Adds a section to both the spine and the toc sections.
@@ -38,11 +40,28 @@ public class Book {
 	 * 
 	 * @return
 	 */
-	public Collection<Resource> getResources() {
+	public Map<String, Resource> getResources() {
 		return resources;
 	}
+	
+	
+	public boolean containsResourceByHref(String href) {
+		return resources.containsKey(href);
+	}
+	
 	public void setResources(Collection<Resource> resources) {
-		this.resources = new ArrayList<Resource>(resources);
+		resources.clear();
+		addResources(resources);
+	}
+	
+	public void addResources(Collection<Resource> resources) {
+		for(Resource resource: resources) {
+			this.resources.put(resource.getHref(), resource);
+		}
+	}
+
+	public void setResources(Map<String, Resource> resources) {
+		this.resources = new HashMap<String, Resource>(resources);
 	}
 
 	/**
@@ -71,17 +90,13 @@ public class Book {
 		return parentSection.addChildSection(new Section(sectionTitle, resource.getHref()));
 	}
 	public Resource addResource(Resource resource) {
-		this.resources.add(resource);
+		this.resources.put(resource.getHref(), resource);
 		return resource;
 	}
 	
 	public Resource getResourceByHref(String href) {
-		for(Resource resource: resources) {
-			if(href.equals(resource.getHref())) {
-				return resource;
-			}
-		}
-		return null;
+		Resource result = resources.get(href);
+		return result;
 	}
 	
 	/**

@@ -1,15 +1,14 @@
 package nl.siegmann.epublib.bookprocessor;
 
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.epub.EpubWriter;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * For sections with empty or non-existing resources it creates a html file with just the name of the section.
@@ -30,15 +29,13 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		ItemIdGenerator itemIdGenerator = new ItemIdGenerator();
-		for(Resource resource: book.getResources()) {
+		for(Resource resource: book.getResources().values()) {
 			if(StringUtils.isBlank(resource.getId())) {
 				resource.setId(itemIdGenerator.getNextItemId());
 			}
 		}
-		Map<String, Resource> resourceMap = BookProcessorUtil.createResourceByHrefMap(book);
-		matchSectionsAndResources(itemIdGenerator, book.getSpineSections(), resourceMap);
-		matchSectionsAndResources(itemIdGenerator, book.getTocSections(), resourceMap);
-		book.setResources(resourceMap.values());
+		matchSectionsAndResources(itemIdGenerator, book.getSpineSections(), book);
+		matchSectionsAndResources(itemIdGenerator, book.getTocSections(), book);
 		return book;
 	}
 
@@ -49,23 +46,22 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 * @param sections
 	 * @param resources
 	 */
-	private static void matchSectionsAndResources(ItemIdGenerator itemIdGenerator, List<Section> sections,
-			Map<String, Resource> resources) {
+	private static void matchSectionsAndResources(ItemIdGenerator itemIdGenerator, List<Section> sections, Book book) {
 		for(Section section: sections) {
-			Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
+			Resource resource = book.getResourceByHref(section.getHref());
 			if(resource == null) {
-				resource = createNewSectionResource(itemIdGenerator, section, resources);
-				resources.put(resource.getHref(), resource);
+				resource = createNewSectionResource(itemIdGenerator, section, book);
+				book.addResource(resource);
 			}
 			section.setItemId(resource.getId());
 			section.setHref(resource.getHref());
-			matchSectionsAndResources(itemIdGenerator, section.getChildren(), resources);
+			matchSectionsAndResources(itemIdGenerator, section.getChildren(), book);
 		}
 	}
 
 	
-	private static Resource createNewSectionResource(ItemIdGenerator itemIdGenerator, Section section, Map<String, Resource> resources) {
-		String href = calculateSectionResourceHref(section, resources);
+	private static Resource createNewSectionResource(ItemIdGenerator itemIdGenerator, Section section, Book book) {
+		String href = calculateSectionResourceHref(section, book);
 		SectionResource result = new SectionResource(itemIdGenerator.getNextItemId(), section.getName(), href);
 		return result;
 	}
@@ -80,15 +76,14 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 * @param resources
 	 * @return
 	 */
-	private static String calculateSectionResourceHref(Section section,
-			Map<String, Resource> resources) {
+	private static String calculateSectionResourceHref(Section section, Book book) {
 		String result = section.getName() + ".html";
-		if(! resources.containsKey(result)) {
+		if(! book.containsResourceByHref(result)) {
 			return result;
 		}
 		int i = 1;
 		String href = "section_" + i + ".html";
-		while(! resources.containsKey(href)) {
+		while(! book.containsResourceByHref(href)) {
 			href = "section_" + (i++) + ".html";
 		}
 		return href;

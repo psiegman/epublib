@@ -2,7 +2,6 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -20,19 +19,18 @@ public class SectionTitleBookProcessor implements BookProcessor {
 
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		Map<String, Resource> resources = BookProcessorUtil.createResourceByHrefMap(book);
 		XPath xpath = createXPathExpression();
-		processSections(book.getTocSections(), resources, xpath);
+		processSections(book.getTocSections(), book, xpath);
 		return book;
 	}
 
-	private void processSections(List<Section> sections, Map<String, Resource> resources, XPath xpath) {
+	private void processSections(List<Section> sections, Book book, XPath xpath) {
 		for(Section section: sections) {
 			if(! StringUtils.isBlank(section.getName())) {
 				continue;
 			}
 			try {
-				String title = getTitle(section, resources, xpath);
+				String title = getTitle(section, book, xpath);
 				section.setName(title);
 			} catch (XPathExpressionException e) {
 				// TODO Auto-generated catch block
@@ -45,8 +43,8 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	}
 	
 	
-	private String getTitle(Section section, Map<String, Resource> resources, XPath xpath) throws IOException, XPathExpressionException {
-		Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
+	private String getTitle(Section section, Book book, XPath xpath) throws IOException, XPathExpressionException {
+		Resource resource = book.getResourceByHref(section.getHref());
 		if(resource == null) {
 			return null;
 		}

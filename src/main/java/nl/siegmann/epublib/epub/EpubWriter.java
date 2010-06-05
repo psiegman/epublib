@@ -97,7 +97,7 @@ public class EpubWriter {
 
 
 	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
-		for(Resource resource: book.getResources()) {
+		for(Resource resource: book.getResources().values()) {
 			writeResource(resource, resultStream);
 		}
 		writeCoverResources(book, resultStream);
