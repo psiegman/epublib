@@ -3,7 +3,6 @@ package nl.siegmann.epublib.bookprocessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -15,15 +14,15 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		processSections(book, book.getSpineSections(), BookProcessorUtil.createResourceByHrefMap(book));
+		processSections(book, book.getSpineSections());
 		return book;
 	}
 
-	private List<Section> processSections(Book book, List<Section> sections, Map<String, Resource> resources) {
+	private List<Section> processSections(Book book, List<Section> sections) {
 		List<Section> result = new ArrayList<Section>(sections.size());
 		for(Section section: sections) {
-			List<Section> children = processSections(book, section.getChildren(), resources);
-			List<Section> foo = splitSection(section, resources);
+			List<Section> children = processSections(book, section.getChildren());
+			List<Section> foo = splitSection(section, book);
 			if(foo.size() > 1) {
 				foo.get(0).setChildren(new ArrayList<Section>());
 			}
@@ -33,9 +32,8 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 		return result;
 	}
 
-	private List<Section> splitSection(Section section,
-			Map<String, Resource> resources) {
-		Resource resource = BookProcessorUtil.getResourceByHref(section.getHref(), resources);
+	private List<Section> splitSection(Section section, Book book) {
+		Resource resource = book.getResourceByHref(section.getHref());
 		List<Section> result = Arrays.asList(new Section[] {section});
 		if(resource == null || (resource.getMediaType() != MediatypeService.XHTML)) {
 			return result;

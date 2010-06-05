@@ -194,7 +194,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 		writeCoverResources(book, writer);
 		writeItem(book, book.getNcxResource(), writer);
-		for(Resource resource: book.getResources()) {
+		for(Resource resource: book.getResources().values()) {
 			writeItem(book, resource, writer);
 		}
 		
