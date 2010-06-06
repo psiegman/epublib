@@ -44,7 +44,7 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	
 	
 	private String getTitle(Section section, Book book, XPath xpath) throws IOException, XPathExpressionException {
-		Resource resource = book.getResourceByHref(section.getHref());
+		Resource resource = book.getResources().getByHref(section.getHref());
 		if(resource == null) {
 			return null;
 		}

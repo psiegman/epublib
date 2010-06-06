@@ -53,7 +53,7 @@ public class ChmParser {
 		Map<String, Resource> resources = findResources(chmRootDir, htmlEncoding);
 		List<Section> sections = HHCParser.parseHhc(new FileInputStream(hhcFile));
 		result.setSections(sections);
-		result.setResources(resources.values());
+		result.getResources().set(resources);
 		return result;
 	}
 	

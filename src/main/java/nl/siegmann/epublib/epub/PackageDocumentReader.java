@@ -313,7 +313,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				&& coverHref.equals(href)) {
 				result.put(id, Resource.NULL_RESOURCE);
 			} else {
-				book.addResource(resource);
+				book.getResources().add(resource);
 				result.put(id, resource);
 			}
 		}
