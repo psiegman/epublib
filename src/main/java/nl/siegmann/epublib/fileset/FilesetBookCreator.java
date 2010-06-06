@@ -43,7 +43,7 @@ public class FilesetBookCreator {
 		List<Section> sections = new ArrayList<Section>();
 		List<Resource> resources = new ArrayList<Resource>();
 		processDirectory(rootDirectory, rootDirectory, sections, resources);
-		result.setResources(resources);
+		result.getResources().set(resources);
 		result.setSections(sections);
 		return result;
 	}

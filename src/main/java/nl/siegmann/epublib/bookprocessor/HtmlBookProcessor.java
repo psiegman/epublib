@@ -31,7 +31,7 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		Collection<Resource> cleanupResources = new ArrayList<Resource>(book.getResources().size());
-		for(Resource resource: book.getResources().values()) {
+		for(Resource resource: book.getResources().getAll()) {
 			Resource cleanedUpResource;
 			try {
 				cleanedUpResource = createCleanedUpResource(resource, book, epubWriter);
@@ -40,7 +40,7 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 				logger.error(e);
 			}
 		}
-		book.setResources(cleanupResources);
+		book.getResources().set(cleanupResources);
 		return book;
 	}
 

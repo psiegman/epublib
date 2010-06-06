@@ -29,7 +29,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		ItemIdGenerator itemIdGenerator = new ItemIdGenerator();
-		for(Resource resource: book.getResources().values()) {
+		for(Resource resource: book.getResources().getAll()) {
 			if(StringUtils.isBlank(resource.getId())) {
 				resource.setId(itemIdGenerator.getNextItemId());
 			}
@@ -48,10 +48,10 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 */
 	private static void matchSectionsAndResources(ItemIdGenerator itemIdGenerator, List<Section> sections, Book book) {
 		for(Section section: sections) {
-			Resource resource = book.getResourceByHref(section.getHref());
+			Resource resource = book.getResources().getByHref(section.getHref());
 			if(resource == null) {
 				resource = createNewSectionResource(itemIdGenerator, section, book);
-				book.addResource(resource);
+				book.getResources().add(resource);
 			}
 			section.setItemId(resource.getId());
 			section.setHref(resource.getHref());
@@ -78,12 +78,12 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 */
 	private static String calculateSectionResourceHref(Section section, Book book) {
 		String result = section.getName() + ".html";
-		if(! book.containsResourceByHref(result)) {
+		if(! book.getResources().containsByHref(result)) {
 			return result;
 		}
 		int i = 1;
 		String href = "section_" + i + ".html";
-		while(! book.containsResourceByHref(href)) {
+		while(! book.getResources().containsByHref(href)) {
 			href = "section_" + (i++) + ".html";
 		}
 		return href;
