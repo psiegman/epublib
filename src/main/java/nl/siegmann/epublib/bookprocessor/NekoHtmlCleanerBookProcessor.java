@@ -18,12 +18,10 @@ import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLDocumentFilter;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.cyberneko.html.HTMLConfiguration;
-import org.cyberneko.html.HTMLTagBalancer;
 import org.cyberneko.html.filters.Purifier;
 import org.cyberneko.html.filters.Writer;
 import org.cyberneko.html.parsers.DOMParser;
