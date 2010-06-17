@@ -7,6 +7,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.InputStreamResource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.service.MediatypeService;
 
 public class Simple1 {
 	public static void main(String[] args) {
@@ -21,10 +22,10 @@ public class Simple1 {
 			book.getMetadata().addAuthor(new Author("Joe", "Tester"));
 	
 			// Set cover image
-			book.setCoverImage(new InputStreamResource(Simple1.class.getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverImage(new InputStreamResource(Simple1.class.getResourceAsStream("/book1/test_cover.png"), MediatypeService.PNG));
 			
 			// Add Chapter 1
-			book.addResourceAsSection("Introduction", new InputStreamResource(Simple1.class.getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
+			book.addResourceAsSection("Introduction", new InputStreamResource(Simple1.class.getResourceAsStream("/book1/chapter1.html"), MediatypeService.XHTML));
 	
 			// Add css file
 			book.getResources().add(new InputStreamResource(Simple1.class.getResourceAsStream("/book1/book1.css"), "book1.css"));
