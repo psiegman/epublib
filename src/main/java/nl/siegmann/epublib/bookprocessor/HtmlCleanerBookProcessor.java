@@ -14,8 +14,8 @@ import nl.siegmann.epublib.epub.EpubWriter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.EpublibXmlSerializer;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.SimpleXmlSerializer;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XmlSerializer;
 
@@ -37,13 +37,15 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	
 	public HtmlCleanerBookProcessor() {
 		this.htmlCleaner = createHtmlCleaner();
-		this.newXmlSerializer = new SimpleXmlSerializer(htmlCleaner.getProperties());
+		this.newXmlSerializer = new EpublibXmlSerializer(htmlCleaner.getProperties());
 	}
 
 	private static HtmlCleaner createHtmlCleaner() {
 		HtmlCleaner result = new HtmlCleaner();
 		CleanerProperties cleanerProperties = result.getProperties();
 		cleanerProperties.setOmitXmlDeclaration(true);
+		cleanerProperties.setRecognizeUnicodeChars(true);
+		cleanerProperties.setTranslateSpecialEntities(true);
 		cleanerProperties.setIgnoreQuestAndExclam(true);
 		return result;
 	}
@@ -58,6 +60,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 			reader = new InputStreamReader(resource.getInputStream());
 		}
 		TagNode node = htmlCleaner.clean(reader);
+		node.removeAttribute("xmlns:xml");
 		if(isAddXmlNamespace()) {
 			node.getAttributes().put("xmlns", Constants.NAMESPACE_XHTML);
 		}
