@@ -69,10 +69,11 @@ public class Fileset2Epub {
 		} else if ("epub".equals(type)) {
 			book = new EpubReader().readEpub(new FileInputStream(inputDir));
 		} else {
-			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir));
+			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir), encoding);
 		}
 		
 		if(StringUtils.isNotBlank(coverImage)) {
+//			book.getResourceByHref(book.getCoverImage());
 			book.setCoverImage(new FileResource(new File(coverImage)));
 			epubWriter.getBookProcessingPipeline().add(new CoverpageBookProcessor());
 		}
