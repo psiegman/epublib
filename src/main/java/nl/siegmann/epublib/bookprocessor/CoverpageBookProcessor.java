@@ -105,7 +105,8 @@ public class CoverpageBookProcessor implements BookProcessor {
     }
 
 
-    private byte[] createThumbnail(byte[] imageData) throws IOException {
+    @SuppressWarnings("unused")
+	private byte[] createThumbnail(byte[] imageData) throws IOException {
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
         Dimension thumbDimension = calculateResizeSize(originalImage);
         BufferedImage thumbnailImage = createResizedCopy(originalImage, (int) thumbDimension.getWidth(), (int) thumbDimension.getHeight(), false);
