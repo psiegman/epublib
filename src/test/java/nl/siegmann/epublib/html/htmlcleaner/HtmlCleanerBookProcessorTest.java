@@ -15,8 +15,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 
 	public void testSimpleDocument() {
 		Book book = new Book();
-		String testInput = "<html><head><title>test page</title><link foo=\"bar\"></head><body background=\"red\">Hello, world!</html>";
-		String expectedResult = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>test page</title><link foo=\"bar\" /></head><body background=\"red\">Hello, world!</body></html>";
+		String testInput = "<html><head><title>title</title></head><body>Hello, world!</html>";
+		String expectedResult = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>title</title></head><body>Hello, world!</body></html>";
 		try {
 			Resource resource = new ByteArrayResource("test.html", testInput.getBytes(Constants.ENCODING));
 			book.getResources().add(resource);
@@ -62,13 +62,11 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		}
 	}
 
-
-	public void XtestSimpleDocument4() {
+	public void testApos() {
 		Book book = new Book();
-		String testInput = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>test page</title><link foo=\"bar\" /></head><body background=\"red\">Hello, world!ß</body></html>";
+		String testInput = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>test page</title></head><body>'hi'</body></html>";
 		try {
-			String inputEncoding = "iso-8859-1";
-			Resource resource = new ByteArrayResource(null, testInput.getBytes(inputEncoding), "test.html", MediatypeService.XHTML, inputEncoding);
+			Resource resource = new ByteArrayResource(null, testInput.getBytes(Constants.ENCODING), "test.html", MediatypeService.XHTML, Constants.ENCODING);
 			book.getResources().add(resource);
 			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
