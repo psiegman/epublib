@@ -227,15 +227,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		return result;
 	}
 	
-	
-	private static String getFirstElementTextChild(Element parentElement, String namespace, String tagname) {
-		Element element = getFirstElementByTagNameNS(parentElement, namespace, tagname);
-		if(element == null) {
-			return null;
-		}
-		return getTextChild(element);
-	}
-
 	private static List<String> getElementsTextChild(Element parentElement, String namespace, String tagname) {
 		NodeList elements = parentElement.getElementsByTagNameNS(namespace, tagname);
 		List<String> result = new ArrayList<String>(elements.getLength());
