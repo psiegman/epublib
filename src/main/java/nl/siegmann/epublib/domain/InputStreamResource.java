@@ -15,6 +15,11 @@ import org.apache.commons.io.IOUtils;
  */
 public class InputStreamResource extends ByteArrayResource implements Resource {
 
+	public InputStreamResource(InputStream in, MediaType mediaType) throws IOException {
+		super(IOUtils.toByteArray(in), mediaType);
+	}
+	
+	
 	public InputStreamResource(InputStream in, String href) throws IOException {
 		super(href, IOUtils.toByteArray(in));
 		setMediaType(MediatypeService.determineMediaType(href));
