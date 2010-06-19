@@ -29,6 +29,6 @@ public class FileObjectResource extends ResourceBase implements Resource {
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return file.getURL().openStream();
+		return file.getContent().getInputStream();
 	}
 }
