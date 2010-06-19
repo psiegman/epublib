@@ -15,7 +15,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,13 +33,13 @@ public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookP
 	}
 
 	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String outputEncoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, Charset outputEncoding) throws IOException {
 		Reader reader;
-		if(StringUtils.isNotBlank(resource.getInputEncoding())) {
-			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
-		} else {
-			reader = new InputStreamReader(resource.getInputStream());
+		Charset inputEncoding = resource.getInputEncoding();
+		if(inputEncoding == null) {
+			inputEncoding = Charset.defaultCharset();
 		}
+		reader = new InputStreamReader(resource.getInputStream(), inputEncoding);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out, Constants.ENCODING);
 		for(String line: (List<String>) IOUtils.readLines(reader)) {
