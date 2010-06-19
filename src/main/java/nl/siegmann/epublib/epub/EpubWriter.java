@@ -178,7 +178,7 @@ public class EpubWriter {
 	}
 	
 	XMLStreamWriter createXMLStreamWriter(OutputStream out) throws XMLStreamException {
-		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING);
+		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING.name());
 	}
 
 	String getNcxId() {

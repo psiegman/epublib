@@ -1,7 +1,6 @@
 package nl.siegmann.epublib.utilities;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
@@ -37,9 +36,6 @@ public class HtmlSplitterTest extends TestCase {
 				assertTrue(data.length <= maxSize);
 			}
 		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

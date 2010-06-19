@@ -34,7 +34,7 @@ public class ResourceUtil {
 	 */
 	public static Document getAsDocument(Resource resource, DocumentBuilderFactory documentBuilderFactory) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
 		InputSource inputSource;
-		if(StringUtils.isBlank(resource.getInputEncoding())) {
+		if(resource.getInputEncoding() == null) {
 			inputSource = new InputSource(resource.getInputStream());
 		} else {
 			inputSource = new InputSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));

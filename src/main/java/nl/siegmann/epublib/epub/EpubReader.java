@@ -3,6 +3,7 @@ package nl.siegmann.epublib.epub;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -106,7 +107,7 @@ public class EpubReader {
 		resources.remove("mimetype");
 	}
 
-	private Map<String, Resource> readResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
+	private Map<String, Resource> readResources(ZipInputStream in, Charset defaultHtmlEncoding) throws IOException {
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
 //			System.out.println(zipEntry.getName());
@@ -115,7 +116,7 @@ public class EpubReader {
 			}
 			Resource resource = new ZipEntryResource(zipEntry, in);
 			if(resource.getMediaType() == MediatypeService.XHTML
-					&& StringUtils.isBlank(resource.getInputEncoding())) {
+					&& resource.getInputEncoding() == null) {
 				resource.setInputEncoding(defaultHtmlEncoding);
 			}
 			result.put(resource.getHref(), resource);

@@ -3,6 +3,7 @@ package nl.siegmann.epublib;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Fileset2Epub {
 		List<String> authorNames = new ArrayList<String>();
 		String type = "";
 		String isbn = "";
-		String encoding = Constants.ENCODING;
+		String encoding = Constants.ENCODING.name();
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
@@ -65,11 +66,11 @@ public class Fileset2Epub {
 		
 		Book book;
 		if("chm".equals(type)) {
-			book = ChmParser.parseChm(new File(inputDir), encoding);
+			book = ChmParser.parseChm(new File(inputDir), Charset.forName(encoding));
 		} else if ("epub".equals(type)) {
 			book = new EpubReader().readEpub(new FileInputStream(inputDir));
 		} else {
-			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir), encoding);
+			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir), Charset.forName(encoding));
 		}
 		
 		if(StringUtils.isNotBlank(coverImage)) {

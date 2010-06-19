@@ -11,7 +11,6 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpublibXmlSerializer;
@@ -52,12 +51,12 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 	
 
 	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String outputEncoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, Charset outputEncoding) throws IOException {
 		Reader reader;
-		if(StringUtils.isNotBlank(resource.getInputEncoding())) {
-			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
-		} else {
+		if(resource.getInputEncoding() == null) {
 			reader = new InputStreamReader(resource.getInputStream());
+		} else {
+			reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
 		}
 		TagNode node = htmlCleaner.clean(reader);
 		node.removeAttribute("xmlns:xml");
@@ -65,7 +64,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements BookP
 			node.getAttributes().put("xmlns", Constants.NAMESPACE_XHTML);
 		}
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		newXmlSerializer.writeXmlToStream(node, out, outputEncoding);
+		newXmlSerializer.writeXmlToStream(node, out, outputEncoding.name());
 		return out.toByteArray();
 	}
 

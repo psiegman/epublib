@@ -37,11 +37,11 @@ public class FilesetBookCreator {
 	
 	
 	public static Book createBookFromDirectory(File rootDirectory) throws IOException {
-		return createBookFromDirectory(rootDirectory, Charset.defaultCharset().toString());	
+		return createBookFromDirectory(rootDirectory, Charset.defaultCharset());	
 	}
 	
 	
-	public static Book createBookFromDirectory(File rootDirectory, String encoding) throws IOException {
+	public static Book createBookFromDirectory(File rootDirectory, Charset encoding) throws IOException {
 		FileObject rootFileObject = VFS.getManager().resolveFile("file:" + rootDirectory.getCanonicalPath());
 		return createBookFromDirectory(rootFileObject, encoding);
 	}
@@ -54,7 +54,7 @@ public class FilesetBookCreator {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Book createBookFromDirectory(FileObject rootDirectory, String encoding) throws IOException {
+	public static Book createBookFromDirectory(FileObject rootDirectory, Charset encoding) throws IOException {
 		Book result = new Book();
 		List<Section> sections = new ArrayList<Section>();
 		List<Resource> resources = new ArrayList<Resource>();
@@ -64,7 +64,7 @@ public class FilesetBookCreator {
 		return result;
 	}
 
-	private static void processDirectory(FileObject rootDir, FileObject directory, List<Section> sections, List<Resource> resources, String inputEncoding) throws IOException {
+	private static void processDirectory(FileObject rootDir, FileObject directory, List<Section> sections, List<Resource> resources, Charset inputEncoding) throws IOException {
 		FileObject[] files = directory.getChildren();
 		Arrays.sort(files, fileComparator);
 		for(int i = 0; i < files.length; i++) {
@@ -86,7 +86,7 @@ public class FilesetBookCreator {
 	}
 
 	private static void processSubdirectory(FileObject rootDir, FileObject file,
-			List<Section> sections, List<Resource> resources, String inputEncoding)
+			List<Section> sections, List<Resource> resources, Charset inputEncoding)
 			throws IOException {
 		List<Section> childSections = new ArrayList<Section>();
 		processDirectory(rootDir, file, childSections, resources, inputEncoding);
@@ -97,7 +97,7 @@ public class FilesetBookCreator {
 		}
 	}
 
-	private static Resource createResource(FileObject rootDir, FileObject file, String inputEncoding) throws IOException {
+	private static Resource createResource(FileObject rootDir, FileObject file, Charset inputEncoding) throws IOException {
 		MediaType mediaType = MediatypeService.determineMediaType(file.getName().getBaseName());
 		if(mediaType == null) {
 			return null;

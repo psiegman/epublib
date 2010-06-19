@@ -154,7 +154,7 @@ public class NCXDocument {
 	
 	public static void write(XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);
-		writer.writeStartDocument(Constants.ENCODING, "1.0");
+		writer.writeStartDocument(Constants.ENCODING.name(), "1.0");
 		writer.setDefaultNamespace(NAMESPACE_NCX);
 		writer.writeStartElement(NAMESPACE_NCX, "ncx");
 //		writer.writeNamespace("ncx", NAMESPACE_NCX);

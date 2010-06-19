@@ -16,7 +16,6 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xerces.xni.parser.XMLDocumentFilter;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -47,10 +46,10 @@ public class NekoHtmlCleanerBookProcessor extends HtmlBookProcessor implements B
 	public NekoHtmlCleanerBookProcessor() {
 	}
 
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String encoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, Charset encoding) throws IOException {
 		Reader reader;
-		if(StringUtils.isNotBlank(resource.getInputEncoding())) {
-			reader = new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding()));
+		if(resource.getInputEncoding() != null) {
+			reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
 		} else {
 			reader = new InputStreamReader(resource.getInputStream());
 		}

@@ -2,6 +2,7 @@ package nl.siegmann.epublib.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * Represents a resource that is part of the epub.
@@ -26,7 +27,7 @@ public interface Resource {
 		}
 
 		@Override
-		public String getInputEncoding() {
+		public Charset getInputEncoding() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -56,7 +57,7 @@ public interface Resource {
 		}
 
 		@Override
-		public void setInputEncoding(String encoding) {
+		public void setInputEncoding(Charset encoding) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -70,9 +71,9 @@ public interface Resource {
 	};
 	void setId(String id);
 	String getId();
-	String getInputEncoding();
+	Charset getInputEncoding();
 	String getHref();
-	void setInputEncoding(String encoding);
+	void setInputEncoding(Charset encoding);
 	void setHref(String href);
 	MediaType getMediaType();
 	void setMediaType(MediaType mediaType);
