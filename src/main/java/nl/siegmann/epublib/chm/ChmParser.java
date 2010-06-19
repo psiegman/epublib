@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,14 +32,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ChmParser {
 
-	public static final String DEFAULT_CHM_HTML_INPUT_ENCODING = "Windows-1251";
+	public static final Charset DEFAULT_CHM_HTML_INPUT_ENCODING = Charset.forName("windows-1252");
 	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
 	public static Book parseChm(File chmRootDir) throws XPathExpressionException, IOException, ParserConfigurationException {
 		return parseChm(chmRootDir, DEFAULT_CHM_HTML_INPUT_ENCODING);
 	}
 
-	public static Book parseChm(File chmRootDir, String htmlEncoding)
+	public static Book parseChm(File chmRootDir, Charset htmlEncoding)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
@@ -47,7 +48,7 @@ public class ChmParser {
 		if(hhcFile == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
 		}
-		if(StringUtils.isBlank(htmlEncoding)) {
+		if(htmlEncoding == null) {
 			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
 		}
 		Map<String, Resource> resources = findResources(chmRootDir, htmlEncoding);
@@ -105,7 +106,7 @@ public class ChmParser {
 	
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Resource> findResources(File rootDir, String defaultEncoding) throws IOException {
+	private static Map<String, Resource> findResources(File rootDir, Charset defaultEncoding) throws IOException {
 		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
 		Iterator<File> fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		while(fileIter.hasNext()) {

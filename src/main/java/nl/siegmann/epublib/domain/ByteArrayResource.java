@@ -3,6 +3,7 @@ package nl.siegmann.epublib.domain;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 public class ByteArrayResource extends ResourceBase implements Resource {
 
@@ -22,7 +23,7 @@ public class ByteArrayResource extends ResourceBase implements Resource {
 		this(id, data, href, mediaType, null);
 	}
 
-	public ByteArrayResource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding) {
+	public ByteArrayResource(String id, byte[] data, String href, MediaType mediaType, Charset inputEncoding) {
 		super(id, href, mediaType, inputEncoding);
 		this.data = data;
 	}

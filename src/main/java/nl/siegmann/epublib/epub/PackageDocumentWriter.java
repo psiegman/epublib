@@ -32,7 +32,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);
-		writer.writeStartDocument(Constants.ENCODING, "1.0");
+		writer.writeStartDocument(Constants.ENCODING.name(), "1.0");
 		writer.setDefaultNamespace(NAMESPACE_OPF);
 		writer.writeCharacters("\n");
 		writer.writeStartElement(NAMESPACE_OPF, OPFTags.packageTag);

@@ -2,7 +2,9 @@ package nl.siegmann.epublib.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
 /**
@@ -16,7 +18,7 @@ public abstract class ResourceBase implements Resource {
 	private String id;
 	private String href;
 	private MediaType mediaType;
-	private String inputEncoding;
+	private Charset inputEncoding = Constants.ENCODING;
 
 	public ResourceBase(String href) {
 		this(null, href, MediatypeService.determineMediaType(href));
@@ -27,7 +29,7 @@ public abstract class ResourceBase implements Resource {
 	}
 	
 	
-	public ResourceBase(String id, String href, MediaType mediaType, String inputEncoding) {
+	public ResourceBase(String id, String href, MediaType mediaType, Charset inputEncoding) {
 		super();
 		this.id = id;
 		this.href = href;
@@ -50,11 +52,11 @@ public abstract class ResourceBase implements Resource {
 	@Override
 	public abstract InputStream getInputStream() throws IOException;
 
-	public String getInputEncoding() {
+	public Charset getInputEncoding() {
 		return inputEncoding;
 	}
 
-	public void setInputEncoding(String inputEncoding) {
+	public void setInputEncoding(Charset inputEncoding) {
 		this.inputEncoding = inputEncoding;
 	}
 

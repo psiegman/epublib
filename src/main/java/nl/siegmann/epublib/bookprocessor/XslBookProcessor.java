@@ -43,8 +43,8 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 	}
 
 	@Override
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, String encoding) throws IOException {
-		Source htmlSource = new StreamSource(new InputStreamReader(resource.getInputStream(), Charset.forName(resource.getInputEncoding())));
+	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, Charset encoding) throws IOException {
+		Source htmlSource = new StreamSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out,encoding);
 		Result streamResult = new StreamResult(writer);
