@@ -11,8 +11,6 @@
 	</xhtml:body>
 </xsl:template>
 
-<xsl:template match="/xhtml:html/xhtml:head/xhtml:meta[@http-equiv='Content-Type']"/>
-
 <xsl:template match="@*|node()">
   <xsl:copy>
     <xsl:apply-templates select="@*|node()"/>
