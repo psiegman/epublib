@@ -1,11 +1,8 @@
 package nl.siegmann.epublib.chm;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,15 +11,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.FileResource;
+import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs.AllFileSelector;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileType;
 
 /**
  * Reads the files that are extracted from a windows help ('.chm') file and creates a epublib Book out of it.
@@ -35,30 +33,30 @@ public class ChmParser {
 	public static final Charset DEFAULT_CHM_HTML_INPUT_ENCODING = Charset.forName("windows-1252");
 	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
-	public static Book parseChm(File chmRootDir) throws XPathExpressionException, IOException, ParserConfigurationException {
+	public static Book parseChm(FileObject chmRootDir) throws XPathExpressionException, IOException, ParserConfigurationException {
 		return parseChm(chmRootDir, DEFAULT_CHM_HTML_INPUT_ENCODING);
 	}
 
-	public static Book parseChm(File chmRootDir, Charset htmlEncoding)
+	public static Book parseChm(FileObject chmRootDir, Charset htmlEncoding)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
 		result.getMetadata().addTitle(findTitle(chmRootDir));
-		File hhcFile = findHhcFile(chmRootDir);
-		if(hhcFile == null) {
-			throw new IllegalArgumentException("No index file found in directory " + chmRootDir.getAbsolutePath() + ". (Looked for file ending with extension '.hhc'");
+		FileObject hhcFileObject = findHhcFileObject(chmRootDir);
+		if(hhcFileObject == null) {
+			throw new IllegalArgumentException("No index file found in directory " + chmRootDir + ". (Looked for file ending with extension '.hhc'");
 		}
 		if(htmlEncoding == null) {
 			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
 		}
 		Map<String, Resource> resources = findResources(chmRootDir, htmlEncoding);
-		List<Section> sections = HHCParser.parseHhc(new FileInputStream(hhcFile));
+		List<Section> sections = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream());
 		result.setSections(sections);
 		result.getResources().set(resources);
 		return result;
 	}
 	
-
+	
 	/**
 	 * Finds in the '#SYSTEM' file the 3rd set of characters that have ascii value >= 32 and <= 126 and is more than 3 characters long.
 	 * Assumes that that is then the title of the book.
@@ -67,9 +65,10 @@ public class ChmParser {
 	 * @return
 	 * @throws IOException
 	 */
-	protected static String findTitle(File chmRootDir) throws IOException {
-		File systemFile = new File(chmRootDir.getAbsolutePath() + File.separatorChar + "#SYSTEM");
-		InputStream in = new FileInputStream(systemFile);
+	protected static String findTitle(FileObject chmRootDir) throws IOException {
+		System.out.println(chmRootDir.getName() + " is dir:" + chmRootDir.getType());		
+		FileObject systemFileObject = chmRootDir.resolveFile("#SYSTEM");
+		InputStream in = systemFileObject.getContent().getInputStream();
 		boolean inText = false;
 		int lineCounter = 0;
 		StringBuilder line = new StringBuilder();
@@ -93,10 +92,10 @@ public class ChmParser {
 		return "<unknown title>";
 	}
 	
-	private static File findHhcFile(File chmRootDir) {
-		File[] files = chmRootDir.listFiles();
+	private static FileObject findHhcFileObject(FileObject chmRootDir) throws FileSystemException {
+		FileObject[] files = chmRootDir.getChildren();
 		for(int i = 0; i < files.length; i++) {
-			if(StringUtils.endsWithIgnoreCase(files[i].getName(), ".hhc")) {
+			if("hhc".equalsIgnoreCase(files[i].getName().getExtension())) {
 				return files[i];
 			}
 		}
@@ -106,21 +105,20 @@ public class ChmParser {
 	
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, Resource> findResources(File rootDir, Charset defaultEncoding) throws IOException {
+	private static Map<String, Resource> findResources(FileObject rootDir, Charset defaultEncoding) throws IOException {
 		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
-		Iterator<File> fileIter = FileUtils.iterateFiles(rootDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-		while(fileIter.hasNext()) {
-			File file = fileIter.next();
-//			System.out.println("file:" + file);
-			if(file.isDirectory()) {
+		FileObject[] allFiles = rootDir.findFiles(new AllFileSelector());
+		for(int i = 0; i < allFiles.length; i++) {
+			FileObject file = allFiles[i];
+			if (file.getType() == FileType.FOLDER) {
 				continue;
 			}
-			MediaType mediaType = MediatypeService.determineMediaType(file.getName()); 
+			MediaType mediaType = MediatypeService.determineMediaType(file.getName().getBaseName()); 
 			if(mediaType == null) {
 				continue;
 			}
-			String href = file.getCanonicalPath().substring(rootDir.getCanonicalPath().length() + 1);
-			FileResource fileResource = new FileResource(null, file, href, mediaType);
+			String href = file.getName().toString().substring(rootDir.getName().toString().length() + 1);
+			FileObjectResource fileResource = new FileObjectResource(null, file, href, mediaType);
 			if(mediaType == MediatypeService.XHTML) {
 				fileResource.setInputEncoding(defaultEncoding);
 			}
