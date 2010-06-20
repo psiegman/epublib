@@ -66,7 +66,6 @@ public class ChmParser {
 	 * @throws IOException
 	 */
 	protected static String findTitle(FileObject chmRootDir) throws IOException {
-		System.out.println(chmRootDir.getName() + " is dir:" + chmRootDir.getType());		
 		FileObject systemFileObject = chmRootDir.resolveFile("#SYSTEM");
 		InputStream in = systemFileObject.getContent().getInputStream();
 		boolean inText = false;
