@@ -29,6 +29,23 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 			assertTrue(e.getMessage(), false);
 		}
 	}
+
+	public void testMetaContentType() {
+		Book book = new Book();
+		String testInput = "<html><head><title>title</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/></head><body>Hello, world!</html>";
+		String expectedResult = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>title</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + Constants.ENCODING.name() + "\" /></head><body>Hello, world!</body></html>";
+		try {
+			Resource resource = new ByteArrayResource("test.html", testInput.getBytes(Constants.ENCODING));
+			book.getResources().add(resource);
+			EpubWriter epubWriter = new EpubWriter();
+			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			String actualResult = new String(processedHtml, Constants.ENCODING);
+			assertEquals(expectedResult, actualResult);
+		} catch (IOException e) {
+			assertTrue(e.getMessage(), false);
+		}
+	}
 	
 	public void testSimpleDocument2() {
 		Book book = new Book();
