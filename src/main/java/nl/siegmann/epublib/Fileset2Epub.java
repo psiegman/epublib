@@ -1,8 +1,8 @@
 package nl.siegmann.epublib;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +20,14 @@ import nl.siegmann.epublib.fileset.FilesetBookCreator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.VFS;
 
 public class Fileset2Epub {
 
 	public static void main(String[] args) throws Exception {
-		String inputDir = "";
-		String outFile = "";
+		String inputLocation = "";
+		String outLocation = "";
 		String xslFile = "";
 		String coverImage = "";
 		String title = "";
@@ -36,9 +38,9 @@ public class Fileset2Epub {
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
-				inputDir = args[++i];
+				inputLocation = args[++i];
 			} else if(args[i].equalsIgnoreCase("--out")) {
-				outFile = args[++i];
+				outLocation = args[++i];
 			} else if(args[i].equalsIgnoreCase("--encoding")) {
 				encoding = args[++i];
 			} else if(args[i].equalsIgnoreCase("--xsl")) {
@@ -55,7 +57,7 @@ public class Fileset2Epub {
 				type = args[++i];
 			}
 		}
-		if(StringUtils.isBlank(inputDir) || StringUtils.isBlank(outFile)) {
+		if(StringUtils.isBlank(inputLocation) || StringUtils.isBlank(outLocation)) {
 			usage();
 		}
 		EpubWriter epubWriter = new EpubWriter();
@@ -66,11 +68,11 @@ public class Fileset2Epub {
 		
 		Book book;
 		if("chm".equals(type)) {
-			book = ChmParser.parseChm(new File(inputDir), Charset.forName(encoding));
+			book = ChmParser.parseChm(VFS.getManager().resolveFile(inputLocation), Charset.forName(encoding));
 		} else if ("epub".equals(type)) {
-			book = new EpubReader().readEpub(new FileInputStream(inputDir));
+			book = new EpubReader().readEpub(VFS.getManager().resolveFile(inputLocation).getContent().getInputStream());
 		} else {
-			book = FilesetBookCreator.createBookFromDirectory(new File(inputDir), Charset.forName(encoding));
+			book = FilesetBookCreator.createBookFromDirectory(VFS.getManager().resolveFile(inputLocation), Charset.forName(encoding));
 		}
 		
 		if(StringUtils.isNotBlank(coverImage)) {
@@ -91,7 +93,13 @@ public class Fileset2Epub {
 		
 		initAuthors(authorNames, book);
 		
-		epubWriter.write(book, new FileOutputStream(outFile));
+		OutputStream result;
+		try {
+			result = VFS.getManager().resolveFile(outLocation).getContent().getOutputStream();
+		} catch(FileSystemException e) {
+			result = new FileOutputStream(outLocation);
+		}
+		epubWriter.write(book, result);
 	}
 
 	private static void initAuthors(List<String> authorNames, Book book) {
