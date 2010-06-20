@@ -1,83 +1,47 @@
 package nl.siegmann.epublib.hhc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
-import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.FilesetBookCreatorTest;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.NameScope;
+import org.apache.commons.vfs.VFS;
 
 public class ChmParserTest extends TestCase {
-
-	public void testDummy() {
-		
-	}
 	
-	
-	public void Xtest1() {
+	@SuppressWarnings("unchecked")
+	public void test1() {
 		try {
-//			String root = "/home/paul/project/veh/backbase/Backbase_Rich_Portal_4.1/documentation/client/Reference/ref/";
-//			String root = "/home/paul/project/private/library/chm/peaa/";dev
-//			String root = "/home/paul/download/python_man";
-//			String root = "/home/paul/download/blender_man_chm";
-			String root = "";
-			String result = "";
-			String xsl = "";
-			root = "/home/paul/project/veh/morello/Morello_5.8/smart_client";
-			root = "/home/paul/download/realworld"; result = "/home/paul/realworld.epub";
-			root = "/home/paul/download/python_man"; result = "/home/paul/pythonman.epub";
-			root = "/home/paul/download/tmp/ccs"; result = "/home/paul/ccs.epub"; xsl = "/home/paul/ccs.xsl";
-			EpubWriter epubWriter = new EpubWriter();
-			if(! StringUtils.isBlank(xsl)) {
-				try {
-					epubWriter.getBookProcessingPipeline().add(new XslBookProcessor(xsl));
-				} catch (TransformerConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			FileSystemManager fsManager = VFS.getManager();
+			FileObject dir = fsManager.resolveFile("ram://chm_test_dir");
+			dir.createFolder();
+			String chm1Dir = "/chm1";
+			Iterator<String> lineIter = IOUtils.lineIterator(FilesetBookCreatorTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING.name());
+			while(lineIter.hasNext()) {
+				String line = lineIter.next();
+				FileObject file = dir.resolveFile(line, NameScope.DESCENDENT);
+				file.createFile();
+				IOUtils.copy(this.getClass().getResourceAsStream(chm1Dir + "/" + line), file.getContent().getOutputStream());
+				file.getContent().close();
 			}
-			Book book = ChmParser.parseChm(new File(root));
-			epubWriter.write(book, new FileOutputStream(result));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
+			Book chmBook = ChmParser.parseChm(dir, Constants.ENCODING);
+			assertEquals(42, chmBook.getResources().size());
+			assertEquals(4, chmBook.getSpineSections().size());
+			assertEquals(4, chmBook.getTocSections().size());
+			assertEquals("chm-example", chmBook.getMetadata().getTitles().get(0));
+		} catch(Exception e) {
 			e.printStackTrace();
-		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FactoryConfigurationError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			assertTrue(false);
 		}
 	}
 
-//	public void test2() {
-//		try {
-////			String root = "/home/paul/project/veh/backbase/Backbase_Rich_Portal_4.1/documentation/client/Reference/ref/";
-//			String root = "/home/paul/project/private/library/chm/peaa/";
-////			String root = "/home/paul/download/python_man";
-////			String root = "/home/paul/download/blender_man_chm";
-//			String title = HHCParser.findTitle(new File(root));
-//			System.out.println("title:" + title);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+
 }
