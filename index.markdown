@@ -3,9 +3,10 @@ layout: default
 title: epublib
 ---
 
-This project <a href="http://github.com//website">epublib</a> is awesome.
+# Epublib #
+Epublib is a java library for managing epub files.
 
-To enable Disqus comments + badges for this site, [add it to your Disqus account](http://disqus.com/add/).
+It’s capable of reading and writing epub files programmatically and from the command-line tool.
 
+It's currently quite useful for generating epubs from sets of html files and for manipulating things like author, title and coverpage in existing epubs.
 
-Also, you can/should [create a Lighthouse project](http://.lighthouseapp.com/projects/new) for your project and update "TODO" within the _layouts files with the project id (e.g. "12345-website" from the Lighthouse project url).
