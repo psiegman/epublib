@@ -83,7 +83,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 		}
 		int i = 1;
 		String href = "section_" + i + ".html";
-		while(! book.getResources().containsByHref(href)) {
+		while (book.getResources().containsByHref(href)) {
 			href = "section_" + (i++) + ".html";
 		}
 		return href;
