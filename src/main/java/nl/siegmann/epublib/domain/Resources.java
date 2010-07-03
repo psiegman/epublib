@@ -89,6 +89,7 @@ public class Resources {
 	}
 	
 	public Resource getByHref(String href) {
+		href = StringUtils.substringBefore(href, "#");
 		Resource result = resources.get(href);
 		return result;
 	}
