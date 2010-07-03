@@ -25,7 +25,7 @@ public abstract class ResourceBase implements Resource {
 	}
 	
 	public ResourceBase(String id, String href, MediaType mediaType) {
-		this(id, href, mediaType, null);
+		this(id, href, mediaType, Constants.ENCODING);
 	}
 	
 	
