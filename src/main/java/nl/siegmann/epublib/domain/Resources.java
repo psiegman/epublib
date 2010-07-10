@@ -18,6 +18,10 @@ public class Resources {
 		return resource;
 	}
 
+	public Resource remove(String href) {
+		return resources.remove(href);
+	}
+	
 	private void fixHref(Resource resource) {
 		if(! StringUtils.isBlank(resource.getHref())
 				&& ! resources.containsKey(resource.getHref())) {

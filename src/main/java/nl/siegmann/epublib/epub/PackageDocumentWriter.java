@@ -116,10 +116,10 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			}
 		}
 
-		if(book.getCoverPage() != null) { // write the cover image
+		if(book.getCoverImage() != null) { // write the cover image
 			writer.writeEmptyElement(OPFTags.meta);
 			writer.writeAttribute(OPFAttributes.name, OPFValues.meta_cover);
-			writer.writeAttribute(OPFAttributes.content, book.getCoverPage().getHref());
+			writer.writeAttribute(OPFAttributes.content, book.getCoverImage().getHref());
 		}
 
 		writer.writeEmptyElement(OPFTags.meta);
