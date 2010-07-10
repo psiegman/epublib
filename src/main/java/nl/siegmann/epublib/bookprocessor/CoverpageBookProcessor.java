@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -13,12 +14,18 @@ import javax.imageio.ImageIO;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * If the book contains a cover image then this will add a cover page to the book.
@@ -33,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 public class CoverpageBookProcessor implements BookProcessor {
 
 	public static int MAX_COVER_IMAGE_SIZE = 999;
+	private static final Logger LOG = Logger.getLogger(CoverpageBookProcessor.class);
 	
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
@@ -53,7 +61,11 @@ public class CoverpageBookProcessor implements BookProcessor {
 			}
 		} else { // coverPage != null
 			if(book.getCoverImage() == null) {
-				// TODO find the image in the page, make a new resource for it and add it to the book.
+				coverImage = getFirstImageSource(epubWriter, coverPage, book.getResources());
+				book.setCoverImage(coverImage);
+				if (coverImage != null) {
+					book.getResources().remove(coverImage.getHref());
+				}
 			} else { // coverImage != null
 				
 			}
@@ -77,7 +89,44 @@ public class CoverpageBookProcessor implements BookProcessor {
 			book.getCoverPage().setId("cover");
 		}
 	}
+
 	
+	private Resource getFirstImageSource(EpubWriter epubWriter, Resource titlePageResource, Resources resources) {
+		try {
+			Document titlePageDocument = ResourceUtil.getAsDocument(titlePageResource, epubWriter.createDocumentBuilder());
+			NodeList imageElements = titlePageDocument.getElementsByTagName("img");
+			for (int i = 0; i < imageElements.getLength(); i++) {
+				String relativeImageHref = ((Element) imageElements.item(i)).getAttribute("src");
+				String absoluteImageHref = calculateAbsoluteImageHref(relativeImageHref, titlePageResource.getHref());
+				Resource imageResource = resources.getByHref(absoluteImageHref);
+				if (imageResource != null) {
+					return imageResource;
+				}
+			}
+		} catch (Exception e) {
+			LOG.error(e);
+		}
+		return null;
+	}
+	
+	
+	// package
+	static String calculateAbsoluteImageHref(String relativeImageHref,
+			String baseHref) {
+		if (relativeImageHref.startsWith("/")) {
+			return relativeImageHref;
+		}
+		try {
+			File file = new File(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
+			String result = file.getCanonicalPath();
+			result = result.substring(System.getProperty("user.dir").length() + 1);
+			return result;
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+		return relativeImageHref;
+	}
+
 	private String createCoverpageHtml(String title, String imageHref) {
 	       return "" +
 	       		"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
@@ -127,5 +176,4 @@ public class CoverpageBookProcessor implements BookProcessor {
         g.dispose();
         return scaledBI;
     }
-
 }
