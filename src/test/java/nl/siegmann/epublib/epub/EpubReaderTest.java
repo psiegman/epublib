@@ -47,6 +47,5 @@ public class EpubReaderTest extends TestCase {
 			e.printStackTrace();
 			assertTrue(false);
 		}
-
 	}
 }
