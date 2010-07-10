@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
  * @author paul
  *
  */
-public class EpubWriter {
+public class EpubWriter extends EpubProcessor {
 	
 	private final static Logger log = Logger.getLogger(EpubWriter.class); 
 	
@@ -46,7 +46,7 @@ public class EpubWriter {
 	private List<BookProcessor> bookProcessingPipeline;
 	private MediatypeService mediatypeService = new MediatypeService();
 	private XMLOutputFactory xmlOutputFactory;
-	
+
 	public EpubWriter() {
 		this(createDefaultBookProcessingPipeline());
 	}
