@@ -10,7 +10,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.siegmann.epublib.domain.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -32,14 +31,8 @@ public class ResourceUtil {
 	 * @throws IOException
 	 * @throws ParserConfigurationException
 	 */
-	public static Document getAsDocument(Resource resource, DocumentBuilderFactory documentBuilderFactory) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
-		InputSource inputSource;
-		if(resource.getInputEncoding() == null) {
-			inputSource = new InputSource(resource.getInputStream());
-		} else {
-			inputSource = new InputSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
-		}
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+	public static Document getAsDocument(Resource resource, DocumentBuilder documentBuilder) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
+		InputSource inputSource = new InputSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
 		Document result = documentBuilder.parse(inputSource);
 		result.setXmlStandalone(true);
 		return result;
