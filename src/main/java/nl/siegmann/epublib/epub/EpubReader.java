@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathFactory;
 
@@ -27,20 +26,16 @@ import org.xml.sax.SAXException;
 
 /**
  * Reads an epub file.
- * <b>Unfinished</b>
  * 
  * @author paul
  *
  */
-public class EpubReader {
+public class EpubReader extends EpubProcessor {
 
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(EpubReader.class);
-	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xpathFactory;
 	
 	public EpubReader() {
-		this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		documentBuilderFactory.setNamespaceAware(true);
 		this.xpathFactory = XPathFactory.newInstance();
 	}
 	
@@ -91,7 +86,7 @@ public class EpubReader {
 			return result;
 		}
 		try {
-			Document document = ResourceUtil.getAsDocument(containerResource, documentBuilderFactory);
+			Document document = ResourceUtil.getAsDocument(containerResource, createDocumentBuilder());
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
 			result = rootFileElement.getAttribute("full-path");
 		} catch (Exception e) {
@@ -124,9 +119,6 @@ public class EpubReader {
 		return result;
 	}
 
-	public DocumentBuilderFactory getDocumentBuilderFactory() {
-		return documentBuilderFactory;
-	}
 
 	public XPathFactory getXpathFactory() {
 		return xpathFactory;
