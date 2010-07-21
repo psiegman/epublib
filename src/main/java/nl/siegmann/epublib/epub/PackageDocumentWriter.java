@@ -1,6 +1,8 @@
 package nl.siegmann.epublib.epub;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +13,9 @@ import javax.xml.stream.XMLStreamWriter;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
+import nl.siegmann.epublib.domain.Reference;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -75,22 +79,33 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		}
 		
 		for(Author author: book.getMetadata().getAuthors()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "creator");
-			writer.writeAttribute(NAMESPACE_OPF, "role", "aut");
-			writer.writeAttribute(NAMESPACE_OPF, "file-as", author.getLastname() + ", " + author.getFirstname());
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.creator);
+			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRole().toString());
+			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
 			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
 			writer.writeEndElement(); // dc:creator
 		}
 
 		for(String subject: book.getMetadata().getSubjects()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "subject");
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.subject);
 			writer.writeCharacters(subject);
 			writer.writeEndElement(); // dc:subject
 		}
 
-		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "date");
-		writer.writeCharacters((new SimpleDateFormat(dateFormat)).format(book.getMetadata().getDate()));
-		writer.writeEndElement(); // dc:date
+		for(String type: book.getMetadata().getTypes()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.type);
+			writer.writeCharacters(type);
+			writer.writeEndElement(); // dc:type
+		}
+
+		for (Date date: book.getMetadata().getDates()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.date);
+			if (date.getEvent() != null) {
+				writer.writeAttribute(PREFIX_OPF, NAMESPACE_OPF, OPFAttributes.event, date.getEvent().toString());
+			}
+			writer.writeCharacters(date.getValue());
+			writer.writeEndElement(); // dc:date
+		}
 
 		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "language");
@@ -116,10 +131,10 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			}
 		}
 
-		if(book.getCoverImage() != null) { // write the cover image
+		if(book.getMetadata().getCoverImage() != null) { // write the cover image
 			writer.writeEmptyElement(OPFTags.meta);
 			writer.writeAttribute(OPFAttributes.name, OPFValues.meta_cover);
-			writer.writeAttribute(OPFAttributes.content, book.getCoverImage().getHref());
+			writer.writeAttribute(OPFAttributes.content, book.getMetadata().getCoverImage().getId());
 		}
 
 		writer.writeEmptyElement(OPFTags.meta);
@@ -174,9 +189,9 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeStartElement("spine");
 		writer.writeAttribute("toc", epubWriter.getNcxId());
 
-		if(book.getCoverPage() != null) { // write the cover html file
+		if(book.getMetadata().getCoverPage() != null) { // write the cover html file
 			writer.writeEmptyElement("itemref");
-			writer.writeAttribute("idref", book.getCoverPage().getId());
+			writer.writeAttribute("idref", book.getMetadata().getCoverPage().getId());
 			writer.writeAttribute("linear", "no");
 		}
 		writeSections(book.getSpineSections(), writer);
@@ -187,14 +202,22 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	private static void writeManifest(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement("manifest");
 
-		writer.writeEmptyElement("item");
-		writer.writeAttribute("id", epubWriter.getNcxId());
-		writer.writeAttribute("href", epubWriter.getNcxHref());
-		writer.writeAttribute("media-type", epubWriter.getNcxMediaType());
+		writer.writeEmptyElement(OPFTags.item);
+		writer.writeAttribute(OPFAttributes.id, epubWriter.getNcxId());
+		writer.writeAttribute(OPFAttributes.href, epubWriter.getNcxHref());
+		writer.writeAttribute(OPFAttributes.media_type, epubWriter.getNcxMediaType());
 
 		writeCoverResources(book, writer);
 		writeItem(book, book.getNcxResource(), writer);
-		for(Resource resource: book.getResources().getAll()) {
+		List<Resource> allResources = new ArrayList<Resource>(book.getResources().getAll());
+		Collections.sort(allResources, new Comparator<Resource>() {
+
+			@Override
+			public int compare(Resource resource1, Resource resource2) {
+				return resource1.getId().compareToIgnoreCase(resource2.getId());
+			}
+		});
+		for(Resource resource: allResources) {
 			writeItem(book, resource, writer);
 		}
 		
