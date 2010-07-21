@@ -6,13 +6,16 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
+import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.epub.EpubWriter;
@@ -29,9 +32,9 @@ import org.w3c.dom.NodeList;
 
 /**
  * If the book contains a cover image then this will add a cover page to the book.
+ * If the book contains a cover html page it will set that page's first image as the book's cover image.
  * 
  * FIXME:
- *  only handles the case of a given cover image
  *  will overwrite any "cover.jpg" or "cover.html" that are already there.
  *  
  * @author paul
@@ -44,11 +47,12 @@ public class CoverpageBookProcessor implements BookProcessor {
 	
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
-		if(book.getCoverPage() == null && book.getCoverImage() == null) {
+		Metadata metadata = book.getMetadata();
+		if(metadata.getCoverPage() == null && metadata.getCoverImage() == null) {
 			return book;
 		}
-		Resource coverPage = book.getCoverPage();
-		Resource coverImage = book.getCoverImage();
+		Resource coverPage = metadata.getCoverPage();
+		Resource coverImage = metadata.getCoverImage();
 		if(coverPage == null) {
 			if(coverImage == null) {
 				// give up
@@ -56,13 +60,13 @@ public class CoverpageBookProcessor implements BookProcessor {
 				if(StringUtils.isBlank(coverImage.getHref())) {
 					coverImage.setHref(getCoverImageHref(coverImage));
 				}
-				String coverPageHtml = createCoverpageHtml(CollectionUtil.first(book.getMetadata().getTitles()), coverImage.getHref());
+				String coverPageHtml = createCoverpageHtml(CollectionUtil.first(metadata.getTitles()), coverImage.getHref());
 				coverPage = new ByteArrayResource("cover", coverPageHtml.getBytes(), "cover.html", MediatypeService.XHTML);
 			}
 		} else { // coverPage != null
-			if(book.getCoverImage() == null) {
+			if(metadata.getCoverImage() == null) {
 				coverImage = getFirstImageSource(epubWriter, coverPage, book.getResources());
-				book.setCoverImage(coverImage);
+				metadata.setCoverImage(coverImage);
 				if (coverImage != null) {
 					book.getResources().remove(coverImage.getHref());
 				}
@@ -71,9 +75,9 @@ public class CoverpageBookProcessor implements BookProcessor {
 			}
 		}
 		
-		book.setCoverImage(coverImage);
-		book.setCoverPage(coverPage);
-		setCoverResourceIds(book);
+		metadata.setCoverImage(coverImage);
+		metadata.setCoverPage(coverPage);
+		setCoverResourceIds(metadata);
 		return book;
 	}
 
@@ -81,7 +85,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 		return "cover" + coverImageResource.getMediaType().getDefaultExtension();
 	}
 	
-	private void setCoverResourceIds(Book book) {
+	private void setCoverResourceIds(Metadata book) {
 		if(book.getCoverImage() != null) {
 			book.getCoverImage().setId("cover-image");
 		}
@@ -110,21 +114,49 @@ public class CoverpageBookProcessor implements BookProcessor {
 	}
 	
 	
+	/**
+	 * Changes a path containing '..', '.' and empty dirs into a path that doesn't.
+	 * X/foo/../Y is changed into 'X/Y', etc.
+	 * Does not handle invalid paths like "../".
+	 * 
+	 * @param path
+	 * @return
+	 */
+	static String collapsePathDots(String path) {
+		String[] stringParts = path.split("/");
+		List<String> parts = new ArrayList<String>(Arrays.asList(stringParts));
+		for (int i = 0; i < parts.size() - 1; i++) {
+			String currentDir = parts.get(i);
+			if (currentDir.length() == 0 || currentDir.equals(".")) {
+				parts.remove(i);
+				i--;
+			} else if(currentDir.equals("..")) {
+				parts.remove(i - 1);
+				parts.remove(i - 1);
+				i--;
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		if (path.startsWith("/")) {
+			result.append('/');
+		}
+		for (int i = 0; i < parts.size(); i++) {
+			result.append(parts.get(i));
+			if (i < (parts.size() - 1)) {
+				result.append('/');
+			}
+		}
+		return result.toString();
+	}
+	
 	// package
 	static String calculateAbsoluteImageHref(String relativeImageHref,
 			String baseHref) {
 		if (relativeImageHref.startsWith("/")) {
 			return relativeImageHref;
 		}
-		try {
-			File file = new File(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
-			String result = file.getCanonicalPath();
-			result = result.substring(System.getProperty("user.dir").length() + 1);
-			return result;
-		} catch (IOException e) {
-			LOG.error(e);
-		}
-		return relativeImageHref;
+		String result = collapsePathDots(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
+		return result;
 	}
 
 	private String createCoverpageHtml(String title, String imageHref) {

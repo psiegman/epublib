@@ -240,8 +240,8 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	 * @throws XMLStreamException
 	 */
 	private static void writeCoverResources(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writeItem(book, book.getCoverImage(), writer);
-		writeItem(book, book.getCoverPage(), writer);
+		writeItem(book, book.getMetadata().getCoverImage(), writer);
+		writeItem(book, book.getMetadata().getCoverPage(), writer);
 	}
 
 	/**
@@ -258,13 +258,20 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	}
 
 	private static void writeGuide(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
-		if(book.getCoverPage() == null) {
-			return;
-		}
 		writer.writeStartElement(OPFTags.guide);
-		writer.writeEmptyElement(OPFTags.reference);
-		writer.writeAttribute(OPFAttributes.type, OPFValues.reference_cover);
-		writer.writeAttribute(OPFAttributes.href, book.getCoverPage().getHref());
+		if(book.getMetadata().getCoverPage() != null) {
+			writer.writeEmptyElement(OPFTags.reference);
+			writer.writeAttribute(OPFAttributes.type, OPFValues.reference_cover);
+			writer.writeAttribute(OPFAttributes.href, book.getMetadata().getCoverPage().getHref());
+		}
+		for (Reference reference: book.getMetadata().getGuide().getReferences()) {
+			writer.writeEmptyElement(OPFTags.reference);
+			writer.writeAttribute(OPFAttributes.type, reference.getType());
+			writer.writeAttribute(OPFAttributes.href, reference.getResource().getHref());
+			if (StringUtils.isNotBlank(reference.getTitle())) {
+				writer.writeAttribute(OPFAttributes.title, reference.getTitle());
+			}
+		}
 		writer.writeEndElement(); // guide
 	}
 }

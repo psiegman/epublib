@@ -11,8 +11,6 @@ import java.util.List;
  *
  */
 public class Book {
-	private Resource coverPage;
-	private Resource coverImage;
 	private Resource ncxResource;
 	private Metadata metadata = new Metadata();
 	private List<Section> spineSections = new ArrayList<Section>();
@@ -70,31 +68,6 @@ public class Book {
 	public void setMetadata(Metadata metadata) {
 		this.metadata = metadata;
 	}
-	
-	/**
-	 * The coverpage of the book.
-	 * 
-	 * @return
-	 */
-	public Resource getCoverPage() {
-		return coverPage;
-	}
-	public void setCoverPage(Resource coverPage) {
-		this.coverPage = coverPage;
-	}
-	
-	/**
-	 * The main image used by the cover page.
-	 * 
-	 * @return
-	 */
-	public Resource getCoverImage() {
-		return coverImage;
-	}
-	public void setCoverImage(Resource coverImage) {
-		this.coverImage = coverImage;
-	}
-	
 	
 	/**
 	 * The NCX resource of the Book (contains the table of contents)

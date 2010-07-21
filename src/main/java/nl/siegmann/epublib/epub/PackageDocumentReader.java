@@ -3,18 +3,24 @@ package nl.siegmann.epublib.epub;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Date;
+import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Metadata;
+import nl.siegmann.epublib.domain.Reference;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -43,14 +49,50 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.createDocumentBuilder());
 		String packageHref = packageResource.getHref();
 		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
-		String coverHref = readCover(packageDocument, book, resourcesByHref);
-		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref, coverHref);
+		readCover(packageDocument, book, resourcesByHref);
+		readGuide(packageDocument, epubReader, book, resourcesByHref);
+		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref);
 		readMetadata(packageDocument, epubReader, book);
 		List<Section> spineSections = readSpine(packageDocument, epubReader, book, resourcesById);
 		book.setSpineSections(spineSections);
 	}
 	
 	
+	private static void readGuide(Document packageDocument,
+			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) {
+		Element guideElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.guide);
+		if(guideElement == null) {
+			return;
+		}
+		Guide guide = book.getMetadata().getGuide();
+		NodeList guideReferences = guideElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.reference);
+		for (int i = 0; i < guideReferences.getLength(); i++) {
+			Element referenceElement = (Element) guideReferences.item(i);
+			String resourceHref = referenceElement.getAttribute(OPFAttributes.href);
+			if (StringUtils.isBlank(resourceHref)) {
+				continue;
+			}
+			Resource resource = resourcesByHref.get(resourceHref);
+			if (resource == null) {
+				log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
+				continue;
+			}
+			String type = referenceElement.getAttribute(OPFAttributes.type);
+			if (StringUtils.isBlank(type)) {
+				log.error("Guide is referencing resource with href " + resourceHref + " which is missing the 'type' attribute");
+				continue;
+			}
+			String title = referenceElement.getAttribute(OPFAttributes.title);
+			if (Guide.Types.COVER.equalsIgnoreCase(type)) {
+				continue; // cover is handled elsewhere
+			}
+			guide.addReference(new Reference(resource, type, title));
+		}
+//		meta.setTitles(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
+
+	}
+
+
 	/**
 	 * Strips off the package prefixes up to the href of the packageHref.
 	 * Example:
@@ -109,22 +151,31 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @return
 	 */
 	// package
-	static String findCoverHref(Document packageDocument) {
+	static Set<String> findCoverHrefs(Document packageDocument) {
 		
-		// try and find a meta tag with name = 'cover' and href is not blank
-		String result = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
+		Set<String> result = new HashSet<String>();
+		
+		// try and find a meta tag with name = 'cover' and a non-blank id
+		String coverResourceId = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
 											OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover,
 											OPFAttributes.content);
 
-		if(StringUtils.isBlank(result)) {
-			// try and find a reference tag with type is 'cover' and reference is not blank
-			result = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
+		if (StringUtils.isNotBlank(coverResourceId)) {
+			String coverHref = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
+					OPFTags.item, OPFAttributes.id, coverResourceId,
+					OPFAttributes.href);
+			if (StringUtils.isNotBlank(coverHref)) {
+				result.add(coverHref);
+			} else {
+				result.add(coverResourceId); // maybe there was a cover href put in the cover id attribute
+			}
+		}
+		// try and find a reference tag with type is 'cover' and reference is not blank
+		String coverHref = getFindAttributeValue(packageDocument, NAMESPACE_OPF,
 											OPFTags.reference, OPFAttributes.type, OPFValues.reference_cover,
 											OPFAttributes.href);
-		}
-
-		if(StringUtils.isBlank(result)) {
-			result = null;
+		if (StringUtils.isNotBlank(coverHref)) {
+			result.add(coverHref);
 		}
 		return result;
 	}
@@ -171,8 +222,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		meta.setTitles(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
 		meta.setRights(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.rights));
+		meta.setTypes(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.type));
+		meta.setSubjects(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.subject));
 		meta.setIdentifiers(readIdentifiers(metadataElement));
 		meta.setAuthors(readAuthors(metadataElement));
+		meta.setDates(readDates(metadataElement));
 	}
 	
 	
@@ -180,20 +234,38 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.creator);
 		List<Author> result = new ArrayList<Author>(elements.getLength());
 		for(int i = 0; i < elements.getLength(); i++) {
-			String authorString = getTextChild((Element) elements.item(i));
-			result.add(createAuthor(authorString));
+			Element authorElement = (Element) elements.item(i);
+			Author author = createAuthor(authorElement);
+			result.add(author);
 		}
 		return result;
 		
 	}
 
-	private static Author createAuthor(String authorString) {
-		int spacePos = authorString.lastIndexOf(' ');
-		if(spacePos < 0) {
-			return new Author(authorString);
-		} else {
-			return new Author(authorString.substring(0, spacePos), authorString.substring(spacePos + 1));
+	private static List<Date> readDates(Element metadataElement) {
+		NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.date);
+		List<Date> result = new ArrayList<Date>(elements.getLength());
+		for(int i = 0; i < elements.getLength(); i++) {
+			Element dateElement = (Element) elements.item(i);
+			Date date = new Date(getTextChild(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
+			result.add(date);
 		}
+		return result;
+		
+	}
+
+	private static Author createAuthor(Element authorElement) {
+		String authorString = getTextChild(authorElement);
+		
+		int spacePos = authorString.lastIndexOf(' ');
+		Author result;
+		if(spacePos < 0) {
+			result = new Author(authorString);
+		} else {
+			result = new Author(authorString.substring(0, spacePos), authorString.substring(spacePos + 1));
+		}
+		result.setRole(authorElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.role));
+		return result;
 	}
 	
 	
@@ -255,14 +327,22 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resources
 	 * @return
 	 */
-	private static String readCover(Document packageDocument, Book book, Map<String, Resource> resources) {
+	private static Collection<String> readCover(Document packageDocument, Book book, Map<String, Resource> resources) {
 		
-		String coverHref = findCoverHref(packageDocument);
-
-		if(StringUtils.isNotBlank(coverHref) && resources.containsKey(coverHref)) {
-			book.setCoverPage(resources.get(coverHref));
+		Collection<String> coverHrefs = findCoverHrefs(packageDocument);
+		for (String coverHref: coverHrefs) {
+			Resource resource = resources.get(coverHref);
+			if (resource == null) {
+				log.error("Cover resource " + coverHref + " not found");
+				continue;
+			}
+			if (resource.getMediaType() == MediatypeService.XHTML) {
+				book.getMetadata().setCoverPage(resource);
+			} else if (MediatypeService.isBitmapImage(resource.getMediaType())) {
+				book.getMetadata().setCoverImage(resource);
+			}
 		}
-		return coverHref;
+		return coverHrefs;
 	}
 	
 	
@@ -276,7 +356,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @return a Map with resources, with their id's as key.
 	 */
 	private static Map<String, Resource> readManifest(Document packageDocument, String packageHref,
-			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref, String coverHref) {
+			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) {
 		Element manifestElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, "manifest");
 		if(manifestElement == null) {
 			log.error("Package document does not contain element manifest");
@@ -288,20 +368,21 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			Element itemElement = (Element) itemElements.item(i);
 			String mediaTypeName = itemElement.getAttribute("media-type");
 			String href = itemElement.getAttribute("href");
-			String id = itemElement.getAttribute("id");
+			String id = itemElement.getAttribute(OPFAttributes.id);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
 				System.err.println("resource not found:" + href);
 				continue;
 			}
+			resource.setId(id);
 			MediaType mediaType = MediatypeService.getMediaTypeByName(mediaTypeName);
 			if(mediaType != null) {
 				resource.setMediaType(mediaType);
 			}
 			if(resource.getMediaType() == MediatypeService.NCX) {
 				book.setNcxResource(resource);
-			} else if(StringUtils.isNotBlank(coverHref)
-				&& coverHref.equals(href)) {
+			} else if ((book.getMetadata().getCoverImage() != null && href.equals(book.getMetadata().getCoverImage().getHref()))
+					|| (book.getMetadata().getCoverPage() != null && href.equals(book.getMetadata().getCoverPage().getHref()))) {
 				result.put(id, Resource.NULL_RESOURCE);
 			} else {
 				book.getResources().add(resource);
