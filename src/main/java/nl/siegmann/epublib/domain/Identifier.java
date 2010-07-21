@@ -18,6 +18,7 @@ public class Identifier {
 		String UUID = "UUID";
 		String ISBN = "ISBN";
 		String URL = "URL";
+		String URI = "URI";
 	}
 	
 	private boolean bookId = false;
