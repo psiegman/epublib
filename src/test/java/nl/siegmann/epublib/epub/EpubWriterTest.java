@@ -28,7 +28,7 @@ public class EpubWriterTest extends TestCase {
 			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
 			Author author = new Author("Joe", "Tester");
 			book.getMetadata().addAuthor(author);
-			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 			book.addResourceAsSection("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.getResources().add(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
 			Section chapter2 = book.addResourceAsSection("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
