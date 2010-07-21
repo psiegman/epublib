@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.epub;
 
+import java.util.Collection;
+
 import junit.framework.TestCase;
 
 import org.w3c.dom.Document;
@@ -11,8 +13,9 @@ public class PackageDocumentReaderTest extends TestCase {
 		Document packageDocument;
 		try {
 			packageDocument = epubReader.getDocumentBuilderFactory().newDocumentBuilder().parse(PackageDocumentReaderTest.class.getResourceAsStream("/opf/test1.opf"));
-			String coverHref = PackageDocumentReader.findCoverHref(packageDocument);
-			assertEquals("cover.html", coverHref);
+			Collection<String> coverHrefs = PackageDocumentReader.findCoverHrefs(packageDocument);
+			assertEquals(1, coverHrefs.size());
+			assertEquals("cover.html", coverHrefs.iterator().next());
 		} catch (Exception e) {
 			e.printStackTrace();
 			assertTrue(false);
