@@ -13,13 +13,13 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			(new EpubWriter()).write(book, out);
 			byte[] epubData = out.toByteArray();
 			Book readBook = new EpubReader().readEpub(new ByteArrayInputStream(epubData));
-			assertNotNull(readBook.getCoverPage());
+			assertNotNull(readBook.getMetadata().getCoverPage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -32,14 +32,14 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 			book.addResourceAsSection("Introduction", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			(new EpubWriter()).write(book, out);
 			byte[] epubData = out.toByteArray();
 			Book readBook = new EpubReader().readEpub(new ByteArrayInputStream(epubData));
-			assertNotNull(readBook.getCoverPage());
+			assertNotNull(readBook.getMetadata().getCoverPage());
 			assertEquals(1, book.getSpineSections().size());
 			assertEquals(1, book.getTocSections().size());
 		} catch (Exception e) {

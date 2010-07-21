@@ -127,8 +127,8 @@ public class EpubWriter extends EpubProcessor {
 	}
 	
 	private void writeCoverResources(Book book, ZipOutputStream resultStream) throws IOException {
-		writeResource(book.getCoverImage(), resultStream);
-		writeResource(book.getCoverPage(), resultStream);
+		writeResource(book.getMetadata().getCoverImage(), resultStream);
+		writeResource(book.getMetadata().getCoverPage(), resultStream);
 	}
 
 

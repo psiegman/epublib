@@ -1,7 +1,6 @@
 package nl.siegmann.epublib.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +19,9 @@ import nl.siegmann.epublib.service.MediatypeService;
 public class Metadata {
 
 	public static final String DEFAULT_LANGUAGE = "en";
+	
 	private List<Author> authors = new ArrayList<Author>();
-	private Date date = new Date();
+	private List<Date> dates = new ArrayList<Date>();
 	private String language = DEFAULT_LANGUAGE;
 	private Map<QName, String> otherProperties = new HashMap<QName, String>();
 	private List<String> rights = new ArrayList<String>();
@@ -29,6 +29,8 @@ public class Metadata {
 	private List<Identifier> identifiers = new ArrayList<Identifier>();
 	private List<String> subjects = new ArrayList<String>();
 	private String format = MediatypeService.EPUB.getName();
+	private List<String> types = new ArrayList<String>();
+	private Guide guide = new Guide();
 	
 	/*
 	 * 
@@ -65,6 +67,18 @@ Type 	The nature or genre of the content of the resource
 		this.otherProperties = otherProperties;
 	}
 	
+	public Date addDate(Date date) {
+		this.dates.add(date);
+		return date;
+	}
+	
+	public List<Date> getDates() {
+		return dates;
+	}
+	public void setDates(List<Date> dates) {
+		this.dates = dates;
+	}
+
 	public Author addAuthor(Author author) {
 		authors.add(author);
 		return author;
@@ -75,14 +89,7 @@ Type 	The nature or genre of the content of the resource
 	}
 	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
-	}
-	public Date getDate() {
-		return date;
-	}
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	public String getLanguage() {
+	}	public String getLanguage() {
 		return language;
 	}
 	public void setLanguage(String language) {
@@ -125,5 +132,33 @@ Type 	The nature or genre of the content of the resource
 	}
 	public String getFormat() {
 		return format;
+	}
+
+	public String addType(String type) {
+		this.types.add(type);
+		return type;
+	}
+	
+	
+	public List<String> getTypes() {
+		return types;
+	}
+	public void setTypes(List<String> types) {
+		this.types = types;
+	}
+	public Resource getCoverPage() {
+		return guide.getCoverPage();
+	}
+	public void setCoverPage(Resource coverPage) {
+		guide.setCoverPage(coverPage);
+	}
+	public Resource getCoverImage() {
+		return guide.getCoverImage();
+	}
+	public void setCoverImage(Resource coverImage) {
+		guide.setCoverImage(coverImage);
+	}
+	public Guide getGuide() {
+		return guide;
 	}
 }
