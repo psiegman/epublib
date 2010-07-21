@@ -12,6 +12,7 @@ public class PackageDocumentBase {
 	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
 	public static final String NAMESPACE_DUBLIN_CORE = "http://purl.org/dc/elements/1.1/";
 	public static final String PREFIX_DUBLIN_CORE = "dc";
+	public static final String PREFIX_OPF = "opf";
 	public static final String dateFormat = "yyyy-MM-dd";
 	
 	protected interface DCTags {
@@ -44,6 +45,7 @@ public class PackageDocumentBase {
 		String itemref = "itemref";
 		String reference = "reference";
 		String guide = "guide";
+		String item = "item";
 	}
 	
 	protected interface OPFAttributes {
@@ -54,6 +56,12 @@ public class PackageDocumentBase {
 		String type = "type";
 		String href = "href";
 		String linear = "linear";
+		String event = "event";
+		String role = "role";
+		String file_as = "file-as";
+		String id = "id";
+		String media_type = "media-type";
+		String title = "title";
 	}
 	
 	protected interface OPFValues {
