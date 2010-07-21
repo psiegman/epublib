@@ -72,7 +72,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if (StringUtils.isBlank(resourceHref)) {
 				continue;
 			}
-			Resource resource = resourcesByHref.get(resourceHref);
+			Resource resource = resourcesByHref.get(StringUtils.substringBefore(resourceHref, "#"));
 			if (resource == null) {
 				log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
 				continue;
@@ -86,7 +86,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if (Guide.Types.COVER.equalsIgnoreCase(type)) {
 				continue; // cover is handled elsewhere
 			}
-			guide.addReference(new Reference(resource, type, title));
+			Reference reference = new Reference(resource, type, title, StringUtils.substringAfter(resourceHref, "#"));
+			guide.addReference(reference);
 		}
 //		meta.setTitles(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
 

@@ -290,7 +290,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		for (Reference reference: book.getMetadata().getGuide().getReferences()) {
 			writer.writeEmptyElement(OPFTags.reference);
 			writer.writeAttribute(OPFAttributes.type, reference.getType());
-			writer.writeAttribute(OPFAttributes.href, reference.getResource().getHref());
+			writer.writeAttribute(OPFAttributes.href, reference.getCompleteHref());
 			if (StringUtils.isNotBlank(reference.getTitle())) {
 				writer.writeAttribute(OPFAttributes.title, reference.getTitle());
 			}
