@@ -2,6 +2,7 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.util.Map;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +23,6 @@ public class BookProcessorUtil {
 	 * @return
 	 */
 	public static Resource getResourceByHref(String href, Map<String, Resource> resources) {
-		return resources.get(StringUtils.substringBefore(href, "#"));
+		return resources.get(StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR));
 	}
 }
