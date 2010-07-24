@@ -13,15 +13,15 @@ public class Guide {
 		String PREFACE = "preface";
 	}
 
-	private List<Reference> references = new ArrayList<Reference>();
+	private List<GuideReference> references = new ArrayList<GuideReference>();
 	private Resource coverPage;
 	private Resource coverImage;
 
-	public List<Reference> getReferences() {
+	public List<GuideReference> getReferences() {
 		return references;
 	}
 
-	public void setReferences(List<Reference> references) {
+	public void setReferences(List<GuideReference> references) {
 		this.references = references;
 	}
 	
@@ -49,7 +49,7 @@ public class Guide {
 		this.coverImage = coverImage;
 	}
 
-	public Reference addReference(Reference reference) {
+	public ResourceReference addReference(GuideReference reference) {
 		this.references.add(reference);
 		return reference;
 	}

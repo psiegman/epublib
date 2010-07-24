@@ -48,13 +48,12 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 */
 	private static void matchSectionsAndResources(ItemIdGenerator itemIdGenerator, List<Section> sections, Book book) {
 		for(Section section: sections) {
-			Resource resource = book.getResources().getByHref(section.getHref());
+			Resource resource = section.getResource();
 			if(resource == null) {
 				resource = createNewSectionResource(itemIdGenerator, section, book);
 				book.getResources().add(resource);
 			}
-			section.setItemId(resource.getId());
-			section.setHref(resource.getHref());
+			section.setResource(resource);
 			matchSectionsAndResources(itemIdGenerator, section.getChildren(), book);
 		}
 	}
@@ -62,7 +61,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	
 	private static Resource createNewSectionResource(ItemIdGenerator itemIdGenerator, Section section, Book book) {
 		String href = calculateSectionResourceHref(section, book);
-		SectionResource result = new SectionResource(itemIdGenerator.getNextItemId(), section.getName(), href);
+		SectionResource result = new SectionResource(itemIdGenerator.getNextItemId(), section.getTitle(), href);
 		return result;
 	}
 	
@@ -77,7 +76,7 @@ public class MissingResourceBookProcessor implements BookProcessor {
 	 * @return
 	 */
 	private static String calculateSectionResourceHref(Section section, Book book) {
-		String result = section.getName() + ".html";
+		String result = section.getTitle() + ".html";
 		if(! book.getResources().containsByHref(result)) {
 			return result;
 		}

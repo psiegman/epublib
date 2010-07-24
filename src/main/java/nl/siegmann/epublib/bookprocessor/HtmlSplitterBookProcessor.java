@@ -33,7 +33,7 @@ public class HtmlSplitterBookProcessor implements BookProcessor {
 	}
 
 	private List<Section> splitSection(Section section, Book book) {
-		Resource resource = book.getResources().getByHref(section.getHref());
+		Resource resource = section.getResource();
 		List<Section> result = Arrays.asList(new Section[] {section});
 		if(resource == null || (resource.getMediaType() != MediatypeService.XHTML)) {
 			return result;

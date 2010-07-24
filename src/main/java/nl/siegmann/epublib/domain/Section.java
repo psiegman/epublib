@@ -10,43 +10,28 @@ import java.util.List;
  * @author paul
  *
  */
-public class Section {
-	private String name;
-	private String href;
-	private String itemId;
+public class Section extends ResourceReference {
 	private List<Section> children;
 	
 	public Section() {
 		this(null, null);
 	}
-	public Section(String name, String href) {
-		this(name, href, new ArrayList<Section>());
+	public Section(String name, Resource resource) {
+		this(name, resource, new ArrayList<Section>());
 	}
 	
-	public Section(String name, String href, List<Section> children) {
-		super();
-		this.name = name;
-		this.href = href;
+	public Section(String title, Resource resource, List<Section> children) {
+		super(title,resource);
 		this.children = children;
 	}
 
 	public String getItemId() {
-		return itemId;
+		if (resource != null) {
+			return resource.getId();
+		}
+		return null;
 	}
 	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getHref() {
-		return href;
-	}
-	public void setHref(String href) {
-		this.href = href;
-	}
-
 	public List<Section> getChildren() {
 		return children;
 	}
@@ -58,9 +43,5 @@ public class Section {
 	
 	public void setChildren(List<Section> children) {
 		this.children = children;
-	}
-
-	public void setItemId(String itemId) {
-		this.itemId = itemId;
 	}
 }

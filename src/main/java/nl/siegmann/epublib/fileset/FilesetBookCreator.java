@@ -14,6 +14,7 @@ import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.vfs.FileObject;
@@ -78,7 +79,7 @@ public class FilesetBookCreator {
 				}
 				resources.add(resource);
 				if(MediatypeService.XHTML == resource.getMediaType()) {
-					Section section = new Section(file.getName().getBaseName(), resource.getHref());
+					Section section = new Section(file.getName().getBaseName(), resource);
 					sections.add(section);
 				}
 			}
@@ -91,7 +92,8 @@ public class FilesetBookCreator {
 		List<Section> childSections = new ArrayList<Section>();
 		processDirectory(rootDir, file, childSections, resources, inputEncoding);
 		if(! childSections.isEmpty()) {
-			Section section = new Section(file.getName().getBaseName(), calculateHref(rootDir,file));
+			SectionResource sectionResource = new SectionResource(null, file.getName().getBaseName(), calculateHref(rootDir,file));
+			Section section = new Section(sectionResource.getSectionName(), sectionResource);
 			section.setChildren(childSections);
 			sections.add(section);
 		}

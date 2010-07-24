@@ -11,6 +11,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.Section;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +34,7 @@ public class HHCParser {
 
 	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
 	
-	public static List<Section> parseHhc(InputStream hhcFile) throws IOException, ParserConfigurationException,	XPathExpressionException {
+	public static List<Section> parseHhc(InputStream hhcFile, Resources resources) throws IOException, ParserConfigurationException,	XPathExpressionException {
 		HtmlCleaner htmlCleaner = new HtmlCleaner();
 		CleanerProperties props = htmlCleaner.getProperties();
 		TagNode node = htmlCleaner.clean(hhcFile);
@@ -41,7 +42,7 @@ public class HHCParser {
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		Node ulNode = (Node) xpath.evaluate("body/ul", hhcDocument
 				.getDocumentElement(), XPathConstants.NODE);
-		List<Section> sections = processUlNode(ulNode);
+		List<Section> sections = processUlNode(ulNode, resources);
 		return sections;
 	}
 	
@@ -58,16 +59,16 @@ public class HHCParser {
 	 * </li>
 	 * <ul> ... </ul> <!-- child elements -->
 	 */
-	private static List<Section> processUlNode(Node ulNode) {
+	private static List<Section> processUlNode(Node ulNode, Resources resources) {
 		List<Section> result = new ArrayList<Section>();
 		NodeList children = ulNode.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
 			if(node.getNodeName().equals("li")) {
-				List<Section> section = processLiNode(node);
+				List<Section> section = processLiNode(node, resources);
 				result.addAll(section);
 			} else if(node.getNodeName().equals("ul")) {
-				List<Section> childSections = processUlNode(node);
+				List<Section> childSections = processUlNode(node, resources);
 				if(result.isEmpty()) {
 					result = childSections;
 				} else {
@@ -79,18 +80,18 @@ public class HHCParser {
 	}
 
 	
-	private static List<Section> processLiNode(Node liNode) {
+	private static List<Section> processLiNode(Node liNode, Resources resources) {
 		List<Section> result = new ArrayList<Section>();
 		NodeList children = liNode.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
 			if(node.getNodeName().equals("object")) {
-				Section section = processObjectNode(node);
+				Section section = processObjectNode(node, resources);
 				if(section != null) {
 					result.add(section);
 				}
 			} else if(node.getNodeName().equals("ul")) {
-				List<Section> childSections = processUlNode(node);
+				List<Section> childSections = processUlNode(node, resources);
 				if(result.isEmpty()) {
 					result = childSections;
 				} else {
@@ -116,7 +117,7 @@ public class HHCParser {
 	 * 
 	 * @return A Section of the object has a non-blank param child with name 'Name' and a non-blank param name 'Local'
 	 */
-	private static Section processObjectNode(Node objectNode) {
+	private static Section processObjectNode(Node objectNode, Resources resources) {
 		Section result = null;
 		NodeList children = objectNode.getChildNodes();
 		String name = null;
@@ -136,7 +137,7 @@ public class HHCParser {
 			return result;
 		}
 		if(! StringUtils.isBlank(name)) {
-			result = new Section(name, href);
+			result = new Section(name, resources.getByCompleteHref(href)); // fragmentId
 		}
 		return result;
 	}

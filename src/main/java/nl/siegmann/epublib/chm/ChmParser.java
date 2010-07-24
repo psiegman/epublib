@@ -3,9 +3,7 @@ package nl.siegmann.epublib.chm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -13,7 +11,7 @@ import javax.xml.xpath.XPathExpressionException;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
-import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
 
@@ -49,10 +47,10 @@ public class ChmParser {
 		if(htmlEncoding == null) {
 			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
 		}
-		Map<String, Resource> resources = findResources(chmRootDir, htmlEncoding);
-		List<Section> sections = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream());
+		Resources resources = findResources(chmRootDir, htmlEncoding);
+		List<Section> sections = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream(), resources);
 		result.setSections(sections);
-		result.getResources().set(resources);
+		result.setResources(resources);
 		return result;
 	}
 	
@@ -102,10 +100,9 @@ public class ChmParser {
 	}
 	
 	
-
 	@SuppressWarnings("unchecked")
-	private static Map<String, Resource> findResources(FileObject rootDir, Charset defaultEncoding) throws IOException {
-		Map<String, Resource> result = new LinkedHashMap<String, Resource>();
+	private static Resources findResources(FileObject rootDir, Charset defaultEncoding) throws IOException {
+		Resources result = new Resources();
 		FileObject[] allFiles = rootDir.findFiles(new AllFileSelector());
 		for(int i = 0; i < allFiles.length; i++) {
 			FileObject file = allFiles[i];
@@ -121,7 +118,7 @@ public class ChmParser {
 			if(mediaType == MediatypeService.XHTML) {
 				fileResource.setInputEncoding(defaultEncoding);
 			}
-			result.put(fileResource.getHref(), fileResource);
+			result.add(fileResource);
 		}
 		return result;
 	}

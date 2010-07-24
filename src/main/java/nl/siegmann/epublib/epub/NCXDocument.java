@@ -107,31 +107,36 @@ public class NCXDocument {
 			XPath xPath = epubReader.getXpathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
 		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":navMap/" + PREFIX_NCX + ":navPoint", ncxDocument, XPathConstants.NODESET);
-			List<Section> sections = readSections(navmapNodes, xPath);
+			List<Section> sections = readSections(navmapNodes, xPath, book);
 			book.setTocSections(sections);
 		} catch (Exception e) {
 			log.error(e);
 		}
 	}
 
-	private static List<Section> readSections(NodeList navpoints, XPath xPath) throws XPathExpressionException {
+	private static List<Section> readSections(NodeList navpoints, XPath xPath, Book book) throws XPathExpressionException {
 		if(navpoints == null) {
 			return new ArrayList<Section>();
 		}
 		List<Section> result = new ArrayList<Section>(navpoints.getLength());
 		for(int i = 0; i < navpoints.getLength(); i++) {
-			Section childSection = readSection((Element) navpoints.item(i), xPath);
+			Section childSection = readSection((Element) navpoints.item(i), xPath, book);
 			result.add(childSection);
 		}
 		return result;
 	}
 
-	private static Section readSection(Element navpointElement, XPath xPath) throws XPathExpressionException {
+	private static Section readSection(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
 		String name = xPath.evaluate(PREFIX_NCX + ":navLabel/" + PREFIX_NCX + ":text", navpointElement);
-		String href = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
-		Section result = new Section(name, href);
+		String completeHref = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
+		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
+		Resource resource = book.getResources().getByHref(href);
+		if (resource == null) {
+			log.error("Resource with href " + href + " in NCX document not found");
+		}
+		Section result = new Section(name, resource);
 		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":navPoint", navpointElement, XPathConstants.NODESET);
-		result.setChildren(readSections(childNavpoints, xPath));
+		result.setChildren(readSections(childNavpoints, xPath, book));
 		return result;
 	}
 
@@ -230,11 +235,11 @@ public class NCXDocument {
 		writer.writeAttribute("class", "chapter");
 		writer.writeStartElement(NAMESPACE_NCX, "navLabel");
 		writer.writeStartElement(NAMESPACE_NCX, "text");
-		writer.writeCharacters(section.getName());
+		writer.writeCharacters(section.getTitle());
 		writer.writeEndElement(); // text
 		writer.writeEndElement(); // navLabel
 		writer.writeEmptyElement(NAMESPACE_NCX, "content");
-		writer.writeAttribute("src", section.getHref());
+		writer.writeAttribute("src", section.getResource().getHref()); // XXX fragmentId
 	}
 
 	private static void writeNavPointEnd(Section section, XMLStreamWriter writer) throws XMLStreamException {

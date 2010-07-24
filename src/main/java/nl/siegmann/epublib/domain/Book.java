@@ -3,6 +3,8 @@ package nl.siegmann.epublib.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * Representation of a Book.
@@ -41,7 +43,7 @@ public class Book {
 	public Section addResourceAsSubSection(Section parentSection, String sectionTitle,
 			Resource resource) {
 		getResources().add(resource);
-		return parentSection.addChildSection(new Section(sectionTitle, resource.getHref()));
+		return parentSection.addChildSection(new Section(sectionTitle, resource));
 	}
 
 	/**
@@ -53,7 +55,10 @@ public class Book {
 	 */
 	public Section addResourceAsSection(String title, Resource resource) {
 		getResources().add(resource);
-		return addSection(new Section(title, resource.getHref()));
+		if (StringUtils.isBlank(resource.getId())) {
+			resource.setId(title);
+		}
+		return addSection(new Section(title, resource));
 	}
 	
 	
