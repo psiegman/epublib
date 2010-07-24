@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
@@ -20,7 +21,7 @@ import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Metadata;
-import nl.siegmann.epublib.domain.Reference;
+import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -72,7 +73,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if (StringUtils.isBlank(resourceHref)) {
 				continue;
 			}
-			Resource resource = resourcesByHref.get(StringUtils.substringBefore(resourceHref, "#"));
+			Resource resource = resourcesByHref.get(StringUtils.substringBefore(resourceHref, Constants.FRAGMENT_SEPARATOR));
 			if (resource == null) {
 				log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
 				continue;
@@ -86,7 +87,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if (Guide.Types.COVER.equalsIgnoreCase(type)) {
 				continue; // cover is handled elsewhere
 			}
-			Reference reference = new Reference(resource, type, title, StringUtils.substringAfter(resourceHref, "#"));
+			GuideReference reference = new GuideReference(resource, type, title, StringUtils.substringAfter(resourceHref, Constants.FRAGMENT_SEPARATOR));
 			guide.addReference(reference);
 		}
 //		meta.setTitles(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
@@ -140,7 +141,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if(resource == Resource.NULL_RESOURCE) {
 				continue;
 			}
-			Section section = new Section(null, resource.getHref());
+			Section section = new Section(null, resource);
 			result.add(section);
 		}
 		return result;

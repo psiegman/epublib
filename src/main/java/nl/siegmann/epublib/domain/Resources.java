@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,10 +15,26 @@ public class Resources {
 	
 	public Resource add(Resource resource) {
 		fixHref(resource);
+		if (StringUtils.isBlank(resource.getId())) {
+			resource.setId(StringUtils.substringBefore(resource.getHref(), "."));
+		}
 		this.resources.put(resource.getHref(), resource);
 		return resource;
 	}
 
+	public boolean containsId(String id) {
+		if (StringUtils.isBlank(id)) {
+			return false;
+		}
+		for (Resource resource: resources.values()) {
+			if (id.equals(resource.getId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	public Resource remove(String href) {
 		return resources.remove(href);
 	}
@@ -92,8 +109,13 @@ public class Resources {
 		this.resources = new HashMap<String, Resource>(resources);
 	}
 	
+	public Resource getByCompleteHref(String completeHref) {
+		return getByHref(StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR));
+	}
+	
+	
 	public Resource getByHref(String href) {
-		href = StringUtils.substringBefore(href, "#");
+		href = StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR);
 		Resource result = resources.get(href);
 		return result;
 	}

@@ -15,7 +15,7 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
-import nl.siegmann.epublib.domain.Reference;
+import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -287,7 +287,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			writer.writeAttribute(OPFAttributes.type, OPFValues.reference_cover);
 			writer.writeAttribute(OPFAttributes.href, book.getMetadata().getCoverPage().getHref());
 		}
-		for (Reference reference: book.getMetadata().getGuide().getReferences()) {
+		for (GuideReference reference: book.getMetadata().getGuide().getReferences()) {
 			writer.writeEmptyElement(OPFTags.reference);
 			writer.writeAttribute(OPFAttributes.type, reference.getType());
 			writer.writeAttribute(OPFAttributes.href, reference.getCompleteHref());

@@ -31,4 +31,14 @@ public class SectionResource extends ResourceBase implements Resource {
 	private String getContent() {
 		return "<html><head><title>" + sectionName + "</title></head><body><h1>" + sectionName + "</h1></body></html>";
 	}
+
+
+	public String getSectionName() {
+		return sectionName;
+	}
+
+
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
+	}
 }

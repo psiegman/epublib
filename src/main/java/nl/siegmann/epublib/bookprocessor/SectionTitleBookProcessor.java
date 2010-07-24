@@ -26,12 +26,12 @@ public class SectionTitleBookProcessor implements BookProcessor {
 
 	private void processSections(List<Section> sections, Book book, XPath xpath) {
 		for(Section section: sections) {
-			if(! StringUtils.isBlank(section.getName())) {
+			if(! StringUtils.isBlank(section.getTitle())) {
 				continue;
 			}
 			try {
 				String title = getTitle(section, book, xpath);
-				section.setName(title);
+				section.setTitle(title);
 			} catch (XPathExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -44,7 +44,7 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	
 	
 	private String getTitle(Section section, Book book, XPath xpath) throws IOException, XPathExpressionException {
-		Resource resource = book.getResources().getByHref(section.getHref());
+		Resource resource = section.getResource();
 		if(resource == null) {
 			return null;
 		}
