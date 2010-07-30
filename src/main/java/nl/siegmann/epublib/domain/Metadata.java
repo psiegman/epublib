@@ -21,6 +21,7 @@ public class Metadata {
 	public static final String DEFAULT_LANGUAGE = "en";
 	
 	private List<Author> authors = new ArrayList<Author>();
+	private List<Author> contributors = new ArrayList<Author>();
 	private List<Date> dates = new ArrayList<Date>();
 	private String language = DEFAULT_LANGUAGE;
 	private Map<QName, String> otherProperties = new HashMap<QName, String>();
@@ -89,7 +90,21 @@ Type 	The nature or genre of the content of the resource
 	}
 	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
-	}	public String getLanguage() {
+	}
+		
+	public Author addContributor(Author contributor) {
+		contributors.add(contributor);
+		return contributor;
+	}
+	
+	public List<Author> getContributors() {
+		return contributors;
+	}
+	public void setContributors(List<Author> contributors) {
+		this.contributors = contributors;
+	}
+	
+	public String getLanguage() {
 		return language;
 	}
 	public void setLanguage(String language) {
