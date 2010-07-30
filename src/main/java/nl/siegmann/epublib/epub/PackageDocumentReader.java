@@ -227,13 +227,21 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		meta.setTypes(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.type));
 		meta.setSubjects(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.subject));
 		meta.setIdentifiers(readIdentifiers(metadataElement));
-		meta.setAuthors(readAuthors(metadataElement));
+		meta.setAuthors(readCreators(metadataElement));
+		meta.setContributors(readContributors(metadataElement));
 		meta.setDates(readDates(metadataElement));
 	}
 	
+	private static List<Author> readCreators(Element metadataElement) {
+		return readAuthors(DCTags.creator, metadataElement);
+	}
 	
-	private static List<Author> readAuthors(Element metadataElement) {
-		NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.creator);
+	private static List<Author> readContributors(Element metadataElement) {
+		return readAuthors(DCTags.contributor, metadataElement);
+	}
+	
+	private static List<Author> readAuthors(String authorTag, Element metadataElement) {
+		NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, authorTag);
 		List<Author> result = new ArrayList<Author>(elements.getLength());
 		for(int i = 0; i < elements.getLength(); i++) {
 			Element authorElement = (Element) elements.item(i);

@@ -80,10 +80,18 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		
 		for(Author author: book.getMetadata().getAuthors()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.creator);
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRole().toString());
+			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
 			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
 			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
 			writer.writeEndElement(); // dc:creator
+		}
+
+		for(Author author: book.getMetadata().getContributors()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.contributor);
+			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
+			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
+			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
+			writer.writeEndElement(); // dc:contributor
 		}
 
 		for(String subject: book.getMetadata().getSubjects()) {
