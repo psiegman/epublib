@@ -6,7 +6,9 @@ import nl.siegmann.epublib.epub.PackageDocumentBase;
 
 public class Date {
 	public enum Event {
-		PUBLICATION("publication"), CREATION("creation");
+		PUBLICATION("publication"),
+		MODIFICATION("modification"),
+		CREATION("creation");
 		
 		private final String value;
 
