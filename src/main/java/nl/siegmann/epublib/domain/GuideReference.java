@@ -5,7 +5,32 @@ import nl.siegmann.epublib.Constants;
 import org.apache.commons.lang.StringUtils;
 
 
+/**
+ * These are references to elements of the book's guide.
+ * 
+ * @author paul
+ *
+ */
 public class GuideReference extends ResourceReference {
+	
+	public static String COVER = "cover"; //  	 the book cover(s), jacket information, etc.
+	public static String TITLE_PAGE = "title-page"; // 	page with possibly title, author, publisher, and other metadata
+	public static String TOC = "toc"; // 	table of contents
+	public static String INDEX = "index"; // 	back-of-book style index
+	public static String GLOSSARY = "glossary"; 	
+	public static String ACKNOWLEDGEMENTS = "acknowledgements"; 	
+	public static String BIBLIOGRAPHY = "bibliography"; 	
+	public static String COLOPHON = "colophon";
+	public static String COPYRIGHT_PAGE = "copyright-page"; 	
+	public static String DEDICATION = "dedication"; 	
+	public static String EPIGRAPH = "epigraph"; 	
+	public static String FOREWORD = "foreword"; 	
+	public static String LOI = "loi"; // 	list of illustrations
+	public static String LOT = "lot"; // 	list of tables
+	public static String NOTES = "notes"; 	
+	public static String PREFACE = "preface"; 	
+	public static String TEXT = "text"; // 	First "real" page of content (e.g. "Chapter 1") 
+	
 	private String type;
 	private String fragmentId;
 	
