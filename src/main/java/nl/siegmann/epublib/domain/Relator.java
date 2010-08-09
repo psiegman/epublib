@@ -1,6 +1,16 @@
 package nl.siegmann.epublib.domain;
 
 
+/**
+ * Relators to be used for Creators and Contributors.
+ * 
+ * The Library of Concress relator list
+ * 
+ * @see http://www.loc.gov/marc/relators/relaterm.html
+ * 
+ * @author paul
+ *
+ */
 public enum Relator {
 	
 	/**
