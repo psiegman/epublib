@@ -16,19 +16,20 @@ import org.apache.commons.lang.StringUtils;
  */
 public class MediatypeService {
 
-	public static MediaType XHTML = new MediaType("application/xhtml+xml", ".xhtml", new String[] {".htm", ".html", ".xhtml"});
-	public static MediaType EPUB = new MediaType("application/epub+zip", ".epub", new String[] {".epub"});
-	public static MediaType JPG = new MediaType("image/jpeg", ".jpg", new String[] {".jpg", ".jpeg"});
-	public static MediaType PNG = new MediaType("image/png", ".png", new String[] {".png"});
-	public static MediaType GIF = new MediaType("image/gif", ".gif", new String[] {".gif"});
-	public static MediaType CSS = new MediaType("text/css", ".css", new String[] {".css"});
-	public static MediaType SVG = new MediaType("image/svg+xml", ".svg", new String[] {".svg"});
-	public static MediaType TTF = new MediaType("application/x-truetype-font", ".ttf", new String[] {".ttf"});
-	public static MediaType NCX = new MediaType("application/x-dtbncx+xml", ".ncx", new String[] {".ncx"});
-	public static MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt", new String[] {".xpgt"});
+	public static final MediaType XHTML = new MediaType("application/xhtml+xml", ".xhtml", new String[] {".htm", ".html", ".xhtml"});
+	public static final MediaType EPUB = new MediaType("application/epub+zip", ".epub");
+	public static final MediaType JPG = new MediaType("image/jpeg", ".jpg", new String[] {".jpg", ".jpeg"});
+	public static final MediaType PNG = new MediaType("image/png", ".png");
+	public static final MediaType GIF = new MediaType("image/gif", ".gif");
+	public static final MediaType CSS = new MediaType("text/css", ".css");
+	public static final MediaType SVG = new MediaType("image/svg+xml", ".svg");
+	public static final MediaType TTF = new MediaType("application/x-truetype-font", ".ttf");
+	public static final MediaType NCX = new MediaType("application/x-dtbncx+xml", ".ncx");
+	public static final MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt");
+	public static final MediaType OPENTYPE = new MediaType("font/opentype", ".otf");
 	
 	public static MediaType[] mediatypes = new MediaType[] {
-		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT
+		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT, OPENTYPE
 	};
 	
 	public static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();

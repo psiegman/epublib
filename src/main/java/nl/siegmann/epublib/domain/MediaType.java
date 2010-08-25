@@ -8,7 +8,10 @@ public class MediaType {
 	private String defaultExtension;
 	private Collection<String> extensions;
 	
-	
+	public MediaType(String name, String defaultExtension) {
+		this(name, defaultExtension, new String[] {defaultExtension});
+	}
+
 	public MediaType(String name, String defaultExtension,
 			String[] extensions) {
 		this(name, defaultExtension, Arrays.asList(extensions));
