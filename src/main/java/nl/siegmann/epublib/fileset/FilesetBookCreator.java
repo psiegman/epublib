@@ -13,6 +13,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -58,14 +59,14 @@ public class FilesetBookCreator {
 	public static Book createBookFromDirectory(FileObject rootDirectory, Charset encoding) throws IOException {
 		Book result = new Book();
 		List<Section> sections = new ArrayList<Section>();
-		List<Resource> resources = new ArrayList<Resource>();
+		Resources resources = new Resources();
 		processDirectory(rootDirectory, rootDirectory, sections, resources, encoding);
-		result.getResources().set(resources);
+		result.setResources(resources);
 		result.setSections(sections);
 		return result;
 	}
 
-	private static void processDirectory(FileObject rootDir, FileObject directory, List<Section> sections, List<Resource> resources, Charset inputEncoding) throws IOException {
+	private static void processDirectory(FileObject rootDir, FileObject directory, List<Section> sections, Resources resources, Charset inputEncoding) throws IOException {
 		FileObject[] files = directory.getChildren();
 		Arrays.sort(files, fileComparator);
 		for(int i = 0; i < files.length; i++) {
@@ -87,7 +88,7 @@ public class FilesetBookCreator {
 	}
 
 	private static void processSubdirectory(FileObject rootDir, FileObject file,
-			List<Section> sections, List<Resource> resources, Charset inputEncoding)
+			List<Section> sections, Resources resources, Charset inputEncoding)
 			throws IOException {
 		List<Section> childSections = new ArrayList<Section>();
 		processDirectory(rootDir, file, childSections, resources, inputEncoding);
