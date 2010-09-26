@@ -1,6 +1,5 @@
 package nl.siegmann.epublib;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -12,11 +11,12 @@ import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
 import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.FileResource;
 import nl.siegmann.epublib.domain.Identifier;
+import nl.siegmann.epublib.domain.InputStreamResource;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
+import nl.siegmann.epublib.util.VFSUtil;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,16 +68,16 @@ public class Fileset2Epub {
 		
 		Book book;
 		if("chm".equals(type)) {
-			book = ChmParser.parseChm(VFS.getManager().resolveFile(inputLocation), Charset.forName(encoding));
+			book = ChmParser.parseChm(VFSUtil.resolveFileObject(inputLocation), Charset.forName(encoding));
 		} else if ("epub".equals(type)) {
-			book = new EpubReader().readEpub(VFS.getManager().resolveFile(inputLocation).getContent().getInputStream());
+			book = new EpubReader().readEpub(VFSUtil.resolveInputStream(inputLocation));
 		} else {
-			book = FilesetBookCreator.createBookFromDirectory(VFS.getManager().resolveFile(inputLocation), Charset.forName(encoding));
+			book = FilesetBookCreator.createBookFromDirectory(VFSUtil.resolveFileObject(inputLocation), Charset.forName(encoding));
 		}
 		
 		if(StringUtils.isNotBlank(coverImage)) {
 //			book.getResourceByHref(book.getCoverImage());
-			book.getMetadata().setCoverImage(new FileResource(new File(coverImage)));
+			book.getMetadata().setCoverImage(new InputStreamResource(VFSUtil.resolveInputStream(coverImage), coverImage));
 			epubWriter.getBookProcessingPipeline().add(new CoverpageBookProcessor());
 		}
 		
