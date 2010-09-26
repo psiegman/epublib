@@ -7,6 +7,9 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * These are references to elements of the book's guide.
+ * The guide points to resources in the book by function ('cover', 'index', 'acknowledgements', etc).
+ * It is an optional part of an epub, and support for the various types of references varies by reader.
+ * The only part of this that is heavily used is the cover page.
  * 
  * @author paul
  *
