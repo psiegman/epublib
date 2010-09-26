@@ -20,6 +20,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -32,7 +33,7 @@ import org.xml.sax.SAXException;
  */
 public class EpubReader extends EpubProcessor {
 
-	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(EpubReader.class);
+	private static final Logger log = Logger.getLogger(EpubReader.class);
 	private XPathFactory xpathFactory;
 	
 	public EpubReader() {
