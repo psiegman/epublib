@@ -8,7 +8,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.InputStreamResource;
 
 public class EpubReaderTest extends TestCase {
-
+	
 	public void testCover_only_cover() {
 		try {
 			Book book = new Book();
