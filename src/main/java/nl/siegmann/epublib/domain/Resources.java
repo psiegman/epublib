@@ -14,12 +14,40 @@ public class Resources {
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
 	
 	public Resource add(Resource resource) {
-		fixHref(resource);
-		if (StringUtils.isBlank(resource.getId())) {
-			resource.setId(StringUtils.substringBefore(resource.getHref(), "."));
-		}
+		fixResourceHref(resource);
+		fixResourceId(resource);
 		this.resources.put(resource.getHref(), resource);
 		return resource;
+	}
+
+	private void fixResourceId(Resource resource) {
+		// first try and create a unique id based on the resource's href
+		if (StringUtils.isBlank(resource.getId())) {
+			String resourceId = StringUtils.substringBeforeLast(resource.getHref(), ".");
+			resourceId = StringUtils.substringAfterLast(resourceId, "/");
+			resource.setId(resourceId);
+		}
+		
+		// check if the id is unique. if not: create one from scratch
+		if (StringUtils.isBlank(resource.getId()) || containsId(resource.getId())) {
+			String resourceId = createUniqueResourceId(resource);
+			resource.setId(resourceId);
+		}
+	}
+
+	private String createUniqueResourceId(Resource resource) {
+		int counter = 1;
+		String prefix;
+		if (MediatypeService.isBitmapImage(resource.getMediaType())) {
+			prefix = "image_";
+		} else {
+			prefix = "item_";
+		}
+		String result = prefix + counter;
+		while (containsId(result)) {
+			result = prefix + (++ counter);
+		}
+		return result;
 	}
 
 	public boolean containsId(String id) {
@@ -39,7 +67,7 @@ public class Resources {
 		return resources.remove(href);
 	}
 	
-	private void fixHref(Resource resource) {
+	private void fixResourceHref(Resource resource) {
 		if(! StringUtils.isBlank(resource.getHref())
 				&& ! resources.containsKey(resource.getHref())) {
 			return;
@@ -100,7 +128,7 @@ public class Resources {
 	
 	public void addAll(Collection<Resource> resources) {
 		for(Resource resource: resources) {
-			fixHref(resource);
+			fixResourceHref(resource);
 			this.resources.put(resource.getHref(), resource);
 		}
 	}
