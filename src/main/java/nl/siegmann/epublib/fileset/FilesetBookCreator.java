@@ -94,6 +94,7 @@ public class FilesetBookCreator {
 		processDirectory(rootDir, file, childSections, resources, inputEncoding);
 		if(! childSections.isEmpty()) {
 			SectionResource sectionResource = new SectionResource(null, file.getName().getBaseName(), calculateHref(rootDir,file));
+			resources.add(sectionResource);
 			Section section = new Section(sectionResource.getSectionName(), sectionResource);
 			section.setChildren(childSections);
 			sections.add(section);
@@ -113,6 +114,7 @@ public class FilesetBookCreator {
 	
 	private static String calculateHref(FileObject rootDir, FileObject currentFile) throws IOException {
 		String result = currentFile.getName().toString().substring(rootDir.getName().toString().length() + 1);
+		result += ".html";
 		return result;
 	}
 }
