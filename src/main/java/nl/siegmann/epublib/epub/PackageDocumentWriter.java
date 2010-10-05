@@ -100,6 +100,18 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			writer.writeEndElement(); // dc:subject
 		}
 
+		for(String description: book.getMetadata().getDescriptions()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.description);
+			writer.writeCharacters(description);
+			writer.writeEndElement(); // dc:description
+		}
+
+		for(String publisher: book.getMetadata().getPublishers()) {
+			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.publisher);
+			writer.writeCharacters(publisher);
+			writer.writeEndElement(); // dc:publisher
+		}
+
 		for(String type: book.getMetadata().getTypes()) {
 			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.type);
 			writer.writeCharacters(type);

@@ -223,6 +223,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			return;
 		}
 		meta.setTitles(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
+		meta.setPublishers(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.publisher));
+		meta.setDescriptions(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.description));
 		meta.setRights(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.rights));
 		meta.setTypes(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.type));
 		meta.setSubjects(getElementsTextChild(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.subject));
