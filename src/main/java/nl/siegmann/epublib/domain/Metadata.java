@@ -32,6 +32,8 @@ public class Metadata {
 	private String format = MediatypeService.EPUB.getName();
 	private List<String> types = new ArrayList<String>();
 	private Guide guide = new Guide();
+	private List<String> descriptions = new ArrayList<String>();
+	private List<String> publishers = new ArrayList<String>();
 	
 	/*
 	 * 
@@ -122,6 +124,7 @@ Type 	The nature or genre of the content of the resource
 	public List<String> getRights() {
 		return rights;
 	}
+	
 	public String addTitle(String title) {
 		this.titles.add(title);
 		return title;
@@ -132,6 +135,29 @@ Type 	The nature or genre of the content of the resource
 	public List<String> getTitles() {
 		return titles;
 	}
+		
+	public String addPublisher(String publisher) {
+		this.publishers.add(publisher);
+		return publisher;
+	}
+	public void setPublishers(List<String> publishers) {
+		this.publishers = publishers;
+	}
+	public List<String> getPublishers() {
+		return publishers;
+	}
+	
+	public String addDescription(String description) {
+		this.descriptions.add(description);
+		return description;
+	}
+	public void setDescriptions(List<String> descriptions) {
+		this.descriptions = descriptions;
+	}
+	public List<String> getDescriptions() {
+		return descriptions;
+	}
+	
 	public Identifier addIdentifier(Identifier identifier) {
 		this.identifiers.add(identifier);
 		return identifier;
