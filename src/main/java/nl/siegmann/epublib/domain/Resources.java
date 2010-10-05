@@ -11,6 +11,9 @@ import org.apache.commons.lang.StringUtils;
 
 public class Resources {
 
+	public static final String IMAGE_PREFIX = "image_";
+	public static final String ITEM_PREFIX = "item_";
+	
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
 	
 	public Resource add(Resource resource) {
@@ -21,28 +24,40 @@ public class Resources {
 	}
 
 	private void fixResourceId(Resource resource) {
+		String  resourceId = resource.getId();
+		
 		// first try and create a unique id based on the resource's href
 		if (StringUtils.isBlank(resource.getId())) {
-			String resourceId = StringUtils.substringBeforeLast(resource.getHref(), ".");
+			resourceId = StringUtils.substringBeforeLast(resource.getHref(), ".");
 			resourceId = StringUtils.substringAfterLast(resourceId, "/");
-			resource.setId(resourceId);
+		}
+		
+		// check if the id is a valid identifier. if not: prepend with valid identifier
+		if (! StringUtils.isBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
+			resourceId = getResourceItemPrefix(resource) + resourceId;
 		}
 		
 		// check if the id is unique. if not: create one from scratch
-		if (StringUtils.isBlank(resource.getId()) || containsId(resource.getId())) {
-			String resourceId = createUniqueResourceId(resource);
-			resource.setId(resourceId);
+		if (StringUtils.isBlank(resourceId) || containsId(resourceId)) {
+			resourceId = createUniqueResourceId(resource);
 		}
+		resource.setId(resourceId);
 	}
 
+	private String getResourceItemPrefix(Resource resource) {
+		String result;
+		if (MediatypeService.isBitmapImage(resource.getMediaType())) {
+			result = IMAGE_PREFIX;
+		} else {
+			result = ITEM_PREFIX;
+		}
+		return result;
+	}
+	
+	
 	private String createUniqueResourceId(Resource resource) {
 		int counter = 1;
-		String prefix;
-		if (MediatypeService.isBitmapImage(resource.getMediaType())) {
-			prefix = "image_";
-		} else {
-			prefix = "item_";
-		}
+		String prefix = getResourceItemPrefix(resource);
 		String result = prefix + counter;
 		while (containsId(result)) {
 			result = prefix + (++ counter);
