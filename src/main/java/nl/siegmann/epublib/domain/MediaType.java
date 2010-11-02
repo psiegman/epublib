@@ -47,4 +47,8 @@ public class MediaType {
 		}
 		return name.equals(((MediaType) otherMediaType).getName());
 	}
+
+	public String toString() {
+		return name;
+	}
 }
