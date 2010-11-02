@@ -50,9 +50,9 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.createDocumentBuilder());
 		String packageHref = packageResource.getHref();
 		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
-		readCover(packageDocument, book, resourcesByHref);
 		readGuide(packageDocument, epubReader, book, resourcesByHref);
 		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref);
+		readCover(packageDocument, book);
 		readMetadata(packageDocument, epubReader, book);
 		List<Section> spineSections = readSpine(packageDocument, epubReader, book, resourcesById);
 		book.setSpineSections(spineSections);
@@ -97,6 +97,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 
 	/**
 	 * Strips off the package prefixes up to the href of the packageHref.
+	 * 
 	 * Example:
 	 * If the packageHref is "OEBPS/content.opf" then a resource href like "OEBPS/foo/bar.html" will be turned into "foo/bar.html"
 	 * 
@@ -139,6 +140,13 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				continue;
 			}
 			if(resource == Resource.NULL_RESOURCE) {
+				continue;
+			}
+			
+			// if the resource is the coverpage then it will be added to the spine later.
+			if (book.getMetadata().getCoverPage() != null
+					&& book.getMetadata().getCoverPage().getId() != null
+					&& book.getMetadata().getCoverPage().getId().equals(resource.getId())) {
 				continue;
 			}
 			Section section = new Section(null, resource);
@@ -206,7 +214,14 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		return null;
 	}
 
-	
+	/**
+	 * Gets the first element that is a child of the parentElement and has the given namespace and tagName
+	 * 
+	 * @param parentElement
+	 * @param namespace
+	 * @param tagName
+	 * @return
+	 */
 	private static Element getFirstElementByTagNameNS(Element parentElement, String namespace, String tagName) {
 		NodeList nodes = parentElement.getElementsByTagNameNS(namespace, tagName);
 		if(nodes.getLength() == 0) {
@@ -339,27 +354,29 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resources
 	 * @return
 	 */
-	private static Collection<String> readCover(Document packageDocument, Book book, Map<String, Resource> resources) {
+	private static void readCover(Document packageDocument, Book book) {
 		
 		Collection<String> coverHrefs = findCoverHrefs(packageDocument);
 		for (String coverHref: coverHrefs) {
-			Resource resource = resources.get(coverHref);
+			Resource resource = book.getResources().getByHref(coverHref);
 			if (resource == null) {
 				log.error("Cover resource " + coverHref + " not found");
 				continue;
 			}
 			if (resource.getMediaType() == MediatypeService.XHTML) {
 				book.getMetadata().setCoverPage(resource);
+				book.getResources().remove(coverHref);
 			} else if (MediatypeService.isBitmapImage(resource.getMediaType())) {
 				book.getMetadata().setCoverImage(resource);
+				book.getResources().remove(coverHref);
 			}
 		}
-		return coverHrefs;
 	}
 	
 	
 	/**
-	 * 
+	 * Sets the resource ids, hrefs and mediatypes with the values from the manifest.
+	 *  
 	 * @param packageDocument
 	 * @param packageHref
 	 * @param epubReader
@@ -369,17 +386,17 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 */
 	private static Map<String, Resource> readManifest(Document packageDocument, String packageHref,
 			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) {
-		Element manifestElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, "manifest");
+		Element manifestElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.manifest);
 		if(manifestElement == null) {
-			log.error("Package document does not contain element manifest");
+			log.error("Package document does not contain element " + OPFTags.manifest);
 			return Collections.<String, Resource>emptyMap();
 		}
-		NodeList itemElements = manifestElement.getElementsByTagName("item");
+		NodeList itemElements = manifestElement.getElementsByTagName(OPFTags.item);
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
-			String mediaTypeName = itemElement.getAttribute("media-type");
-			String href = itemElement.getAttribute("href");
+			String mediaTypeName = itemElement.getAttribute(OPFAttributes.media_type);
+			String href = itemElement.getAttribute(OPFAttributes.href);
 			String id = itemElement.getAttribute(OPFAttributes.id);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
@@ -393,9 +410,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			}
 			if(resource.getMediaType() == MediatypeService.NCX) {
 				book.setNcxResource(resource);
-			} else if ((book.getMetadata().getCoverImage() != null && href.equals(book.getMetadata().getCoverImage().getHref()))
-					|| (book.getMetadata().getCoverPage() != null && href.equals(book.getMetadata().getCoverPage().getHref()))) {
-				result.put(id, Resource.NULL_RESOURCE);
 			} else {
 				book.getResources().add(resource);
 				result.put(id, resource);
