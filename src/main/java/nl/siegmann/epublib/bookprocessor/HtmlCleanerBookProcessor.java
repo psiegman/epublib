@@ -50,7 +50,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 		CleanerProperties cleanerProperties = result.getProperties();
 		cleanerProperties.setOmitXmlDeclaration(true);
 		cleanerProperties.setRecognizeUnicodeChars(true);
-		cleanerProperties.setTranslateSpecialEntities(true);
+		cleanerProperties.setTranslateSpecialEntities(false);
 		cleanerProperties.setIgnoreQuestAndExclam(true);
 		return result;
 	}
