@@ -44,6 +44,10 @@ public class CoverpageBookProcessor implements BookProcessor {
 
 	public static int MAX_COVER_IMAGE_SIZE = 999;
 	private static final Logger LOG = Logger.getLogger(CoverpageBookProcessor.class);
+	public static final String DEFAULT_COVER_PAGE_ID = "cover";
+	public static final String DEFAULT_COVER_PAGE_HREF = "cover.html";
+	public static final String DEFAULT_COVER_IMAGE_ID = "cover-image";
+	public static final String DEFAULT_COVER_IMAGE_HREF = "images/cover.png";
 	
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
@@ -58,10 +62,11 @@ public class CoverpageBookProcessor implements BookProcessor {
 				// give up
 			} else { // coverImage != null
 				if(StringUtils.isBlank(coverImage.getHref())) {
-					coverImage.setHref(getCoverImageHref(coverImage));
+					coverImage.setHref(getCoverImageHref(coverImage, book));
 				}
 				String coverPageHtml = createCoverpageHtml(CollectionUtil.first(metadata.getTitles()), coverImage.getHref());
-				coverPage = new ByteArrayResource("cover", coverPageHtml.getBytes(), "cover.html", MediatypeService.XHTML);
+				coverPage = new ByteArrayResource(null, coverPageHtml.getBytes(), getCoverPageHref(book), MediatypeService.XHTML);
+				fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
 			}
 		} else { // coverPage != null
 			if(metadata.getCoverImage() == null) {
@@ -77,23 +82,40 @@ public class CoverpageBookProcessor implements BookProcessor {
 		
 		metadata.setCoverImage(coverImage);
 		metadata.setCoverPage(coverPage);
-		setCoverResourceIds(metadata);
+		setCoverResourceIds(book);
 		return book;
 	}
 
-	private String getCoverImageHref(Resource coverImageResource) {
-		return "cover" + coverImageResource.getMediaType().getDefaultExtension();
-	}
+//	private String getCoverImageHref(Resource coverImageResource) {
+//		return "cover" + coverImageResource.getMediaType().getDefaultExtension();
+//	}
 	
-	private void setCoverResourceIds(Metadata book) {
-		if(book.getCoverImage() != null) {
-			book.getCoverImage().setId("cover-image");
+	private void setCoverResourceIds(Book book) {
+		Metadata metadata = book.getMetadata();
+		if(metadata.getCoverImage() != null) {
+			fixCoverResourceId(book, metadata.getCoverImage(), DEFAULT_COVER_IMAGE_ID);
 		}
-		if(book.getCoverPage() != null) {
-			book.getCoverPage().setId("cover");
+		if(metadata.getCoverPage() != null) {
+			fixCoverResourceId(book, metadata.getCoverPage(), DEFAULT_COVER_PAGE_ID);
 		}
 	}
 
+	
+	private void fixCoverResourceId(Book book, Resource resource, String defaultId) {
+		if (StringUtils.isBlank(resource.getId())) {
+			resource.setId(defaultId);
+		}
+		book.getResources().fixResourceId(resource);
+	}
+	
+	private String getCoverPageHref(Book book) {
+		return DEFAULT_COVER_PAGE_HREF;
+	}
+	
+	
+	private String getCoverImageHref(Resource imageResource, Book book) {
+		return DEFAULT_COVER_IMAGE_HREF;
+	}
 	
 	private Resource getFirstImageSource(EpubWriter epubWriter, Resource titlePageResource, Resources resources) {
 		try {
