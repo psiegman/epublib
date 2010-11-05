@@ -2,21 +2,12 @@ package nl.siegmann.epublib.domain;
 
 public class ResourceReference {
 
-	protected String title;
 	protected Resource resource;
 
-	public ResourceReference(String title, Resource resource) {
-		this.title = title;
+	public ResourceReference(Resource resource) {
 		this.resource = resource;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
 
 	public Resource getResource() {
 		return resource;
@@ -29,5 +20,20 @@ public class ResourceReference {
 	 */
 	public void setResource(Resource resource) {
 		this.resource = resource;
+	}
+
+
+	/**
+	 * The id of the reference referred to.
+	 * 
+	 * null of the reference is null or has a null id itself.
+	 * 
+	 * @return
+	 */
+	public String getId() {
+		if (resource != null) {
+			return resource.getId();
+		}
+		return null;
 	}
 }

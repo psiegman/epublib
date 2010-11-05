@@ -43,6 +43,7 @@ public class PackageDocumentBase {
 		String manifest = "manifest";
 		String packageTag = "package";
 		String itemref = "itemref";
+		String spine = "spine";
 		String reference = "reference";
 		String guide = "guide";
 		String item = "item";
@@ -62,11 +63,13 @@ public class PackageDocumentBase {
 		String id = "id";
 		String media_type = "media-type";
 		String title = "title";
+		String toc = "toc";
 	}
 	
 	protected interface OPFValues {
 		String meta_cover = "cover";
 		String reference_cover = "cover";
 		String no = "no";
+		String generator = "generator";
 	}
 }

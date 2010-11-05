@@ -12,7 +12,7 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.InputStreamResource;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.util.CollectionUtil;
 
 public class EpubWriterTest extends TestCase {
@@ -29,12 +29,12 @@ public class EpubWriterTest extends TestCase {
 			Author author = new Author("Joe", "Tester");
 			book.getMetadata().addAuthor(author);
 			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
-			book.addResourceAsSection("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
+			book.addToTableOfContents("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.getResources().add(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
-			Section chapter2 = book.addResourceAsSection("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
+			TOCReference chapter2 = book.addToTableOfContents("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
 			book.getResources().add(new InputStreamResource(this.getClass().getResourceAsStream("/book1/flowers_320x240.jpg"), "flowers.jpg"));
-			book.addResourceAsSubSection(chapter2, "Chapter 2 section 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2_1.html"), "chapter2_1.html"));
-			book.addResourceAsSection("Chapter 3", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter3.html"), "chapter3.html"));
+			book.addToTableOfContents(chapter2, "Chapter 2 section 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2_1.html"), "chapter2_1.html"));
+			book.addToTableOfContents("Chapter 3", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter3.html"), "chapter3.html"));
 			EpubWriter writer = new EpubWriter();
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();

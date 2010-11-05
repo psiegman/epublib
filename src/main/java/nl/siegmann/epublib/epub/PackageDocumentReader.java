@@ -18,12 +18,14 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Guide;
+import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Metadata;
-import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.Resources;
+import nl.siegmann.epublib.domain.Spine;
+import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
@@ -54,8 +56,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref);
 		readCover(packageDocument, book);
 		readMetadata(packageDocument, epubReader, book);
-		List<Section> spineSections = readSpine(packageDocument, epubReader, book, resourcesById);
-		book.setSpineSections(spineSections);
+		Spine spine = readSpine(packageDocument, epubReader, book, resourcesById);
+		book.setSpine(spine);
 	}
 	
 	
@@ -122,14 +124,38 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		return result;
 	}
 
-	private static List<Section> readSpine(Document packageDocument,
+	private static Spine generateSpineFromResources(Map<String, Resource> resourcesById) {
+		Spine result = new Spine();
+		List<String> resourceIds = new ArrayList<String>();
+		resourceIds.addAll(resourcesById.keySet());
+		Collections.sort(resourceIds, String.CASE_INSENSITIVE_ORDER);
+		for (String resourceId: resourceIds) {
+			Resource resource = resourcesById.get(resourceId);
+			if (resource.getMediaType() == MediatypeService.NCX) {
+				result.setTocResource(resource);
+			} else if (resource.getMediaType() == MediatypeService.XHTML) {
+				result.addSpineReference(new SpineReference(resource));
+			}
+		}
+		return result;
+	}
+
+	
+	private static Spine readSpine(Document packageDocument,
 			EpubReader epubReader, Book book, Map<String, Resource> resourcesById) {
 
+		Element spineElement = getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.spine);
+		if (spineElement == null) {
+			log.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
+			return generateSpineFromResources(resourcesById);
+		}
+		Spine result = new Spine();
+		result.setTocResource(findTableOfContentsResource(spineElement, resourcesById));
 		NodeList spineNodes = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.itemref);
-		List<Section> result = new ArrayList<Section>(spineNodes.getLength());
+		List<SpineReference> spineReferences = new ArrayList<SpineReference>(spineNodes.getLength());
 		for(int i = 0; i < spineNodes.getLength(); i++) {
-			Element spineElement = (Element) spineNodes.item(i);
-			String itemref = spineElement.getAttribute(OPFAttributes.idref);
+			Element spineItem = (Element) spineNodes.item(i);
+			String itemref = spineItem.getAttribute(OPFAttributes.idref);
 			if(StringUtils.isBlank(itemref)) {
 				log.error("itemref with missing or empty idref"); // XXX
 				continue;
@@ -149,12 +175,41 @@ public class PackageDocumentReader extends PackageDocumentBase {
 					&& book.getMetadata().getCoverPage().getId().equals(resource.getId())) {
 				continue;
 			}
-			Section section = new Section(null, resource);
-			result.add(section);
+			SpineReference spineReference = new SpineReference(resource);
+			spineReferences.add(spineReference);
 		}
+		result.setSpineReferences(spineReferences);
 		return result;
 	}
 	
+	private static Resource findTableOfContentsResource(Element spineElement, Map<String, Resource> resourcesById) {
+		String tocResourceId = spineElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.toc);
+		if (StringUtils.isBlank(tocResourceId)) {
+			tocResourceId = Constants.DEFAULT_TOC_ID;
+		}
+		Resource tocResource = resourcesById.get(tocResourceId);
+		if (tocResource == null) {
+			// could not find toc resource. Try some other options.
+			if (! tocResourceId.equals(Constants.DEFAULT_TOC_ID)) {
+				tocResource = resourcesById.get(Constants.DEFAULT_TOC_ID);
+			}
+		}
+		
+		// try to find resource with id TOC
+		if (tocResource == null) {
+			tocResource = resourcesById.get(Constants.DEFAULT_TOC_ID.toUpperCase());
+		}
+		if (tocResource == null) {
+			// get the first resource with the NCX mediatype
+			tocResource = Resources.findFirstResourceByMediaType(resourcesById.values(), MediatypeService.NCX);
+		}
+		if (tocResource == null) {
+			log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + ", " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
+		}
+		return tocResource;
+	}
+
+
 	/**
 	 * Search for the cover page in the meta tags and the guide references
 	 * @param packageDocument
@@ -400,7 +455,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			String id = itemElement.getAttribute(OPFAttributes.id);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
-				System.err.println("resource not found:" + href);
+				log.error("resource with href '" + href + "' not found");
 				continue;
 			}
 			resource.setId(id);
@@ -408,12 +463,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if(mediaType != null) {
 				resource.setMediaType(mediaType);
 			}
-			if(resource.getMediaType() == MediatypeService.NCX) {
-				book.setNcxResource(resource);
-			} else {
-				book.getResources().add(resource);
-				result.put(id, resource);
-			}
+			book.getResources().add(resource);
+			result.put(id, resource);
 		}
 		return result;
 	}
