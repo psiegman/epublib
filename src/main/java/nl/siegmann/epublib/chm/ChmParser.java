@@ -12,7 +12,8 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.vfs.AllFileSelector;
@@ -48,9 +49,10 @@ public class ChmParser {
 			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
 		}
 		Resources resources = findResources(chmRootDir, htmlEncoding);
-		List<Section> sections = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream(), resources);
-		result.setSections(sections);
+		List<TOCReference> tocReferences = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream(), resources);
+		result.setTableOfContents(new TableOfContents(tocReferences));
 		result.setResources(resources);
+		result.generateSpineFromTableOfContents();
 		return result;
 	}
 	

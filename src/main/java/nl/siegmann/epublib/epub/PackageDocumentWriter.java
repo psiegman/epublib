@@ -14,10 +14,11 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
-import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.GuideReference;
+import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.Spine;
+import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
@@ -158,7 +159,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		}
 
 		writer.writeEmptyElement(OPFTags.meta);
-		writer.writeAttribute(OPFAttributes.name, "generator");
+		writer.writeAttribute(OPFAttributes.name, OPFValues.generator);
 		writer.writeAttribute(OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
 		
 		writer.writeEndElement(); // dc:metadata
@@ -206,15 +207,15 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	 * @throws XMLStreamException
 	 */
 	private static void writeSpine(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement("spine");
-		writer.writeAttribute("toc", epubWriter.getNcxId());
+		writer.writeStartElement(OPFTags.spine);
+		writer.writeAttribute(OPFAttributes.toc, book.getSpine().getTocResource().getId());
 
 		if(book.getMetadata().getCoverPage() != null) { // write the cover html file
 			writer.writeEmptyElement("itemref");
 			writer.writeAttribute("idref", book.getMetadata().getCoverPage().getId());
 			writer.writeAttribute("linear", "no");
 		}
-		writeSections(book.getSpineSections(), writer);
+		writeSpineItems(book.getSpine(), writer);
 		writer.writeEndElement(); // spine
 	}
 
@@ -228,7 +229,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeAttribute(OPFAttributes.media_type, epubWriter.getNcxMediaType());
 
 		writeCoverResources(book, writer);
-		writeItem(book, book.getNcxResource(), writer);
+		writeItem(book, book.getSpine().getTocResource(), writer);
 		List<Resource> allResources = new ArrayList<Resource>(book.getResources().getAll());
 		Collections.sort(allResources, new Comparator<Resource>() {
 
@@ -254,7 +255,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			throws XMLStreamException {
 		if(resource == null ||
 				(resource.getMediaType() == MediatypeService.NCX
-				&& book.getNcxResource() != null)) {
+				&& book.getSpine().getTocResource() != null)) {
 			return;
 		}
 		if(StringUtils.isBlank(resource.getId())) {
@@ -288,14 +289,14 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	}
 
 	/**
-	 * Recursively list the entire section tree.
+	 * List all spine references
 	 */
-	private static void writeSections(List<Section> sections, XMLStreamWriter writer) throws XMLStreamException {
-		for(Section section: sections) {
+	private static void writeSpineItems(Spine spine, XMLStreamWriter writer) throws XMLStreamException {
+		for(SpineReference spineReference: spine.getSpineReferences()) {
 			writer.writeEmptyElement(OPFTags.itemref);
-			writer.writeAttribute(OPFAttributes.idref, section.getItemId());
-			if(section.getChildren() != null && ! section.getChildren().isEmpty()) {
-				writeSections(section.getChildren(), writer);
+			writer.writeAttribute(OPFAttributes.idref, spineReference.getId());
+			if (! spineReference.isLinear()) {
+				writer.writeAttribute(OPFAttributes.linear, OPFValues.no);
 			}
 		}
 	}

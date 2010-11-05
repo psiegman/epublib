@@ -23,7 +23,7 @@ public class Resources {
 		return resource;
 	}
 
-	private void fixResourceId(Resource resource) {
+	public void fixResourceId(Resource resource) {
 		String  resourceId = resource.getId();
 		
 		// first try and create a unique id based on the resource's href
@@ -32,10 +32,7 @@ public class Resources {
 			resourceId = StringUtils.substringAfterLast(resourceId, "/");
 		}
 		
-		// check if the id is a valid identifier. if not: prepend with valid identifier
-		if (! StringUtils.isBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
-			resourceId = getResourceItemPrefix(resource) + resourceId;
-		}
+		resourceId = makeValidId(resourceId, resource);
 		
 		// check if the id is unique. if not: create one from scratch
 		if (StringUtils.isBlank(resourceId) || containsId(resourceId)) {
@@ -44,6 +41,19 @@ public class Resources {
 		resource.setId(resourceId);
 	}
 
+	/**
+	 * Check if the id is a valid identifier. if not: prepend with valid identifier
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	private String makeValidId(String resourceId, Resource resource) {
+		if (! StringUtils.isBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
+			resourceId = getResourceItemPrefix(resource) + resourceId;
+		}
+		return resourceId;
+	}
+	
 	private String getResourceItemPrefix(Resource resource) {
 		String result;
 		if (MediatypeService.isBitmapImage(resource.getMediaType())) {
@@ -161,5 +171,18 @@ public class Resources {
 		href = StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR);
 		Resource result = resources.get(href);
 		return result;
+	}
+	
+	public Resource findFirstResourceByMediaType(MediaType mediaType) {
+		return findFirstResourceByMediaType(resources.values(), mediaType);
+	}
+	
+	public static Resource findFirstResourceByMediaType(Collection<Resource> resources, MediaType mediaType) {
+		for (Resource resource: resources) {
+			if (resource.getMediaType() == mediaType) {
+				return resource;
+			}
+		}
+		return null;
 	}
 }

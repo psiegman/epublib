@@ -11,8 +11,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.SectionResource;
+import nl.siegmann.epublib.domain.TOCReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.htmlcleaner.CleanerProperties;
@@ -34,7 +36,7 @@ public class HHCParser {
 
 	public static final String DEFAULT_HTML_INPUT_ENCODING = "Windows-1251";
 	
-	public static List<Section> parseHhc(InputStream hhcFile, Resources resources) throws IOException, ParserConfigurationException,	XPathExpressionException {
+	public static List<TOCReference> parseHhc(InputStream hhcFile, Resources resources) throws IOException, ParserConfigurationException,	XPathExpressionException {
 		HtmlCleaner htmlCleaner = new HtmlCleaner();
 		CleanerProperties props = htmlCleaner.getProperties();
 		TagNode node = htmlCleaner.clean(hhcFile);
@@ -42,7 +44,7 @@ public class HHCParser {
 		XPath xpath = XPathFactory.newInstance().newXPath();
 		Node ulNode = (Node) xpath.evaluate("body/ul", hhcDocument
 				.getDocumentElement(), XPathConstants.NODE);
-		List<Section> sections = processUlNode(ulNode, resources);
+		List<TOCReference> sections = processUlNode(ulNode, resources);
 		return sections;
 	}
 	
@@ -59,20 +61,20 @@ public class HHCParser {
 	 * </li>
 	 * <ul> ... </ul> <!-- child elements -->
 	 */
-	private static List<Section> processUlNode(Node ulNode, Resources resources) {
-		List<Section> result = new ArrayList<Section>();
+	private static List<TOCReference> processUlNode(Node ulNode, Resources resources) {
+		List<TOCReference> result = new ArrayList<TOCReference>();
 		NodeList children = ulNode.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
 			if(node.getNodeName().equals("li")) {
-				List<Section> section = processLiNode(node, resources);
+				List<TOCReference> section = processLiNode(node, resources);
 				result.addAll(section);
 			} else if(node.getNodeName().equals("ul")) {
-				List<Section> childSections = processUlNode(node, resources);
+				List<TOCReference> childTOCReferences = processUlNode(node, resources);
 				if(result.isEmpty()) {
-					result = childSections;
+					result = childTOCReferences;
 				} else {
-					result.get(result.size() - 1).getChildren().addAll(childSections);
+					result.get(result.size() - 1).getChildren().addAll(childTOCReferences);
 				}
 			}
 		}
@@ -80,22 +82,22 @@ public class HHCParser {
 	}
 
 	
-	private static List<Section> processLiNode(Node liNode, Resources resources) {
-		List<Section> result = new ArrayList<Section>();
+	private static List<TOCReference> processLiNode(Node liNode, Resources resources) {
+		List<TOCReference> result = new ArrayList<TOCReference>();
 		NodeList children = liNode.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
 			if(node.getNodeName().equals("object")) {
-				Section section = processObjectNode(node, resources);
+				TOCReference section = processObjectNode(node, resources);
 				if(section != null) {
 					result.add(section);
 				}
 			} else if(node.getNodeName().equals("ul")) {
-				List<Section> childSections = processUlNode(node, resources);
+				List<TOCReference> childTOCReferences = processUlNode(node, resources);
 				if(result.isEmpty()) {
-					result = childSections;
+					result = childTOCReferences;
 				} else {
-					result.get(result.size() - 1).getChildren().addAll(childSections);
+					result.get(result.size() - 1).getChildren().addAll(childTOCReferences);
 				}
 			}
 		}
@@ -104,8 +106,8 @@ public class HHCParser {
 
 	
 	/**
-	 * Processes a CHM object node into a Section
-	 * If the local name is empty then a Section node is made with a null href value.
+	 * Processes a CHM object node into a TOCReference
+	 * If the local name is empty then a TOCReference node is made with a null href value.
 	 * 
 	 * <object type="text/sitemap">
 	 * 		<param name="Name" value="My favorite section" />
@@ -115,10 +117,10 @@ public class HHCParser {
 	 * 
 	 * @param objectNode
 	 * 
-	 * @return A Section of the object has a non-blank param child with name 'Name' and a non-blank param name 'Local'
+	 * @return A TOCReference of the object has a non-blank param child with name 'Name' and a non-blank param name 'Local'
 	 */
-	private static Section processObjectNode(Node objectNode, Resources resources) {
-		Section result = null;
+	private static TOCReference processObjectNode(Node objectNode, Resources resources) {
+		TOCReference result = null;
 		NodeList children = objectNode.getChildNodes();
 		String name = null;
 		String href = null;
@@ -137,7 +139,12 @@ public class HHCParser {
 			return result;
 		}
 		if(! StringUtils.isBlank(name)) {
-			result = new Section(name, resources.getByCompleteHref(href)); // fragmentId
+			Resource resource = resources.getByCompleteHref(href);
+			if (resource == null) {
+				resource = new SectionResource(null, name, href);
+				resources.add(resource);
+			}
+			result = new TOCReference(name, resource);
 		}
 		return result;
 	}

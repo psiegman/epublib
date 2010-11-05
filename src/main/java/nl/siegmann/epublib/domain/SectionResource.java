@@ -14,11 +14,11 @@ import nl.siegmann.epublib.service.MediatypeService;
  */
 public class SectionResource extends ResourceBase implements Resource {
 
-	private String sectionName;
+	private String title;
 	
-	public SectionResource(String id, String sectionName, String href) {
+	public SectionResource(String id, String title, String href) {
 		super(id, href, MediatypeService.XHTML);
-		this.sectionName = sectionName;
+		this.title = title;
 	}
 
 	
@@ -29,16 +29,16 @@ public class SectionResource extends ResourceBase implements Resource {
 
 	
 	private String getContent() {
-		return "<html><head><title>" + sectionName + "</title></head><body><h1>" + sectionName + "</h1></body></html>";
+		return "<html><head><title>" + title + "</title></head><body><h1>" + title + "</h1></body></html>";
 	}
 
 
 	public String getSectionName() {
-		return sectionName;
+		return title;
 	}
 
 
 	public void setSectionName(String sectionName) {
-		this.sectionName = sectionName;
+		this.title = sectionName;
 	}
 }

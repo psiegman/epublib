@@ -25,7 +25,8 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
@@ -95,11 +96,11 @@ public class NCXDocument {
 	
 	
 	public static void read(Book book, EpubReader epubReader) {
-		if(book.getNcxResource() == null) {
+		if(book.getSpine().getTocResource() == null) {
 			return;
 		}
 		try {
-			Resource ncxResource = book.getNcxResource();
+			Resource ncxResource = book.getSpine().getTocResource();
 			if(ncxResource == null) {
 				return;
 			}
@@ -107,36 +108,37 @@ public class NCXDocument {
 			XPath xPath = epubReader.getXpathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
 		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":navMap/" + PREFIX_NCX + ":navPoint", ncxDocument, XPathConstants.NODESET);
-			List<Section> sections = readSections(navmapNodes, xPath, book);
-			book.setTocSections(sections);
+			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));
+			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
 			log.error(e);
 		}
 	}
 
-	private static List<Section> readSections(NodeList navpoints, XPath xPath, Book book) throws XPathExpressionException {
+	private static List<TOCReference> readTOCReferences(NodeList navpoints, XPath xPath, Book book) throws XPathExpressionException {
 		if(navpoints == null) {
-			return new ArrayList<Section>();
+			return new ArrayList<TOCReference>();
 		}
-		List<Section> result = new ArrayList<Section>(navpoints.getLength());
+		List<TOCReference> result = new ArrayList<TOCReference>(navpoints.getLength());
 		for(int i = 0; i < navpoints.getLength(); i++) {
-			Section childSection = readSection((Element) navpoints.item(i), xPath, book);
-			result.add(childSection);
+			TOCReference tocReference = readSection((Element) navpoints.item(i), xPath, book);
+			result.add(tocReference);
 		}
 		return result;
 	}
 
-	private static Section readSection(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
+	private static TOCReference readSection(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
 		String name = xPath.evaluate(PREFIX_NCX + ":navLabel/" + PREFIX_NCX + ":text", navpointElement);
 		String completeHref = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
 		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
+		String fragmentId = StringUtils.substringAfter(completeHref, Constants.FRAGMENT_SEPARATOR);
 		Resource resource = book.getResources().getByHref(href);
 		if (resource == null) {
 			log.error("Resource with href " + href + " in NCX document not found");
 		}
-		Section result = new Section(name, resource);
+		TOCReference result = new TOCReference(name, resource, fragmentId);
 		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":navPoint", navpointElement, XPathConstants.NODESET);
-		result.setChildren(readSections(childNavpoints, xPath, book));
+		result.setChildren(readTOCReferences(childNavpoints, xPath, book));
 		return result;
 	}
 
@@ -207,42 +209,42 @@ public class NCXDocument {
 		}
 		
 		writer.writeStartElement(NAMESPACE_NCX, "navMap");
-		writeNavPoints(book.getTocSections(), 1, writer);
+		writeNavPoints(book.getTableOfContents().getTocReferences(), 1, writer);
 		writer.writeEndElement();
 		writer.writeEndElement();
 		writer.writeEndDocument();
 	}
 
 
-	private static int writeNavPoints(List<Section> sections, int playOrder,
+	private static int writeNavPoints(List<TOCReference> tocReferences, int playOrder,
 			XMLStreamWriter writer) throws XMLStreamException {
-		for(Section section: sections) {
-			writeNavPointStart(section, playOrder, writer);
+		for(TOCReference tocReference: tocReferences) {
+			writeNavPointStart(tocReference, playOrder, writer);
 			playOrder++;
-			if(! section.getChildren().isEmpty()) {
-				playOrder = writeNavPoints(section.getChildren(), playOrder, writer);
+			if(! tocReference.getChildren().isEmpty()) {
+				playOrder = writeNavPoints(tocReference.getChildren(), playOrder, writer);
 			}
-			writeNavPointEnd(section, writer);
+			writeNavPointEnd(tocReference, writer);
 		}
 		return playOrder;
 	}
 
 
-	private static void writeNavPointStart(Section section, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
+	private static void writeNavPointStart(TOCReference tocReference, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(NAMESPACE_NCX, "navPoint");
 		writer.writeAttribute("id", "navPoint-" + playOrder);
 		writer.writeAttribute("playOrder", String.valueOf(playOrder));
 		writer.writeAttribute("class", "chapter");
 		writer.writeStartElement(NAMESPACE_NCX, "navLabel");
 		writer.writeStartElement(NAMESPACE_NCX, "text");
-		writer.writeCharacters(section.getTitle());
+		writer.writeCharacters(tocReference.getTitle());
 		writer.writeEndElement(); // text
 		writer.writeEndElement(); // navLabel
 		writer.writeEmptyElement(NAMESPACE_NCX, "content");
-		writer.writeAttribute("src", section.getResource().getHref()); // XXX fragmentId
+		writer.writeAttribute("src", tocReference.getCompleteHref());
 	}
 
-	private static void writeNavPointEnd(Section section, XMLStreamWriter writer) throws XMLStreamException {
+	private static void writeNavPointEnd(TOCReference tocReference, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeEndElement(); // navPoint
 	}
 

@@ -23,7 +23,6 @@ import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
 import nl.siegmann.epublib.bookprocessor.FixIdentifierBookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import nl.siegmann.epublib.bookprocessor.MissingResourceBookProcessor;
 import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -68,7 +67,6 @@ public class EpubWriter extends EpubProcessor {
 		result.addAll(Arrays.asList(new BookProcessor[] {
 			new SectionHrefSanityCheckBookProcessor(),
 			new HtmlCleanerBookProcessor(),
-			new MissingResourceBookProcessor(),
 			new CoverpageBookProcessor(),
 			new FixIdentifierBookProcessor()
 		}));
@@ -82,7 +80,7 @@ public class EpubWriter extends EpubProcessor {
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
 		// create an NCX/table of contents document and add it as a resources to the book.
-		book.setNcxResource(NCXDocument.createNCXResource(this, book));
+		book.getSpine().setTocResource(NCXDocument.createNCXResource(this, book));
 		writeResources(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
@@ -101,7 +99,7 @@ public class EpubWriter extends EpubProcessor {
 			writeResource(resource, resultStream);
 		}
 		writeCoverResources(book, resultStream);
-		writeResource(book.getNcxResource(), resultStream);
+		writeResource(book.getSpine().getTocResource(), resultStream);
 	}
 
 	/**

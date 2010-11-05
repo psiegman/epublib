@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.Section;
+import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,18 +20,18 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		XPath xpath = createXPathExpression();
-		processSections(book.getTocSections(), book, xpath);
+		processSections(book.getTableOfContents().getTocReferences(), book, xpath);
 		return book;
 	}
 
-	private void processSections(List<Section> sections, Book book, XPath xpath) {
-		for(Section section: sections) {
-			if(! StringUtils.isBlank(section.getTitle())) {
+	private void processSections(List<TOCReference> tocReferences, Book book, XPath xpath) {
+		for(TOCReference tocReference: tocReferences) {
+			if(! StringUtils.isBlank(tocReference.getTitle())) {
 				continue;
 			}
 			try {
-				String title = getTitle(section, book, xpath);
-				section.setTitle(title);
+				String title = getTitle(tocReference, book, xpath);
+				tocReference.setTitle(title);
 			} catch (XPathExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -43,8 +43,8 @@ public class SectionTitleBookProcessor implements BookProcessor {
 	}
 	
 	
-	private String getTitle(Section section, Book book, XPath xpath) throws IOException, XPathExpressionException {
-		Resource resource = section.getResource();
+	private String getTitle(TOCReference tocReference, Book book, XPath xpath) throws IOException, XPathExpressionException {
+		Resource resource = tocReference.getResource();
 		if(resource == null) {
 			return null;
 		}

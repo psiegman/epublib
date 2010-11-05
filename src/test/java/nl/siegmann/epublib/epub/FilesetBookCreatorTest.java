@@ -24,8 +24,8 @@ public class FilesetBookCreatorTest extends TestCase {
 			IOUtils.copy(this.getClass().getResourceAsStream("/book1/chapter1.html"), chapter1.getContent().getOutputStream());
 			Book bookFromDirectory = FilesetBookCreator.createBookFromDirectory(dir, Charset.forName("UTF-8"));
 			assertEquals(1, bookFromDirectory.getResources().size());
-			assertEquals(1, bookFromDirectory.getSpineSections().size());
-			assertEquals(1, bookFromDirectory.getTocSections().size());
+			assertEquals(1, bookFromDirectory.getSpine().size());
+			assertEquals(1, bookFromDirectory.getTableOfContents().getTotalSize());
 		} catch(Exception e) {
 			assertTrue(false);
 		}

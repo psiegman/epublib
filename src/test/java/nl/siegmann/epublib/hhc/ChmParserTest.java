@@ -1,12 +1,13 @@
 package nl.siegmann.epublib.hhc;
 
+import java.io.FileOutputStream;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.FilesetBookCreatorTest;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
@@ -23,7 +24,7 @@ public class ChmParserTest extends TestCase {
 			FileObject dir = fsManager.resolveFile("ram://chm_test_dir");
 			dir.createFolder();
 			String chm1Dir = "/chm1";
-			Iterator<String> lineIter = IOUtils.lineIterator(FilesetBookCreatorTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING.name());
+			Iterator<String> lineIter = IOUtils.lineIterator(ChmParserTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING.name());
 			while(lineIter.hasNext()) {
 				String line = lineIter.next();
 				FileObject file = dir.resolveFile(line, NameScope.DESCENDENT);
@@ -33,9 +34,10 @@ public class ChmParserTest extends TestCase {
 			}
 			
 			Book chmBook = ChmParser.parseChm(dir, Constants.ENCODING);
-			assertEquals(42, chmBook.getResources().size());
-			assertEquals(4, chmBook.getSpineSections().size());
-			assertEquals(4, chmBook.getTocSections().size());
+			new EpubWriter().write(chmBook, new FileOutputStream("/home/paul/chm_test.epub"));
+			assertEquals(45, chmBook.getResources().size());
+			assertEquals(18, chmBook.getSpine().size());
+			assertEquals(19, chmBook.getTableOfContents().getTotalSize());
 			assertEquals("chm-example", chmBook.getMetadata().getTitles().get(0));
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -14,8 +14,10 @@ import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.domain.Section;
 import nl.siegmann.epublib.domain.SectionResource;
+import nl.siegmann.epublib.domain.Spine;
+import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.vfs.FileObject;
@@ -58,15 +60,17 @@ public class FilesetBookCreator {
 	 */
 	public static Book createBookFromDirectory(FileObject rootDirectory, Charset encoding) throws IOException {
 		Book result = new Book();
-		List<Section> sections = new ArrayList<Section>();
+		List<TOCReference> sections = new ArrayList<TOCReference>();
 		Resources resources = new Resources();
 		processDirectory(rootDirectory, rootDirectory, sections, resources, encoding);
 		result.setResources(resources);
-		result.setSections(sections);
+		TableOfContents tableOfContents = new TableOfContents(sections);
+		result.setTableOfContents(tableOfContents);
+		result.setSpine(new Spine(tableOfContents));
 		return result;
 	}
 
-	private static void processDirectory(FileObject rootDir, FileObject directory, List<Section> sections, Resources resources, Charset inputEncoding) throws IOException {
+	private static void processDirectory(FileObject rootDir, FileObject directory, List<TOCReference> sections, Resources resources, Charset inputEncoding) throws IOException {
 		FileObject[] files = directory.getChildren();
 		Arrays.sort(files, fileComparator);
 		for(int i = 0; i < files.length; i++) {
@@ -80,7 +84,7 @@ public class FilesetBookCreator {
 				}
 				resources.add(resource);
 				if(MediatypeService.XHTML == resource.getMediaType()) {
-					Section section = new Section(file.getName().getBaseName(), resource);
+					TOCReference section = new TOCReference(file.getName().getBaseName(), resource);
 					sections.add(section);
 				}
 			}
@@ -88,15 +92,15 @@ public class FilesetBookCreator {
 	}
 
 	private static void processSubdirectory(FileObject rootDir, FileObject file,
-			List<Section> sections, Resources resources, Charset inputEncoding)
+			List<TOCReference> sections, Resources resources, Charset inputEncoding)
 			throws IOException {
-		List<Section> childSections = new ArrayList<Section>();
-		processDirectory(rootDir, file, childSections, resources, inputEncoding);
-		if(! childSections.isEmpty()) {
+		List<TOCReference> childTOCReferences = new ArrayList<TOCReference>();
+		processDirectory(rootDir, file, childTOCReferences, resources, inputEncoding);
+		if(! childTOCReferences.isEmpty()) {
 			SectionResource sectionResource = new SectionResource(null, file.getName().getBaseName(), calculateHref(rootDir,file));
 			resources.add(sectionResource);
-			Section section = new Section(sectionResource.getSectionName(), sectionResource);
-			section.setChildren(childSections);
+			TOCReference section = new TOCReference(sectionResource.getSectionName(), sectionResource);
+			section.setChildren(childTOCReferences);
 			sections.add(section);
 		}
 	}
