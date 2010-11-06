@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Section of a book.
- * Represents both an item in the package document and a item in the index.
+ * An item in the Table of Contents.
+ * 
+ * @see nl.siegmann.epublib.domain.TableOfContents
  * 
  * @author paul
  *

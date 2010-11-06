@@ -2,6 +2,7 @@ package nl.siegmann.epublib.epub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -29,18 +30,18 @@ public class EpubWriterTest extends TestCase {
 			Author author = new Author("Joe", "Tester");
 			book.getMetadata().addAuthor(author);
 			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
-			book.addToTableOfContents("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
-			book.getResources().add(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
-			TOCReference chapter2 = book.addToTableOfContents("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
-			book.getResources().add(new InputStreamResource(this.getClass().getResourceAsStream("/book1/flowers_320x240.jpg"), "flowers.jpg"));
-			book.addToTableOfContents(chapter2, "Chapter 2 section 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2_1.html"), "chapter2_1.html"));
-			book.addToTableOfContents("Chapter 3", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter3.html"), "chapter3.html"));
+			book.addSection("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
+			book.addResource(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
+			TOCReference chapter2 = book.addSection("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
+			book.addResource(new InputStreamResource(this.getClass().getResourceAsStream("/book1/flowers_320x240.jpg"), "flowers.jpg"));
+			book.addSection(chapter2, "Chapter 2 section 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2_1.html"), "chapter2_1.html"));
+			book.addSection("Chapter 3", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter3.html"), "chapter3.html"));
 			EpubWriter writer = new EpubWriter();
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			writer.write(book, out);
 			byte[] epubData = out.toByteArray();
-//			new FileOutputStream("test2_book1.epub").write(epubData);
+			new FileOutputStream("test2_book1.epub").write(epubData);
 
 			assertNotNull(epubData);
 			assertTrue(epubData.length > 0);
@@ -50,6 +51,7 @@ public class EpubWriterTest extends TestCase {
 			assertEquals(Identifier.Scheme.ISBN, CollectionUtil.first(readBook.getMetadata().getIdentifiers()).getScheme());
 			assertEquals(isbn, CollectionUtil.first(readBook.getMetadata().getIdentifiers()).getValue());
 			assertEquals(author, CollectionUtil.first(readBook.getMetadata().getAuthors()));
+			assertEquals(4, readBook.getTableOfContents().size());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

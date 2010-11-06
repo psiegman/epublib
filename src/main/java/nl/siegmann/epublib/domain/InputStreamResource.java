@@ -8,7 +8,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Wraps the Resource interface around a file on disk.
+ * Wraps the Resource interface around an inputstream.
  * 
  * @author paul
  *

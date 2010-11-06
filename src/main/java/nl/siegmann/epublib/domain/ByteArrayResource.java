@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+/**
+ * A resource that stores it's data as a byte[]
+ * 
+ * @author paul
+ *
+ */
 public class ByteArrayResource extends ResourceBase implements Resource {
 
 	private byte[] data;

@@ -3,19 +3,21 @@ package nl.siegmann.epublib.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The guide is a selection of special pages of the book.
+ * Examples of these are the cover, list if illustrations, etc.
+ * 
+ * It is an optional part of an epub, and support for the various types of references varies by reader.
+ * 
+ * The only part of this that is heavily used is the cover page.
+ * 
+ * @author paul
+ *
+ */
 public class Guide {
-
-	public interface Types {
-		String COVER = "cover";
-		String TITLE_PAGE = "title-page";
-		String TOC = "toc";
-		String TEXT = "text";
-		String PREFACE = "preface";
-	}
 
 	private List<GuideReference> references = new ArrayList<GuideReference>();
 	private Resource coverPage;
-	private Resource coverImage;
 
 	public List<GuideReference> getReferences() {
 		return references;
@@ -37,17 +39,6 @@ public class Guide {
 		this.coverPage = coverPage;
 	}
 	
-	/**
-	 * The main image used by the cover page.
-	 * 
-	 * @return
-	 */
-	public Resource getCoverImage() {
-		return coverImage;
-	}
-	public void setCoverImage(Resource coverImage) {
-		this.coverImage = coverImage;
-	}
 
 	public ResourceReference addReference(GuideReference reference) {
 		this.references.add(reference);

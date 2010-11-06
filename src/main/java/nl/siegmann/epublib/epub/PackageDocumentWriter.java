@@ -210,9 +210,10 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeStartElement(OPFTags.spine);
 		writer.writeAttribute(OPFAttributes.toc, book.getSpine().getTocResource().getId());
 
-		if(book.getMetadata().getCoverPage() != null) { // write the cover html file
+		// XXX check if the coverpage isn't already in the spine
+		if(book.getCoverPage() != null) { // write the cover html file
 			writer.writeEmptyElement("itemref");
-			writer.writeAttribute("idref", book.getMetadata().getCoverPage().getId());
+			writer.writeAttribute("idref", book.getCoverPage().getId());
 			writer.writeAttribute("linear", "no");
 		}
 		writeSpineItems(book.getSpine(), writer);
@@ -284,8 +285,8 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	 * @throws XMLStreamException
 	 */
 	private static void writeCoverResources(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writeItem(book, book.getMetadata().getCoverImage(), writer);
-		writeItem(book, book.getMetadata().getCoverPage(), writer);
+		writeItem(book, book.getCoverImage(), writer);
+		writeItem(book, book.getCoverPage(), writer);
 	}
 
 	/**
@@ -294,7 +295,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	private static void writeSpineItems(Spine spine, XMLStreamWriter writer) throws XMLStreamException {
 		for(SpineReference spineReference: spine.getSpineReferences()) {
 			writer.writeEmptyElement(OPFTags.itemref);
-			writer.writeAttribute(OPFAttributes.idref, spineReference.getId());
+			writer.writeAttribute(OPFAttributes.idref, spineReference.getResourceId());
 			if (! spineReference.isLinear()) {
 				writer.writeAttribute(OPFAttributes.linear, OPFValues.no);
 			}
@@ -303,12 +304,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	private static void writeGuide(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(OPFTags.guide);
-		if(book.getMetadata().getCoverPage() != null) {
-			writer.writeEmptyElement(OPFTags.reference);
-			writer.writeAttribute(OPFAttributes.type, OPFValues.reference_cover);
-			writer.writeAttribute(OPFAttributes.href, book.getMetadata().getCoverPage().getHref());
-		}
-		for (GuideReference reference: book.getMetadata().getGuide().getReferences()) {
+		for (GuideReference reference: book.getGuide().getReferences()) {
 			writer.writeEmptyElement(OPFTags.reference);
 			writer.writeAttribute(OPFAttributes.type, reference.getType());
 			writer.writeAttribute(OPFAttributes.href, reference.getCompleteHref());

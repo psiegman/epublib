@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
+
 import nl.siegmann.epublib.service.MediatypeService;
 
 /**
@@ -31,10 +33,9 @@ public class Metadata {
 	private List<String> subjects = new ArrayList<String>();
 	private String format = MediatypeService.EPUB.getName();
 	private List<String> types = new ArrayList<String>();
-	private Guide guide = new Guide();
 	private List<String> descriptions = new ArrayList<String>();
 	private List<String> publishers = new ArrayList<String>();
-	
+	private Resource coverImage;
 	/*
 	 * 
 	 
@@ -125,6 +126,26 @@ Type 	The nature or genre of the content of the resource
 		return rights;
 	}
 	
+	
+	/**
+	 * Gets the first non-blank title of the book.
+	 * Will return "" if no title found.
+	 * 
+	 * @return
+	 */
+	public String getFirstTitle() {
+		if (titles == null || titles.isEmpty()) {
+			return "";
+		}
+		for (String title: titles) {
+			if (! StringUtils.isBlank(title)) {
+				return title;
+			}
+		}
+		return "";
+	}
+	
+	
 	public String addTitle(String title) {
 		this.titles.add(title);
 		return title;
@@ -180,26 +201,22 @@ Type 	The nature or genre of the content of the resource
 		return type;
 	}
 	
-	
 	public List<String> getTypes() {
 		return types;
 	}
 	public void setTypes(List<String> types) {
 		this.types = types;
 	}
-	public Resource getCoverPage() {
-		return guide.getCoverPage();
-	}
-	public void setCoverPage(Resource coverPage) {
-		guide.setCoverPage(coverPage);
-	}
+	
+	/**
+	 * The main image used by the cover page.
+	 * 
+	 * @return
+	 */
 	public Resource getCoverImage() {
-		return guide.getCoverImage();
+		return coverImage;
 	}
 	public void setCoverImage(Resource coverImage) {
-		guide.setCoverImage(coverImage);
-	}
-	public Guide getGuide() {
-		return guide;
+		this.coverImage = coverImage;
 	}
 }

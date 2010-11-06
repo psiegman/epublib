@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * A Book's identifier.
+ * 
  * Defaults to a random UUID and scheme "UUID"
  * 
  * @author paul

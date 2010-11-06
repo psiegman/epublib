@@ -50,11 +50,13 @@ public class NCXDocument {
 	public static final String PREFIX_NCX = "ncx";
 	public static final String NCX_ITEM_ID = "ncx";
 	public static final String NCX_HREF = "toc.ncx";
-	
+
 	private static Logger log = Logger.getLogger(NCXDocument.class);
 
 	private interface NCXTags {
 		String meta = "meta";
+		String navPoint = "navPoint";
+		String navMap = "navMap";
 	}
 
 	// package
@@ -97,6 +99,7 @@ public class NCXDocument {
 	
 	public static void read(Book book, EpubReader epubReader) {
 		if(book.getSpine().getTocResource() == null) {
+			log.error("Book does not contain a table of contents file");
 			return;
 		}
 		try {
@@ -107,7 +110,7 @@ public class NCXDocument {
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader.createDocumentBuilder());
 			XPath xPath = epubReader.getXpathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
-		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":navMap/" + PREFIX_NCX + ":navPoint", ncxDocument, XPathConstants.NODESET);
+		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint, ncxDocument, XPathConstants.NODESET);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
@@ -137,19 +140,28 @@ public class NCXDocument {
 			log.error("Resource with href " + href + " in NCX document not found");
 		}
 		TOCReference result = new TOCReference(name, resource, fragmentId);
-		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":navPoint", navpointElement, XPathConstants.NODESET);
+		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":" + NCXTags.navPoint, navpointElement, XPathConstants.NODESET);
 		result.setChildren(readTOCReferences(childNavpoints, xPath, book));
 		return result;
 	}
 
 	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
-		resultStream.putNextEntry(new ZipEntry("OEBPS/toc.ncx"));
+		resultStream.putNextEntry(new ZipEntry(book.getSpine().getTocResource().getHref()));
 		XMLStreamWriter out = epubWriter.createXMLStreamWriter(resultStream);
 		write(out, book);
 		out.flush();
 	}
 	
 
+	/**
+	 * Generates a resource containing an xml document containing the table of contents of the book in ncx format.
+	 * 
+	 * @param epubWriter
+	 * @param book
+	 * @return
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 */
 	public static Resource createNCXResource(EpubWriter epubWriter, Book book) throws XMLStreamException, FactoryConfigurationError {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		XMLStreamWriter out = epubWriter.createXMLStreamWriter(data);
@@ -208,7 +220,7 @@ public class NCXDocument {
 			writer.writeEndElement();
 		}
 		
-		writer.writeStartElement(NAMESPACE_NCX, "navMap");
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navMap);
 		writeNavPoints(book.getTableOfContents().getTocReferences(), 1, writer);
 		writer.writeEndElement();
 		writer.writeEndElement();
@@ -231,7 +243,7 @@ public class NCXDocument {
 
 
 	private static void writeNavPointStart(TOCReference tocReference, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement(NAMESPACE_NCX, "navPoint");
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navPoint);
 		writer.writeAttribute("id", "navPoint-" + playOrder);
 		writer.writeAttribute("playOrder", String.valueOf(playOrder));
 		writer.writeAttribute("class", "chapter");
@@ -247,6 +259,4 @@ public class NCXDocument {
 	private static void writeNavPointEnd(TOCReference tocReference, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeEndElement(); // navPoint
 	}
-
-
 }

@@ -2,9 +2,11 @@ package nl.siegmann.epublib.domain;
 
 
 /**
- * Relators to be used for Creators and Contributors.
+ * A relator denotes which role a certain individual had in the creation/modification of the ebook.
  * 
- * The Library of Concress relator list
+ * Examples are 'creator', 'blurb writer', etc.
+ * 
+ * This is contains the complete Library of Concress relator list.
  * 
  * @see http://www.loc.gov/marc/relators/relaterm.html
  * 

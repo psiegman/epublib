@@ -5,32 +5,66 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * These are references to elements of the book's guide.
- * The guide points to resources in the book by function ('cover', 'index', 'acknowledgements', etc).
- * It is an optional part of an epub, and support for the various types of references varies by reader.
- * The only part of this that is heavily used is the cover page.
+ * 
+ * @see nl.siegmann.epublib.domain.Guide
  * 
  * @author paul
  *
  */
 public class GuideReference extends TitledResourceReference {
 	
-	public static String COVER = "cover"; //  	 the book cover(s), jacket information, etc.
-	public static String TITLE_PAGE = "title-page"; // 	page with possibly title, author, publisher, and other metadata
-	public static String TOC = "toc"; // 	table of contents
-	public static String INDEX = "index"; // 	back-of-book style index
+	/**
+	 * the book cover(s), jacket information, etc.
+	 */
+	public static String COVER = "cover";
+	
+	/**
+	 * human-readable page with title, author, publisher, and other metadata
+	 */
+	public static String TITLE_PAGE = "title-page";
+	
+	/**
+	 * Human-readable table of contents.
+	 * Not to be confused the epub file table of contents
+	 * 
+	 */
+	public static String TOC = "toc";
+	
+	/**
+	 * back-of-book style index
+	 */
+	public static String INDEX = "index";
 	public static String GLOSSARY = "glossary"; 	
 	public static String ACKNOWLEDGEMENTS = "acknowledgements"; 	
 	public static String BIBLIOGRAPHY = "bibliography"; 	
 	public static String COLOPHON = "colophon";
 	public static String COPYRIGHT_PAGE = "copyright-page"; 	
 	public static String DEDICATION = "dedication"; 	
-	public static String EPIGRAPH = "epigraph"; 	
-	public static String FOREWORD = "foreword"; 	
-	public static String LOI = "loi"; // 	list of illustrations
-	public static String LOT = "lot"; // 	list of tables
+	
+	/**
+	 *  an epigraph is a phrase, quotation, or poem that is set at the beginning of a document or component.
+	 *  source: http://en.wikipedia.org/wiki/Epigraph_%28literature%29
+	 */
+	public static String EPIGRAPH = "epigraph";
+	
+	public static String FOREWORD = "foreword";
+	
+	/**
+	 * list of illustrations
+	 */
+	public static String LOI = "loi";
+	
+	/**
+	 * list of tables
+	 */
+	public static String LOT = "lot"; 
 	public static String NOTES = "notes"; 	
-	public static String PREFACE = "preface"; 	
-	public static String TEXT = "text"; // 	First "real" page of content (e.g. "Chapter 1") 
+	public static String PREFACE = "preface";
+	
+	/**
+	 * A page of content (e.g. "Chapter 1")
+	 */
+	public static String TEXT = "text"; 
 	
 	private String type;
 	
