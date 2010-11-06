@@ -34,10 +34,9 @@ public class ChmParserTest extends TestCase {
 			}
 			
 			Book chmBook = ChmParser.parseChm(dir, Constants.ENCODING);
-			new EpubWriter().write(chmBook, new FileOutputStream("/home/paul/chm_test.epub"));
 			assertEquals(45, chmBook.getResources().size());
 			assertEquals(18, chmBook.getSpine().size());
-			assertEquals(19, chmBook.getTableOfContents().getTotalSize());
+			assertEquals(19, chmBook.getTableOfContents().size());
 			assertEquals("chm-example", chmBook.getMetadata().getTitles().get(0));
 		} catch(Exception e) {
 			e.printStackTrace();

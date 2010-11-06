@@ -30,7 +30,7 @@ public class ResourceReference {
 	 * 
 	 * @return
 	 */
-	public String getId() {
+	public String getResourceId() {
 		if (resource != null) {
 			return resource.getId();
 		}

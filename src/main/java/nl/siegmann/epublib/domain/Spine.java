@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * The spine sections are the sections of the book in the order in which the book should be read.
+ * 
  * This contrasts with the Table of Contents sections which is an index into the Book's sections.
  *
+ * @see nl.siegmann.epublib.domain.TableOfContents
+ * 
  * @author paul
  *
  */
@@ -43,6 +48,29 @@ public class Spine {
 		this.spineReferences = spineReferences;
 	}
 
+	
+	public Resource getResource(int index) {
+		if (index < 0 || index >= spineReferences.size()) {
+			return null;
+		}
+		return spineReferences.get(index).getResource();
+	}
+	
+	
+	public int findFirstResourceById(String resourceId) {
+		if (StringUtils.isBlank(resourceId)) {
+			return -1;
+		}
+		
+		for (int i = 0; i < spineReferences.size(); i++) {
+			SpineReference spineReference = spineReferences.get(i);
+			if (resourceId.equals(spineReference.getResourceId())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public SpineReference addSpineReference(SpineReference spineReference) {
 		if (spineReferences == null) {
 			this.spineReferences = new ArrayList<SpineReference>();
@@ -59,6 +87,12 @@ public class Spine {
 		this.tocResource = tocResource;
 	}
 
+	/**
+	 * The resource containing the XML for the tableOfContents.
+	 * When saving an epub file this resource needs to be in this place.
+	 * 
+	 * @return
+	 */
 	public Resource getTocResource() {
 		return tocResource;
 	}

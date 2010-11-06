@@ -4,6 +4,14 @@ import java.text.SimpleDateFormat;
 
 import nl.siegmann.epublib.epub.PackageDocumentBase;
 
+/**
+ * A Date used by the book's metadata.
+ * 
+ * Examples: creation-date, modification-date, etc
+ * 
+ * @author paul
+ *
+ */
 public class Date {
 	public enum Event {
 		PUBLICATION("publication"),

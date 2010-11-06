@@ -6,6 +6,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The table of contents of the book.
+ * 
+ * The table of contents is used by epub as a quick index to chapters.
+ * It may contain duplicate entries, may decide to point not to certain chapters, etc.
+ * 
+ * See the spine for the complete list of sections in the order in which they should be read.
+ * 
+ * @see nl.siegmann.epublib.domain.Spine
+ * 
+ * @author paul
+ *
+ */
 public class TableOfContents {
 
 	private List<TOCReference> tocReferences;
@@ -34,6 +47,11 @@ public class TableOfContents {
 		return tocReference;
 	}
 	
+	/**
+	 * All unique references (unique by href) in the order in which they are referenced to in the table of contents.
+	 * 
+	 * @return
+	 */
 	public List<Resource> getAllUniqueResources() {
 		Set<String> uniqueHrefs = new HashSet<String>();
 		List<Resource> result = new ArrayList<Resource>();
@@ -53,11 +71,12 @@ public class TableOfContents {
 		}
 	}
 
+	/**
+	 * The total number of references in this table of contents.
+	 * 
+	 * @return
+	 */
 	public int size() {
-		return tocReferences.size();
-	}
-	
-	public int getTotalSize() {
 		return getTotalSize(tocReferences);
 	}
 	

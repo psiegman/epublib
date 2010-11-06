@@ -9,6 +9,13 @@ import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * All the resources that make up the book.
+ * XHTML files, images and epub xml documents must be here.
+ * 
+ * @author paul
+ *
+ */
 public class Resources {
 
 	public static final String IMAGE_PREFIX = "image_";
@@ -16,6 +23,14 @@ public class Resources {
 	
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
 	
+	/**
+	 * Adds a resource to the resources.
+	 * 
+	 * Fixes the resources id and href if necessary.
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public Resource add(Resource resource) {
 		fixResourceHref(resource);
 		fixResourceId(resource);

@@ -3,6 +3,18 @@ package nl.siegmann.epublib.domain;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * MediaType is used to tell the type of content a resource is.
+ * 
+ * Examples of mediatypes are image/gif, text/css and application/xhtml+xml
+ * 
+ * All allowed mediaTypes are maintained bye the MediaTypeService.
+ * 
+ * @see nl.siegmann.epublib.service.MediatypeService
+ * 
+ * @author paul
+ *
+ */
 public class MediaType {
 	private String name;
 	private String defaultExtension;

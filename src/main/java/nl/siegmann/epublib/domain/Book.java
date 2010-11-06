@@ -9,11 +9,17 @@ package nl.siegmann.epublib.domain;
  *
  */
 public class Book {
+	
+	private Resources resources = new Resources();
 	private Metadata metadata = new Metadata();
 	private Spine spine = new Spine();
 	private TableOfContents tableOfContents = new TableOfContents();
-	private Resources resources = new Resources();
+	private Guide guide = new Guide();
 	
+	
+	public SectionWalker createSectionWalker() {
+		return new SectionWalker(this);
+	}
 	
 	/**
 	 * Adds the resource to the table of contents of the book as a child section of the given parentSection
@@ -23,9 +29,12 @@ public class Book {
 	 * @param resource
 	 * @return
 	 */
-	public TOCReference addToTableOfContents(TOCReference parentSection, String sectionTitle,
+	public TOCReference addSection(TOCReference parentSection, String sectionTitle,
 			Resource resource) {
 		getResources().add(resource);
+		if (spine.findFirstResourceById(resource.getId()) < 0)  {
+			spine.addSpineReference(new SpineReference(resource));
+		}
 		return parentSection.addChildSection(new TOCReference(sectionTitle, resource));
 	}
 
@@ -39,15 +48,19 @@ public class Book {
 	}
 	
 	/**
-	 * Adds a resource to the book and creates both a spine and a toc section to point to it.
+	 * Adds a resource to the book's set of resources, table of contents and if there is no resource with the id in the spine also adds it to the spine.
 	 * 
 	 * @param title
 	 * @param resource
 	 * @return
 	 */
-	public TOCReference addToTableOfContents(String title, Resource resource) {
+	public TOCReference addSection(String title, Resource resource) {
 		getResources().add(resource);
-		return tableOfContents.addTOCReference(new TOCReference(title, resource));
+		TOCReference tocReference = tableOfContents.addTOCReference(new TOCReference(title, resource));
+		if (spine.findFirstResourceById(resource.getId()) < 0)  {
+			spine.addSpineReference(new SpineReference(resource));
+		}
+		return tocReference;
 	}
 	
 	
@@ -69,6 +82,10 @@ public class Book {
 	}
 
 
+	public Resource addResource(Resource resource) {
+		return resources.add(resource);
+	}
+	
 	public Resources getResources() {
 		return resources;
 	}
@@ -92,4 +109,45 @@ public class Book {
 	public void setTableOfContents(TableOfContents tableOfContents) {
 		this.tableOfContents = tableOfContents;
 	}
+	
+	/**
+	 * The book's cover page.
+	 * An XHTML document containing a link to the cover image.
+	 * 
+	 * @return
+	 */
+	public Resource getCoverPage() {
+		return guide.getCoverPage();
+	}
+	public void setCoverPage(Resource coverPage) {
+		guide.setCoverPage(coverPage);
+	}
+	
+	/**
+	 * Gets the first non-blank title from the book's metadata.
+	 * 
+	 * @return
+	 */
+	public String getTitle() {
+		return getMetadata().getFirstTitle();
+	}
+	
+	
+	/**
+	 * The book's cover image.
+	 * 
+	 * @return
+	 */
+	public Resource getCoverImage() {
+		return metadata.getCoverImage();
+	}
+
+	public void setCoverImage(Resource coverImage) {
+		metadata.setCoverImage(coverImage);
+	}
+	
+	public Guide getGuide() {
+		return guide;
+	}
+
 }

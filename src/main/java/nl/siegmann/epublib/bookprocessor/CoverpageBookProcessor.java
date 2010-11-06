@@ -52,11 +52,11 @@ public class CoverpageBookProcessor implements BookProcessor {
 	@Override
 	public Book processBook(Book book, EpubWriter epubWriter) {
 		Metadata metadata = book.getMetadata();
-		if(metadata.getCoverPage() == null && metadata.getCoverImage() == null) {
+		if(book.getCoverPage() == null && book.getCoverImage() == null) {
 			return book;
 		}
-		Resource coverPage = metadata.getCoverPage();
-		Resource coverImage = metadata.getCoverImage();
+		Resource coverPage = book.getCoverPage();
+		Resource coverImage = book.getCoverImage();
 		if(coverPage == null) {
 			if(coverImage == null) {
 				// give up
@@ -69,9 +69,9 @@ public class CoverpageBookProcessor implements BookProcessor {
 				fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
 			}
 		} else { // coverPage != null
-			if(metadata.getCoverImage() == null) {
+			if(book.getCoverImage() == null) {
 				coverImage = getFirstImageSource(epubWriter, coverPage, book.getResources());
-				metadata.setCoverImage(coverImage);
+				book.setCoverImage(coverImage);
 				if (coverImage != null) {
 					book.getResources().remove(coverImage.getHref());
 				}
@@ -80,8 +80,8 @@ public class CoverpageBookProcessor implements BookProcessor {
 			}
 		}
 		
-		metadata.setCoverImage(coverImage);
-		metadata.setCoverPage(coverPage);
+		book.setCoverImage(coverImage);
+		book.setCoverPage(coverPage);
 		setCoverResourceIds(book);
 		return book;
 	}
@@ -91,12 +91,11 @@ public class CoverpageBookProcessor implements BookProcessor {
 //	}
 	
 	private void setCoverResourceIds(Book book) {
-		Metadata metadata = book.getMetadata();
-		if(metadata.getCoverImage() != null) {
-			fixCoverResourceId(book, metadata.getCoverImage(), DEFAULT_COVER_IMAGE_ID);
+		if(book.getCoverImage() != null) {
+			fixCoverResourceId(book, book.getCoverImage(), DEFAULT_COVER_IMAGE_ID);
 		}
-		if(metadata.getCoverPage() != null) {
-			fixCoverResourceId(book, metadata.getCoverPage(), DEFAULT_COVER_PAGE_ID);
+		if(book.getCoverPage() != null) {
+			fixCoverResourceId(book, book.getCoverPage(), DEFAULT_COVER_PAGE_ID);
 		}
 	}
 

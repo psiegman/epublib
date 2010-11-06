@@ -25,7 +25,7 @@ public class FilesetBookCreatorTest extends TestCase {
 			Book bookFromDirectory = FilesetBookCreator.createBookFromDirectory(dir, Charset.forName("UTF-8"));
 			assertEquals(1, bookFromDirectory.getResources().size());
 			assertEquals(1, bookFromDirectory.getSpine().size());
-			assertEquals(1, bookFromDirectory.getTableOfContents().getTotalSize());
+			assertEquals(1, bookFromDirectory.getTableOfContents().size());
 		} catch(Exception e) {
 			assertTrue(false);
 		}
