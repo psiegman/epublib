@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -26,16 +25,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
-import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import org.apache.commons.io.IOUtils;
@@ -61,7 +55,7 @@ public class Viewer extends JPanel  {
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
 		this.sectionWalker = book.createSectionWalker();
-		this.sectionWalker.addEventListener(new SectionChangeListener() {
+		this.sectionWalker.addSectionChangeEventListener(new SectionChangeListener() {
 			
 			@Override
 			public void sectionChanged(SectionWalker sectionWalker, int oldPosition,
@@ -72,18 +66,8 @@ public class Viewer extends JPanel  {
 				displayURL(sectionWalker.getBook().getSpine().getResource(newPosition));
 			}
 		});
-		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(
-				book.getTitle());
-		createNodes(top, book);
-
-		// Create a tree that allows one selection at a time.
-		tree = new JTree(top);
-		tree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		// Listen for when the selection changes.
-		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(tree));
+		
+		tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
 
 		// Create the scroll pane and add the tree to it.
 		JScrollPane treeView = new JScrollPane(tree);
@@ -97,7 +81,7 @@ public class Viewer extends JPanel  {
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlView, BorderLayout.CENTER);
-		contentPanel.add(createButtonBar(), BorderLayout.SOUTH);
+		contentPanel.add(createButtonBar(sectionWalker), BorderLayout.SOUTH);
 
 		// Add the scroll panes to a split pane.
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -114,7 +98,13 @@ public class Viewer extends JPanel  {
 		add(splitPane);
 	}
 
-	private JPanel createButtonBar() {
+
+	/**
+	 * Creates a panel with the first,previous,next and last buttons.
+	 * 
+	 * @return
+	 */
+	private static JPanel createButtonBar(final SectionWalker sectionWalker) {
 		JPanel result = new JPanel(new GridLayout(0, 4));
 		
 		JButton firstButton = new JButton("|<");
@@ -122,7 +112,7 @@ public class Viewer extends JPanel  {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Viewer.this.sectionWalker.gotoFirst();
+				sectionWalker.gotoFirst();
 			}
 		});
 		result.add(firstButton);
@@ -133,7 +123,7 @@ public class Viewer extends JPanel  {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Viewer.this.sectionWalker.gotoPrevious();
+				sectionWalker.gotoPrevious();
 			}
 		});
 		result.add(previousButton);
@@ -143,7 +133,7 @@ public class Viewer extends JPanel  {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Viewer.this.sectionWalker.gotoNext();
+				sectionWalker.gotoNext();
 			}
 		});
 		result.add(nextButton);
@@ -153,63 +143,14 @@ public class Viewer extends JPanel  {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Viewer.this.sectionWalker.gotoLast();
+				sectionWalker.gotoLast();
 			}
 		});
 		result.add(lastButton);
 
 		return result;
 	}
-	
-	private class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
-		private final JTree tree;
-		
-		public TableOfContentsTreeSelectionListener(JTree tree) {
-			this.tree = tree;
-		}
-		
-		/** Required by TreeSelectionListener interface. */
-		public void valueChanged(TreeSelectionEvent e) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			
-			if (node == null)
-				return;
-			
-			Object nodeInfo = node.getUserObject();
-			TOCItem tocReference = (TOCItem) nodeInfo;
-			Viewer.this.displayURL(tocReference);
-		}
-	}
 
-	private class TOCItem {
-		private Book book;
-		private TOCReference tocReference;
-		public TOCItem(Book book, TOCReference tocReference) {
-			super();
-			this.book = book;
-			this.tocReference = tocReference;
-		}
-		
-		public String toString() {
-			return tocReference.getTitle();
-		}
-
-		public Book getBook() {
-			return book;
-		}
-
-		public void setBook(Book book) {
-			this.book = book;
-		}
-
-		public TOCReference getTocReference() {
-			return tocReference;
-		}
-
-		public void setTocReference(TOCReference tocReference) {
-			this.tocReference = tocReference;
-		}
-	}
 
 	private void initHelp(Book book) {
 //		helpURL = getClass().getResource(s);
@@ -217,13 +158,9 @@ public class Viewer extends JPanel  {
 			System.err.println("Couldn't open help file: " + "hi");
 		}
 
-		displayURL(new TOCItem(book, new TOCReference("cover", book.getCoverPage())));
+		displayURL(book.getCoverPage());
 	}
 
-	private void displayURL(TOCItem tocItem) {
-		displayURL(tocItem.tocReference.getResource());
-	}
-	
 	
 	private void displayURL(Resource resource) {
 		try {
@@ -240,21 +177,6 @@ public class Viewer extends JPanel  {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	private void createNodes(DefaultMutableTreeNode top, Book book) {
-		createNodes(top, book, book.getTableOfContents().getTocReferences());
-	}
-	
-	private void createNodes(DefaultMutableTreeNode parent, Book book, List<TOCReference> tocReferences) {
-		if (tocReferences == null) {
-			return;
-		}
-		for (TOCReference tocReference: tocReferences) {
-			DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(new TOCItem(book, tocReference));
-			createNodes(treeNode, book, tocReference.getChildren());
-			parent.add(treeNode);
 		}
 	}
 
