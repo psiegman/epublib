@@ -24,15 +24,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.UIManager;
+import javax.swing.text.Element;
+import javax.swing.text.html.ImageView;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
+import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 
 public class Viewer extends JPanel  {
@@ -43,31 +46,27 @@ public class Viewer extends JPanel  {
 	 */
 	private static final long serialVersionUID = 1610691708767665447L;
 	
+	private static final Logger log = Logger.getLogger(Viewer.class);
+	
 	private JScrollPane htmlView;
 	private JEditorPane htmlPane;
-	private JTree tree;
 	private URL helpURL;
 	private SectionWalker sectionWalker;
 	
-	// Optionally set the look and feel.
-	private static boolean useSystemLookAndFeel = false;
-
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
 		this.sectionWalker = book.createSectionWalker();
 		this.sectionWalker.addSectionChangeEventListener(new SectionChangeListener() {
 			
 			@Override
-			public void sectionChanged(SectionWalker sectionWalker, int oldPosition,
-					int newPosition) {
-				if (oldPosition == newPosition) {
-					return;
+			public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
+				if (sectionChangeEvent.isSectionChanged()) {
+					displayURL(((SectionWalker) sectionChangeEvent.getSource()).getCurrentResource());
 				}
-				displayURL(sectionWalker.getBook().getSpine().getResource(newPosition));
 			}
 		});
 		
-		tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
+		JTree tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
 
 		// Create the scroll pane and add the tree to it.
 		JScrollPane treeView = new JScrollPane(tree);
@@ -161,22 +160,33 @@ public class Viewer extends JPanel  {
 		displayURL(book.getCoverPage());
 	}
 
+	public static class MyImageView extends ImageView {
+
+		public MyImageView(Element elem) {
+			super(elem);
+			// TODO Auto-generated constructor stub
+		}
+		
+		
+	}
 	
 	private void displayURL(Resource resource) {
-		try {
-		System.out.println("displaying contents of " + resource.getHref());
-		} catch(Exception e) {
-			e.printStackTrace();
+		if (resource == null) {
+			return;
 		}
-		String pageContent;
 		try {
-			Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
-			pageContent = IOUtils.toString(reader);
+			log.debug("Reading resource " + resource.getHref());
+//			HTMLEditorKit kit =
+//			    (HTMLEditorKit) htmlPane.getEditorKit();
+//			  Document doc = htmlPane.getDocument();
+		  Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
+//			  kit.read(reader, doc, 0);
+			  
+			String pageContent = IOUtils.toString(reader);
 			htmlPane.setText(pageContent);
 			htmlPane.setCaretPosition(0);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("When reading resource " + resource.getId() + "(" + resource.getHref() + ") :" + e.getMessage(), e);
 		}
 	}
 
@@ -185,14 +195,6 @@ public class Viewer extends JPanel  {
 	 * invoked from the event dispatch thread.
 	 */
 	private static void createAndShowGUI(Book book) {
-		if (useSystemLookAndFeel) {
-			try {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				System.err.println("Couldn't use system look and feel.");
-			}
-		}
 
 		// Create and set up the window.
 		JFrame frame = new JFrame(book.getTitle());

@@ -13,7 +13,7 @@ import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.domain.TOCReference;
 
 /**
- * Creates a JTree for navigating a Book via its Table of Contents
+ * Creates a JTree for navigating a Book via its Table of Contents.
  * 
  * @author paul
  *

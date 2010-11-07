@@ -2,6 +2,10 @@ package nl.siegmann.epublib.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EventObject;
+
+import org.apache.commons.lang.StringUtils;
+
 
 public class SectionWalker {
 	
@@ -9,8 +13,42 @@ public class SectionWalker {
 	private int currentIndex;
 	private Collection<SectionChangeListener> eventListeners = new ArrayList<SectionChangeListener>();
 	
+	public static class SectionChangeEvent extends EventObject {
+
+		private int oldPosition;
+		
+		public SectionChangeEvent(Object source, int oldPosition) {
+			super(source);
+			this.oldPosition = oldPosition;
+		}
+		
+		public int getPreviousSectionIndex() {
+			return oldPosition;
+		}
+		
+		public int getCurrentSectionIndex() {
+			return ((SectionWalker) getSource()).getCurrentIndex();
+		}
+		
+		public String getCurrentFragmentId() {
+			return "";
+		}
+		
+		public String getPreviousFragmentId() {
+			return "";
+		}
+		
+		public boolean isSectionChanged() {
+			return getPreviousSectionIndex() != getCurrentSectionIndex();
+		}
+
+		public boolean isFragmentChanged() {
+			return StringUtils.equals(getPreviousFragmentId(), getCurrentFragmentId());
+		}
+	}
+
 	public interface SectionChangeListener {
-		public void sectionChanged(SectionWalker sectionWalker, int oldPosition, int newPosition);
+		public void sectionChanged(SectionChangeEvent sectionChangeEvent);
 	}
 	
 	public SectionWalker(Book book) {
@@ -24,8 +62,9 @@ public class SectionWalker {
 		if (oldPosition == currentIndex) {
 			return;
 		}
+		SectionChangeEvent sectionChangeEvent = new SectionChangeEvent(this, oldPosition);
 		for (SectionChangeListener sectionChangeListener: eventListeners) {
-			sectionChangeListener.sectionChanged(this, oldPosition, currentIndex);
+			sectionChangeListener.sectionChanged(sectionChangeEvent);
 		}
 	}
 
@@ -76,11 +115,12 @@ public class SectionWalker {
 		if (newIndex == currentIndex) {
 			return currentIndex;
 		}
-		if (newIndex >= 0 && newIndex < book.getSpine().size()) {
-			int oldIndex = currentIndex;
-			currentIndex = newIndex;
-			handleEventListeners(oldIndex);
+		if (newIndex < 0 || newIndex >= book.getSpine().size()) {
+			return currentIndex;
 		}
+		int oldIndex = currentIndex;
+		currentIndex = newIndex;
+		handleEventListeners(oldIndex);
 		return currentIndex;
 	}
 
