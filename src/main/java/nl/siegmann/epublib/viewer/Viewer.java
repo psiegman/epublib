@@ -1,6 +1,5 @@
 package nl.siegmann.epublib.viewer;
 
-//Import the swing and AWT classes needed
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -9,15 +8,8 @@ import java.awt.event.ActionListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -27,23 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.text.Element;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.View;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.ImageView;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 import nl.siegmann.epublib.epub.EpubReader;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -53,33 +33,20 @@ public class Viewer extends JPanel {
 	
 	static final Logger log = Logger.getLogger(Viewer.class);
 	
-	private JScrollPane htmlView;
-	private JEditorPane htmlPane;
-	private SectionWalker sectionWalker;
-	private ImageLoaderCache imageLoaderCache;
 	
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
-		this.sectionWalker = book.createSectionWalker();
-		this.sectionWalker.addSectionChangeEventListener(new SectionChangeListener() {
-			
-			@Override
-			public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
-				if (sectionChangeEvent.isSectionChanged()) {
-					displayPage(((SectionWalker) sectionChangeEvent.getSource()).getCurrentResource());
-				}
-			}
-		});
+		SectionWalker sectionWalker = book.createSectionWalker();
+
+		// setup the html view
+		PagePane htmlPane = new PagePane(book);
+		sectionWalker.addSectionChangeEventListener(htmlPane);
+		htmlPane.displayPage(book.getCoverPage());
+		JScrollPane htmlView = new JScrollPane(htmlPane);
 		
+		// setup the table of contents view
 		JTree tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
-
-		// Create the scroll pane and add the tree to it.
 		JScrollPane treeView = new JScrollPane(tree);
-
-		htmlPane = createHtmlPane(book);
-		imageLoaderCache = initImageLoader(book, htmlPane);
-		displayPage(book.getCoverPage());
-		htmlView = new JScrollPane(htmlPane);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlView, BorderLayout.CENTER);
@@ -100,17 +67,6 @@ public class Viewer extends JPanel {
 		add(splitPane);
 	}
 
-
-	/**
-	 *  Create the HTML viewing pane.
-	 * @return
-	 */
-	private static JEditorPane createHtmlPane(Book book) {
-		JEditorPane htmlPane = new JEditorPane();
-		htmlPane.setEditable(false);
-		htmlPane.setContentType("text/html");
-		return htmlPane;
-	}
 
 	/**
 	 * Creates a panel with the first,previous,next and last buttons.
@@ -164,32 +120,6 @@ public class Viewer extends JPanel {
 		return result;
 	}
 
-
-	public static class MyImageView extends ImageView {
-
-		public MyImageView(Element elem) {
-			super(elem);
-			// TODO Auto-generated constructor stub
-		}
-		
-		
-	}
-	
-	private void displayPage(Resource resource) {
-		if (resource == null) {
-			return;
-		}
-		try {
-			log.debug("Reading resource " + resource.getHref());
-			Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
-			String pageContent = IOUtils.toString(reader);
-			imageLoaderCache.setContextResource(resource);
-			htmlPane.setText(pageContent);
-			htmlPane.setCaretPosition(0);
-		} catch (Exception e) {
-			log.error("When reading resource " + resource.getId() + "(" + resource.getHref() + ") :" + e.getMessage(), e);
-		}
-	}
 
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
@@ -295,22 +225,6 @@ public class Viewer extends JPanel {
 //
 //	}
 	
-	private static ImageLoaderCache initImageLoader(Book book, JEditorPane htmlPane) {
-		HTMLDocument document = (HTMLDocument) htmlPane.getDocument();
-		try {
-			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        Dictionary cache = (Dictionary) document.getProperty("imageCache");
-        if (cache == null) {
-        	cache = new Hashtable();
-        }
-        ImageLoaderCache result = new ImageLoaderCache(book, cache);
-        document.getDocumentProperties().put("imageCache", result);
-        return result;
-	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		// jquery-fundamentals-book.epub
