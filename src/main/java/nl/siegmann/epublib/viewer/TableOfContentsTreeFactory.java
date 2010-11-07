@@ -54,15 +54,13 @@ public class TableOfContentsTreeFactory {
 	public static JTree createTableOfContentsTree(SectionWalker sectionWalker) {
 		Book book = sectionWalker.getBook();
 		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(
-				book.getTitle());
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(book.getTitle());
 		createNodes(top, book);
 
 		// Create a tree that allows one selection at a time.
 		JTree tree = new JTree(top);
-		tree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setRootVisible(false);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//		tree.setRootVisible(false);
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
 
@@ -96,17 +94,17 @@ public class TableOfContentsTreeFactory {
 	}
 
 	private static void createNodes(DefaultMutableTreeNode top, Book book) {
-		createNodes(top, book, book.getTableOfContents().getTocReferences());
+		addNodesToParent(top, book.getTableOfContents().getTocReferences());
 	}
 	
-	private static void createNodes(DefaultMutableTreeNode parent, Book book, List<TOCReference> tocReferences) {
+	private static void addNodesToParent(DefaultMutableTreeNode parent, List<TOCReference> tocReferences) {
 		if (tocReferences == null) {
 			return;
 		}
 		for (TOCReference tocReference: tocReferences) {
 			TOCItem tocItem = new TOCItem(tocReference);
 			DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(tocItem);
-			createNodes(treeNode, book, tocReference.getChildren());
+			addNodesToParent(treeNode, tocReference.getChildren());
 			parent.add(treeNode);
 		}
 	}
