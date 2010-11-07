@@ -1,7 +1,6 @@
 package nl.siegmann.epublib.util;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +11,8 @@ import nl.siegmann.epublib.domain.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.google.gdata.util.io.base.UnicodeReader;
 
 /**
  * Various resource utility methods
@@ -31,7 +32,8 @@ public class ResourceUtil {
 	 * @throws ParserConfigurationException
 	 */
 	public static Document getAsDocument(Resource resource, DocumentBuilder documentBuilder) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
-		InputSource inputSource = new InputSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
+		UnicodeReader unicodeReader = new UnicodeReader(resource.getInputStream(), resource.getInputEncoding().name());
+		InputSource inputSource = new InputSource(unicodeReader);
 		Document result = documentBuilder.parse(inputSource);
 		result.setXmlStandalone(true);
 		return result;
