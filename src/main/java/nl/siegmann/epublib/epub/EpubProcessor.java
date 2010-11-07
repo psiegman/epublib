@@ -34,6 +34,11 @@ public class EpubProcessor {
 			} else {
 				resourcePath = previousLocation + systemId.substring(systemId.lastIndexOf('/'));
 			}
+			
+			if (this.getClass().getClassLoader().getResource(resourcePath) == null) {
+				throw new RuntimeException("remote resource is not cached : [" + systemId + "] cannot continue");
+			}
+
 			InputStream in = EpubProcessor.class.getClassLoader().getResourceAsStream(resourcePath);
 			return new InputSource(in);
 		}
