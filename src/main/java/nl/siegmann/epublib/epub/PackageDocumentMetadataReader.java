@@ -8,6 +8,7 @@ import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -70,7 +71,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		for(int i = 0; i < elements.getLength(); i++) {
 			Element authorElement = (Element) elements.item(i);
 			Author author = createAuthor(authorElement);
-			result.add(author);
+			if (author != null) {
+				result.add(author);
+			}
 		}
 		return result;
 		
@@ -81,8 +84,13 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		List<Date> result = new ArrayList<Date>(elements.getLength());
 		for(int i = 0; i < elements.getLength(); i++) {
 			Element dateElement = (Element) elements.item(i);
-			Date date = new Date(DOMUtil.getTextChild(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
-			result.add(date);
+			Date date;
+			try {
+				date = new Date(DOMUtil.getTextChild(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
+				result.add(date);
+			} catch(IllegalArgumentException e) {
+				log.error(e);
+			}
 		}
 		return result;
 		
@@ -90,7 +98,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 
 	private static Author createAuthor(Element authorElement) {
 		String authorString = DOMUtil.getTextChild(authorElement);
-		
+		if (StringUtils.isBlank(authorString)) {
+			return null;
+		}
 		int spacePos = authorString.lastIndexOf(' ');
 		Author result;
 		if(spacePos < 0) {

@@ -63,10 +63,16 @@ public class Date {
 	}
 	
 	public Date(String dateString, String event) {
-		this(dateString, Event.fromValue(event));
+		this(checkDate(dateString), Event.fromValue(event));
 		this.dateString = dateString;
 	}
 
+	private static String checkDate(String dateString) {
+		if (dateString == null) {
+			throw new IllegalArgumentException("Cannot create a date from a blank string");
+		}
+		return dateString;
+	}
 	public String getValue() {
 		return dateString;
 	}
