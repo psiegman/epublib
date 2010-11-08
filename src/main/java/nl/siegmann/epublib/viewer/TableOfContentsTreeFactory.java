@@ -54,7 +54,7 @@ public class TableOfContentsTreeFactory {
 	public static JTree createTableOfContentsTree(SectionWalker sectionWalker) {
 		Book book = sectionWalker.getBook();
 		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(book.getTitle());
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage())));
 		createNodes(top, book);
 
 		// Create a tree that allows one selection at a time.
