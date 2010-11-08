@@ -69,11 +69,15 @@ public class GuideReference extends TitledResourceReference {
 	private String type;
 	
 	public GuideReference(Resource resource) {
-		this(null, resource);
+		this(resource, null);
 	}
 	
-	public GuideReference(String title, Resource resource) {
+	public GuideReference(Resource resource, String title) {
 		super(resource, title);
+	}
+	
+	public GuideReference(Resource resource, String type, String title) {
+		this(resource, type, title, null);
 	}
 	
 	public GuideReference(Resource resource, String type, String title, String fragmentId) {
