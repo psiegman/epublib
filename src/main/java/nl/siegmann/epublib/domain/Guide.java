@@ -16,9 +16,11 @@ import java.util.List;
  */
 public class Guide {
 
+	public static final String DEFAULT_COVER_TITLE = GuideReference.COVER;
+	
 	private List<GuideReference> references = new ArrayList<GuideReference>();
-	private Resource coverPage;
-
+	private GuideReference coverPage;
+	
 	public List<GuideReference> getReferences() {
 		return references;
 	}
@@ -27,16 +29,28 @@ public class Guide {
 		this.references = references;
 	}
 	
+	public GuideReference getCoverReference() {
+		return coverPage;
+	}
+	
+	public void setCoverReference(GuideReference guideReference) {
+		this.coverPage = guideReference;
+	}
+
 	/**
 	 * The coverpage of the book.
 	 * 
 	 * @return
 	 */
 	public Resource getCoverPage() {
-		return coverPage;
+		if (coverPage == null) {
+			return null;
+		}
+		return coverPage.getResource();
 	}
+
 	public void setCoverPage(Resource coverPage) {
-		this.coverPage = coverPage;
+		this.coverPage = new GuideReference(coverPage, GuideReference.COVER, DEFAULT_COVER_TITLE);
 	}
 	
 
