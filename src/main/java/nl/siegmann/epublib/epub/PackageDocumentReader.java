@@ -330,10 +330,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			}
 			if (resource.getMediaType() == MediatypeService.XHTML) {
 				book.setCoverPage(resource);
-				book.getResources().remove(coverHref);
 			} else if (MediatypeService.isBitmapImage(resource.getMediaType())) {
 				book.setCoverImage(resource);
-				book.getResources().remove(coverHref);
 			}
 		}
 	}
