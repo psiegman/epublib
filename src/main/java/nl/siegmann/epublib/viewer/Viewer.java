@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -97,6 +96,7 @@ public class Viewer extends JPanel {
 		private JButton previousButton = new JButton("<");
 		private JButton nextButton = new JButton(">");
 		private JButton lastButton = new JButton(">|");
+		private final ValueHolder<SectionWalker> sectionWalkerHolder = new ValueHolder<SectionWalker>();
 		
 		public ButtonBar(SectionWalker sectionWalker) {
 			super(new GridLayout(0, 4));
@@ -107,29 +107,22 @@ public class Viewer extends JPanel {
 			setSectionWalker(sectionWalker);
 		}
 		
-		public void removeActionListeners(JButton button) {
-			for( ActionListener al : button.getActionListeners() ) button.removeActionListener(al);
-		}
-		
-		public void setSectionWalker(final SectionWalker sectionWalker) {
-			removeActionListeners(firstButton);
-			removeActionListeners(previousButton);
-			removeActionListeners(nextButton);
-			removeActionListeners(lastButton);
+		public void setSectionWalker(SectionWalker sectionWalker) {
+			sectionWalkerHolder.setValue(sectionWalker);
 			
 			firstButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					sectionWalker.gotoFirst();
+					sectionWalkerHolder.getValue().gotoFirst();
 				}
 			});
 			previousButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					sectionWalker.gotoPrevious();
+					sectionWalkerHolder.getValue().gotoPrevious();
 				}
 			});
 			
@@ -137,7 +130,7 @@ public class Viewer extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					sectionWalker.gotoNext();
+					sectionWalkerHolder.getValue().gotoNext();
 				}
 			});
 
@@ -145,7 +138,7 @@ public class Viewer extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					sectionWalker.gotoLast();
+					sectionWalkerHolder.getValue().gotoLast();
 				}
 			});
 		}
