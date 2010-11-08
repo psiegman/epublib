@@ -98,8 +98,6 @@ public class EpubWriter extends EpubProcessor {
 		for(Resource resource: book.getResources().getAll()) {
 			writeResource(resource, resultStream);
 		}
-		writeCoverResources(book, resultStream);
-		writeResource(book.getSpine().getTocResource(), resultStream);
 	}
 
 	/**
@@ -124,11 +122,6 @@ public class EpubWriter extends EpubProcessor {
 		}
 	}
 	
-	private void writeCoverResources(Book book, ZipOutputStream resultStream) throws IOException {
-		writeResource(book.getCoverImage(), resultStream);
-		writeResource(book.getCoverPage(), resultStream);
-	}
-
 
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
