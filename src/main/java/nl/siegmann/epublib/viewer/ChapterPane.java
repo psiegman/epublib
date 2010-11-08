@@ -24,15 +24,15 @@ import org.apache.log4j.Logger;
  *  
  * @return
  */
-public class PagePane extends JEditorPane implements SectionChangeListener {
+public class ChapterPane extends JEditorPane implements SectionChangeListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
-	private static final Logger log = Logger.getLogger(PagePane.class);
+	private static final Logger log = Logger.getLogger(ChapterPane.class);
 	private ImageLoaderCache imageLoaderCache;
 	private Book book;
 	
-	public PagePane(Book book) {
+	public ChapterPane(Book book) {
 		this.book = book;
 		setEditable(false);
 		setContentType("text/html");
@@ -46,8 +46,9 @@ public class PagePane extends JEditorPane implements SectionChangeListener {
 		try {
 			log.debug("Reading resource " + resource.getHref());
 			Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
-			String pageContent = IOUtils.toString(reader);
 			imageLoaderCache.setContextResource(resource);
+			String pageContent = IOUtils.toString(reader);
+			pageContent = stripXml(pageContent);
 			setText(pageContent);
 			setCaretPosition(0);
 		} catch (Exception e) {
@@ -55,6 +56,32 @@ public class PagePane extends JEditorPane implements SectionChangeListener {
 		}
 	}
 
+	/**
+	 * Quick and dirty stripper of all &lt;?...&gt; and &lt;!...&gt; tags as these confuse the html viewer.
+	 *  
+	 * @param input
+	 * @return
+	 */
+	private static String stripXml(String input) {
+		StringBuilder result = new StringBuilder();
+		boolean inXml = false;
+		for (int i = 0; i < input.length(); i++) {
+			char c = input.charAt(i);
+			if (inXml) {
+				if (c == '>') {
+					inXml = false;
+				}
+			} else if(c == '<'  // look for &lt;! or &lt;?
+				&& i < input.length() - 1
+				&& (input.charAt(i + 1) == '!' || input.charAt(i + 1) == '?')) {
+				inXml = true;
+			} else {
+				result.append(c);
+			}
+		}
+		return result.toString();
+	}
+	
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
 		if (sectionChangeEvent.isSectionChanged()) {
 			displayPage(((SectionWalker) sectionChangeEvent.getSource()).getCurrentResource());
