@@ -124,13 +124,13 @@ public class NCXDocument {
 		}
 		List<TOCReference> result = new ArrayList<TOCReference>(navpoints.getLength());
 		for(int i = 0; i < navpoints.getLength(); i++) {
-			TOCReference tocReference = readSection((Element) navpoints.item(i), xPath, book);
+			TOCReference tocReference = readTOCReference((Element) navpoints.item(i), xPath, book);
 			result.add(tocReference);
 		}
 		return result;
 	}
 
-	private static TOCReference readSection(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
+	private static TOCReference readTOCReference(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
 		String name = xPath.evaluate(PREFIX_NCX + ":navLabel/" + PREFIX_NCX + ":text", navpointElement);
 		String completeHref = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
 		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
