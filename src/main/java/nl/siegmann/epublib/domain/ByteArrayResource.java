@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
  * @author paul
  *
  */
-public class ByteArrayResource extends ResourceBase implements Resource {
+public class ByteArrayResource extends ResourceBase {
 
 	private byte[] data;
 	
