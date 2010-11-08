@@ -5,10 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -32,25 +34,28 @@ public class Viewer extends JPanel {
 	private static final long serialVersionUID = 1610691708767665447L;
 	
 	static final Logger log = Logger.getLogger(Viewer.class);
-	
+	private JScrollPane treeView;
+	private JScrollPane htmlView;
+	private ButtonBar buttonBar;
 	
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
 		SectionWalker sectionWalker = book.createSectionWalker();
 
 		// setup the html view
-		PagePane htmlPane = new PagePane(book);
+		ChapterPane htmlPane = new ChapterPane(book);
 		sectionWalker.addSectionChangeEventListener(htmlPane);
 		htmlPane.displayPage(book.getCoverPage());
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 		
 		// setup the table of contents view
 		JTree tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
-		JScrollPane treeView = new JScrollPane(tree);
+		treeView = new JScrollPane(tree);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlView, BorderLayout.CENTER);
-		contentPanel.add(createButtonBar(sectionWalker), BorderLayout.SOUTH);
+		this.buttonBar = new ButtonBar(sectionWalker);
+		contentPanel.add(buttonBar, BorderLayout.SOUTH);
 
 		// Add the scroll panes to a split pane.
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -67,57 +72,83 @@ public class Viewer extends JPanel {
 		add(splitPane);
 	}
 
+	private void init(Book book) {
+		SectionWalker sectionWalker = book.createSectionWalker();
+		treeView = new JScrollPane(TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker));
+
+		// setup the html view
+		ChapterPane htmlPane = new ChapterPane(book);
+		sectionWalker.addSectionChangeEventListener(htmlPane);
+		htmlPane.displayPage(book.getCoverPage());
+		htmlView = new JScrollPane(htmlPane);
+		
+		buttonBar.setSectionWalker(sectionWalker);
+	}
 
 	/**
 	 * Creates a panel with the first,previous,next and last buttons.
 	 * 
 	 * @return
 	 */
-	private static JPanel createButtonBar(final SectionWalker sectionWalker) {
-		JPanel result = new JPanel(new GridLayout(0, 4));
-		
-		JButton firstButton = new JButton("|<");
-		firstButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sectionWalker.gotoFirst();
-			}
-		});
-		result.add(firstButton);
-		
-		
-		JButton previousButton = new JButton("<");
-		previousButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sectionWalker.gotoPrevious();
-			}
-		});
-		result.add(previousButton);
-		
-		JButton nextButton = new JButton(">");
-		nextButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sectionWalker.gotoNext();
-			}
-		});
-		result.add(nextButton);
-		
-		JButton lastButton = new JButton(">|");
-		lastButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sectionWalker.gotoLast();
-			}
-		});
-		result.add(lastButton);
+	private static class ButtonBar extends JPanel {
+		private static final long serialVersionUID = 6431437924245035812L;
 
-		return result;
+		private JButton firstButton = new JButton("|<");
+		private JButton previousButton = new JButton("<");
+		private JButton nextButton = new JButton(">");
+		private JButton lastButton = new JButton(">|");
+		
+		public ButtonBar(SectionWalker sectionWalker) {
+			super(new GridLayout(0, 4));
+			super.add(firstButton);
+			super.add(previousButton);
+			super.add(nextButton);
+			super.add(lastButton);
+			setSectionWalker(sectionWalker);
+		}
+		
+		public void removeActionListeners(JButton button) {
+			for( ActionListener al : button.getActionListeners() ) button.removeActionListener(al);
+		}
+		
+		public void setSectionWalker(final SectionWalker sectionWalker) {
+			removeActionListeners(firstButton);
+			removeActionListeners(previousButton);
+			removeActionListeners(nextButton);
+			removeActionListeners(lastButton);
+			
+			firstButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					sectionWalker.gotoFirst();
+				}
+			});
+			previousButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sectionWalker.gotoPrevious();
+				}
+			});
+			
+			nextButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sectionWalker.gotoNext();
+				}
+			});
+
+			lastButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					sectionWalker.gotoLast();
+				}
+			});
+		}
 	}
 
 
@@ -131,10 +162,11 @@ public class Viewer extends JPanel {
 		JFrame frame = new JFrame(book.getTitle());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		Viewer viewer = new Viewer(book);
 		// Add content to the window.
-		frame.add(new Viewer(book));
+		frame.add(viewer);
 
-		frame.setJMenuBar(createMenuBar());
+		frame.setJMenuBar(createMenuBar(viewer));
 		// Display the window.
 		frame.pack();
 		frame.setVisible(true);
@@ -144,86 +176,35 @@ public class Viewer extends JPanel {
 		return text;
 	}
 	
-	private static JMenuBar createMenuBar() {
+	private static JMenuBar createMenuBar(final Viewer viewer) {
 		//Where the GUI is created:
-		JMenuBar menuBar = new JMenuBar();
+		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu(getText("File"));
 		menuBar.add(fileMenu);
 		JMenuItem openFileMenuItem = new JMenuItem(getText("Open file"));
 		openFileMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-
-		        JFileChooser fc = new JFileChooser();
-		        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//		        fc.setVisible(true);
-//				        //Create the open button.  We use the image from the JLF
-//				        //Graphics Repository (but we extracted it from the jar).
-//				        JButton openButton = new JButton("Open");
-//				        openButton.addActionListener(new ActionListener() {
-		    //Handle open button action.
-//		    if (e.getSource() == openButton) {
-//		        int returnVal = fc.showOpenDialog(FileChooserDemo.this);
-//
-//		        if (returnVal == JFileChooser.APPROVE_OPTION) {
-//		            File file = fc.getSelectedFile();
-//		            //This is where a real application would open the file.
-//		            log.append("Opening: " + file.getName() + "." + newline);
-//		        } else {
-//		            log.append("Open command cancelled by user." + newline);
-//		        }
-		        //Create the open button.  We use the image from the JLF
-		        //Graphics Repository (but we extracted it from the jar).
-		        JButton openButton = new JButton("Open a File...");
-//		        openButton.addActionListener(this);
-
-		        //Create the save button.  We use the image from the JLF
-		        //Graphics Repository (but we extracted it from the jar).
-//		        saveButton = new JButton("Save a File...",
-//		                                 createImageIcon("images/Save16.gif"));
-//		        saveButton.addActionListener(this);
-
-		        //For layout purposes, put the buttons in a separate panel
-		        JPanel buttonPanel = new JPanel(); //use FlowLayout
-		        buttonPanel.add(openButton);
-//		        buttonPanel.add(saveButton);
-
-		        //Add the buttons and the log to this panel.
-		        fc.add(buttonPanel, BorderLayout.PAGE_START);
-//		        add(logScrollPane, BorderLayout.CENTER);
-
-			
+				
+				String filename = File.separator+"tmp";
+				JFileChooser fc = new JFileChooser(new File(filename));
+				// Show open dialog; this method does not return until the dialog is closed
+				fc.showOpenDialog(menuBar);
+				File selFile = fc.getSelectedFile();
+				if (selFile == null) {
+					return;
+				}
+				try {
+					Book book = (new EpubReader()).readEpub(new FileInputStream(selFile));
+					viewer.init(book);
+				} catch (Exception e1) {
+					log.error(e1);
+				}
 			}
 		});
 		fileMenu.add(openFileMenuItem);
 		return menuBar;
 	}
-	
-//	public static void handleOpenFile() {
-//        //Create a file chooser
-//        JFileChooser fc = new JFileChooser();
-//
-//        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//        //Create the open button.  We use the image from the JLF
-//        //Graphics Repository (but we extracted it from the jar).
-//        JButton openButton = new JButton("Open");
-//        openButton.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//	            int returnVal = fc.showOpenDialog();
-//
-//	            if (returnVal == JFileChooser.APPROVE_OPTION) {
-//	                File file = fc.getSelectedFile();
-//	                //This is where a real application would open the file.
-//	                log.append("Opening: " + file.getName() + "." + newline);
-//	            } else {
-//	                log.append("Open command cancelled by user." + newline);
-//	            }
-//			}
-//		};
-//
-//	}
 	
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -231,7 +212,12 @@ public class Viewer extends JPanel {
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/test2_book1.epub"));
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/three_men_in_a_boat_jerome_k_jerome.epub"));
 	
-		final String bookFile = "/home/paul/test2_book1.epub";
+		String bookFile = "/home/paul/test2_book1.epub";
+//		bookFile = "/home/paul/project/private/library/epub/this_dynamic_earth-AAH813.epub";
+		
+		if (args.length > 0) {
+			bookFile = args[0];
+		}
 		final Book book = (new EpubReader()).readEpub(new FileInputStream(bookFile));
 		// Schedule a job for the event dispatch thread:
 		// creating and showing this application's GUI.
