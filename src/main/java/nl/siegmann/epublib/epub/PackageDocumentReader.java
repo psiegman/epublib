@@ -53,6 +53,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		readCover(packageDocument, book);
 		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
 		book.setSpine(readSpine(packageDocument, epubReader, book, resourcesById));
+		
+		// if we did not find a cover page then we make the first page of the book te cover page
+		if (book.getCoverPage() == null && book.getSpine().size() > 0) {
+			book.setCoverPage(book.getSpine().getResource(0));
+		}
 	}
 	
 	/**
