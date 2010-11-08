@@ -14,6 +14,7 @@ public class SectionWalker {
 	private Collection<SectionChangeListener> eventListeners = new ArrayList<SectionChangeListener>();
 	
 	public static class SectionChangeEvent extends EventObject {
+		private static final long serialVersionUID = -6346750144308952762L;
 
 		private int oldPosition;
 		
