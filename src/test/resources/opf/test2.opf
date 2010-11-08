@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<package version="2.0" unique-identifier="ISBN" xmlns="http://www.idpf.org/2007/opf">
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+		<dc:title>This Dynamic Earth</dc:title>
+		<dc:identifier id="ISBN" opf:scheme="ISBN">this_dynamic_earth-AAH813</dc:identifier>
+		<dc:language>en</dc:language>
+		<dc:creator opf:role="aut" opf:file-as="W. Jacquelyne Kious, Robert I. Tilling">W. Jacquelyne Kious, Robert I. Tilling</dc:creator>
+		<dc:contributor opf:role="edt" opf:file-as=""></dc:contributor>
+		<dc:publisher>Infogrid Pacific</dc:publisher>
+		<dc:description></dc:description>
+		<dc:coverage></dc:coverage>
+		<dc:source></dc:source>
+		<dc:date opf:event="original-publication">22-01-2009</dc:date>
+		<dc:rights></dc:rights>
+		<dc:subject></dc:subject>
+	</metadata>
+
+	<manifest>
+	</manifest>
+
+	<spine>
+	</spine>
+</package>
