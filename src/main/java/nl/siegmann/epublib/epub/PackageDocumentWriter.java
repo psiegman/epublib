@@ -210,8 +210,9 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeStartElement(OPFTags.spine);
 		writer.writeAttribute(OPFAttributes.toc, book.getSpine().getTocResource().getId());
 
-		// XXX check if the coverpage isn't already in the spine
-		if(book.getCoverPage() != null) { // write the cover html file
+		if(book.getCoverPage() != null // there is a cover page
+			&&	book.getSpine().findFirstResourceById(book.getCoverPage().getId()) < 0) { // cover page is not already in the spine
+			// write the cover html file
 			writer.writeEmptyElement("itemref");
 			writer.writeAttribute("idref", book.getCoverPage().getId());
 			writer.writeAttribute("linear", "no");
@@ -304,14 +305,22 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	private static void writeGuide(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(OPFTags.guide);
+		writeGuideReference(book.getGuide().getCoverReference(), writer);
 		for (GuideReference reference: book.getGuide().getReferences()) {
-			writer.writeEmptyElement(OPFTags.reference);
-			writer.writeAttribute(OPFAttributes.type, reference.getType());
-			writer.writeAttribute(OPFAttributes.href, reference.getCompleteHref());
-			if (StringUtils.isNotBlank(reference.getTitle())) {
-				writer.writeAttribute(OPFAttributes.title, reference.getTitle());
-			}
+			writeGuideReference(reference, writer);
 		}
 		writer.writeEndElement(); // guide
+	}
+	
+	private static void writeGuideReference(GuideReference reference, XMLStreamWriter writer) throws XMLStreamException {
+		if (reference == null) {
+			return;
+		}
+		writer.writeEmptyElement(OPFTags.reference);
+		writer.writeAttribute(OPFAttributes.type, reference.getType());
+		writer.writeAttribute(OPFAttributes.href, reference.getCompleteHref());
+		if (StringUtils.isNotBlank(reference.getTitle())) {
+			writer.writeAttribute(OPFAttributes.title, reference.getTitle());
+		}
 	}
 }
