@@ -74,4 +74,8 @@ public abstract class ResourceBase implements Resource {
 	public void setMediaType(MediaType mediaType) {
 		this.mediaType = mediaType;
 	}
+	
+	public String toString() {
+		return String.valueOf(id) + " (" + String.valueOf(mediaType) + "): '" + href + "'";
+	}
 }
