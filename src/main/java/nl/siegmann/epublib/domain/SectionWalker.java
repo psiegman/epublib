@@ -12,6 +12,7 @@ public class SectionWalker {
 	private Book book;
 	private int currentIndex;
 	private Collection<SectionChangeListener> eventListeners = new ArrayList<SectionChangeListener>();
+	private boolean atCover = true;
 	
 	public static class SectionChangeEvent extends EventObject {
 		private static final long serialVersionUID = -6346750144308952762L;
@@ -95,7 +96,11 @@ public class SectionWalker {
 	}
 	
 	public int gotoNext() {
-		return gotoSection(currentIndex + 1);
+		if (atCover) {
+			return gotoSection(0);
+		} else {
+			return gotoSection(currentIndex + 1);
+		}
 	}
 
 	public int gotoResource(Resource resource) {
@@ -113,6 +118,7 @@ public class SectionWalker {
 	
 	
 	public int gotoSection(int newIndex) {
+		atCover = false;
 		if (newIndex == currentIndex) {
 			return currentIndex;
 		}
@@ -134,6 +140,12 @@ public class SectionWalker {
 	}
 	
 	public Resource getCurrentResource() {
+		if (atCover) {
+			atCover = false;
+			if(book.getCoverPage() != null) {
+				return book.getCoverPage();
+			}
+		}
 		return book.getSpine().getSpineReferences().get(currentIndex).getResource();
 	}
 
