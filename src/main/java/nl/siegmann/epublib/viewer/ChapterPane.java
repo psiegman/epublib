@@ -48,7 +48,7 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener {
 			Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
 			imageLoaderCache.setContextResource(resource);
 			String pageContent = IOUtils.toString(reader);
-			pageContent = stripXml(pageContent);
+			pageContent = stripHtml(pageContent);
 			setText(pageContent);
 			setCaretPosition(0);
 		} catch (Exception e) {
@@ -56,13 +56,20 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener {
 		}
 	}
 
+	private String stripHtml(String input) {
+		String result = removeControlTags(input);
+		result = result.replaceAll("<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>","");
+		return result;
+	}
+	
+	
 	/**
 	 * Quick and dirty stripper of all &lt;?...&gt; and &lt;!...&gt; tags as these confuse the html viewer.
 	 *  
 	 * @param input
 	 * @return
 	 */
-	private static String stripXml(String input) {
+	private static String removeControlTags(String input) {
 		StringBuilder result = new StringBuilder();
 		boolean inXml = false;
 		for (int i = 0; i < input.length(); i++) {
