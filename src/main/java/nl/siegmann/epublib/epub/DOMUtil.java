@@ -12,6 +12,24 @@ import org.w3c.dom.Text;
 // package
 class DOMUtil {
 
+	
+	/**
+	 * First tries to get the attribute value by doing an getAttributeNS on the element, if that gets an empty element it does a getAttribute without namespace.
+	 * 
+	 * @param element
+	 * @param namespace
+	 * @param attribute
+	 * @return
+	 */
+	public static String getAttribute(Element element, String namespace, String attribute) {
+		String result = element.getAttributeNS(namespace, attribute);
+		if (StringUtils.isEmpty(result)) {
+			result = element.getAttribute(attribute);
+		}
+		return result;
+	}
+	
+	
 	public static List<String> getElementsTextChild(Element parentElement, String namespace, String tagname) {
 		NodeList elements = parentElement.getElementsByTagNameNS(namespace, tagname);
 		List<String> result = new ArrayList<String>(elements.getLength());
