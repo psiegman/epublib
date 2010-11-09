@@ -77,13 +77,13 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			log.error("Package document does not contain element " + OPFTags.manifest);
 			return Collections.<String, Resource>emptyMap();
 		}
-		NodeList itemElements = manifestElement.getElementsByTagName(OPFTags.item);
+		NodeList itemElements = manifestElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.item);
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
-			String mediaTypeName = itemElement.getAttribute(OPFAttributes.media_type);
-			String href = itemElement.getAttribute(OPFAttributes.href);
-			String id = itemElement.getAttribute(OPFAttributes.id);
+			String id = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.id);
+			String href = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.href);
+			String mediaTypeName = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.media_type);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
 				log.error("resource with href '" + href + "' not found");
@@ -119,7 +119,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		NodeList guideReferences = guideElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.reference);
 		for (int i = 0; i < guideReferences.getLength(); i++) {
 			Element referenceElement = (Element) guideReferences.item(i);
-			String resourceHref = referenceElement.getAttribute(OPFAttributes.href);
+			String resourceHref = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.href);
 			if (StringUtils.isBlank(resourceHref)) {
 				continue;
 			}
@@ -128,12 +128,12 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
 				continue;
 			}
-			String type = referenceElement.getAttribute(OPFAttributes.type);
+			String type = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.type);
 			if (StringUtils.isBlank(type)) {
 				log.error("Guide is referencing resource with href " + resourceHref + " which is missing the 'type' attribute");
 				continue;
 			}
-			String title = referenceElement.getAttribute(OPFAttributes.title);
+			String title = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.title);
 			if (GuideReference.COVER.equalsIgnoreCase(type)) {
 				continue; // cover is handled elsewhere
 			}
@@ -193,7 +193,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		List<SpineReference> spineReferences = new ArrayList<SpineReference>(spineNodes.getLength());
 		for(int i = 0; i < spineNodes.getLength(); i++) {
 			Element spineItem = (Element) spineNodes.item(i);
-			String itemref = spineItem.getAttribute(OPFAttributes.idref);
+			String itemref = DOMUtil.getAttribute(spineItem, NAMESPACE_OPF, OPFAttributes.idref);
 			if(StringUtils.isBlank(itemref)) {
 				log.error("itemref with missing or empty idref"); // XXX
 				continue;
@@ -248,7 +248,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @return
 	 */
 	private static Resource findTableOfContentsResource(Element spineElement, Map<String, Resource> resourcesById) {
-		String tocResourceId = spineElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.toc);
+		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
 		Resource tocResource = null;
 		if (! StringUtils.isBlank(tocResourceId)) {
 			tocResource = resourcesById.get(tocResourceId);
@@ -273,7 +273,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		tocResource = Resources.findFirstResourceByMediaType(resourcesById.values(), MediatypeService.NCX);
 
 		if (tocResource == null) {
-			log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + ", " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
+			log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + "', " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
 		}
 		return tocResource;
 	}
