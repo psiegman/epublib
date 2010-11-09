@@ -42,9 +42,7 @@ public class Viewer extends JPanel {
 		SectionWalker sectionWalker = book.createSectionWalker();
 
 		// setup the html view
-		ChapterPane htmlPane = new ChapterPane(book);
-		sectionWalker.addSectionChangeEventListener(htmlPane);
-		htmlPane.displayPage(book.getCoverPage());
+		ChapterPane htmlPane = new ChapterPane(sectionWalker);
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 		
 		// setup the table of contents view
@@ -76,9 +74,8 @@ public class Viewer extends JPanel {
 		treeView = new JScrollPane(TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker));
 
 		// setup the html view
-		ChapterPane htmlPane = new ChapterPane(book);
+		ChapterPane htmlPane = new ChapterPane(sectionWalker);
 		sectionWalker.addSectionChangeEventListener(htmlPane);
-		htmlPane.displayPage(book.getCoverPage());
 		htmlView = new JScrollPane(htmlPane);
 		
 		buttonBar.setSectionWalker(sectionWalker);
