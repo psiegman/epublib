@@ -8,9 +8,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.swing.JEditorPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 
-import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
@@ -21,51 +22,64 @@ import org.apache.log4j.Logger;
 
 /**
  * Displays a page
- *  
+ * 
  * @return
  */
-public class ChapterPane extends JEditorPane implements SectionChangeListener {
+public class ChapterPane extends JEditorPane implements SectionChangeListener, HyperlinkListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
 	private static final Logger log = Logger.getLogger(ChapterPane.class);
 	private ImageLoaderCache imageLoaderCache;
-	private Book book;
-	
-	public ChapterPane(Book book) {
-		this.book = book;
+	private SectionWalker sectionWalker;
+
+	public ChapterPane(SectionWalker sectionWalker) {
+		this.sectionWalker = sectionWalker;
 		setEditable(false);
 		setContentType("text/html");
+		addHyperlinkListener(this);
 		imageLoaderCache = initImageLoader();
+		sectionWalker.addSectionChangeEventListener(this);
+		displayPage(sectionWalker.getCurrentResource());
 	}
 
-	public void displayPage(Resource resource) {
+	private void displayPage(Resource resource) {
 		if (resource == null) {
 			return;
 		}
 		try {
 			log.debug("Reading resource " + resource.getHref());
-			Reader reader = new InputStreamReader(resource.getInputStream(), resource.getInputEncoding());
+			Reader reader = new InputStreamReader(resource.getInputStream(),
+					resource.getInputEncoding());
 			imageLoaderCache.setContextResource(resource);
 			String pageContent = IOUtils.toString(reader);
 			pageContent = stripHtml(pageContent);
 			setText(pageContent);
 			setCaretPosition(0);
 		} catch (Exception e) {
-			log.error("When reading resource " + resource.getId() + "(" + resource.getHref() + ") :" + e.getMessage(), e);
+			log.error("When reading resource " + resource.getId() + "("
+					+ resource.getHref() + ") :" + e.getMessage(), e);
+		}
+	}
+	
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			String resourceHref = event.getURL().toString().substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
+			displayPage(sectionWalker.getBook().getResources().getByCompleteHref(resourceHref));
 		}
 	}
 
 	private String stripHtml(String input) {
 		String result = removeControlTags(input);
-		result = result.replaceAll("<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>","");
+		result = result.replaceAll(
+				"<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>", "");
 		return result;
 	}
-	
-	
+
 	/**
-	 * Quick and dirty stripper of all &lt;?...&gt; and &lt;!...&gt; tags as these confuse the html viewer.
-	 *  
+	 * Quick and dirty stripper of all &lt;?...&gt; and &lt;!...&gt; tags as
+	 * these confuse the html viewer.
+	 * 
 	 * @param input
 	 * @return
 	 */
@@ -78,9 +92,9 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener {
 				if (c == '>') {
 					inXml = false;
 				}
-			} else if(c == '<'  // look for &lt;! or &lt;?
-				&& i < input.length() - 1
-				&& (input.charAt(i + 1) == '!' || input.charAt(i + 1) == '?')) {
+			} else if (c == '<' // look for &lt;! or &lt;?
+					&& i < input.length() - 1
+					&& (input.charAt(i + 1) == '!' || input.charAt(i + 1) == '?')) {
 				inXml = true;
 			} else {
 				result.append(c);
@@ -88,10 +102,11 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener {
 		}
 		return result.toString();
 	}
-	
+
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
 		if (sectionChangeEvent.isSectionChanged()) {
-			displayPage(((SectionWalker) sectionChangeEvent.getSource()).getCurrentResource());
+			displayPage(((SectionWalker) sectionChangeEvent.getSource())
+					.getCurrentResource());
 		}
 	}
 
@@ -102,12 +117,12 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener {
 		} catch (MalformedURLException e) {
 			log.error(e);
 		}
-        Dictionary cache = (Dictionary) document.getProperty("imageCache");
-        if (cache == null) {
-        	cache = new Hashtable();
-        }
-        ImageLoaderCache result = new ImageLoaderCache(book, cache);
-        document.getDocumentProperties().put("imageCache", result);
-        return result;
+		Dictionary cache = (Dictionary) document.getProperty("imageCache");
+		if (cache == null) {
+			cache = new Hashtable();
+		}
+		ImageLoaderCache result = new ImageLoaderCache(sectionWalker.getBook(), cache);
+		document.getDocumentProperties().put("imageCache", result);
+		return result;
 	}
 }
