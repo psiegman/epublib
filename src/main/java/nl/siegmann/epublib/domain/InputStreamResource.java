@@ -13,7 +13,7 @@ import org.apache.commons.io.IOUtils;
  * @author paul
  *
  */
-public class InputStreamResource extends ByteArrayResource implements Resource {
+public class InputStreamResource extends ByteArrayResource {
 
 	public InputStreamResource(InputStream in, MediaType mediaType) throws IOException {
 		super(IOUtils.toByteArray(in), mediaType);

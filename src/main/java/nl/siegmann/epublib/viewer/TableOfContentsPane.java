@@ -10,6 +10,8 @@ import javax.swing.tree.TreeSelectionModel;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.SectionWalker;
+import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
+import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 import nl.siegmann.epublib.domain.TOCReference;
 
 /**
@@ -18,11 +20,13 @@ import nl.siegmann.epublib.domain.TOCReference;
  * @author paul
  *
  */
-public class TableOfContentsTreeFactory {
+public class TableOfContentsPane extends JTree implements SectionChangeListener {
 
+	private static final long serialVersionUID = 2277717264176049700L;
+	
 	/**
 	 * Wrapper around a TOCReference that gives the TOCReference's title when toString() is called
-	 * 
+	 * .createTableOfContentsTree
 	 * @author paul
 	 *
 	 */
@@ -51,22 +55,23 @@ public class TableOfContentsTreeFactory {
 	 * @param sectionWalker
 	 * @return
 	 */
-	public static JTree createTableOfContentsTree(SectionWalker sectionWalker) {
-		Book book = sectionWalker.getBook();
-		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage())));
-		createNodes(top, book);
-
-		// Create a tree that allows one selection at a time.
-		JTree tree = new JTree(top);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	public TableOfContentsPane(SectionWalker sectionWalker) {
+		super(createTree(sectionWalker));
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 //		tree.setRootVisible(false);
-		// Listen for when the selection changes.
-		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
-
-		return tree;
+		addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
+		sectionWalker.addSectionChangeEventListener(this);
 	}
 
+	
+	private static DefaultMutableTreeNode createTree(SectionWalker sectionWalker) {
+		Book book = sectionWalker.getBook();
+		TOCItem rootTOCItem = new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage()));
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(rootTOCItem);
+		createNodes(top, book);
+		return top;
+	}
+	
 	/**
 	 * Updates the SectionWalker when a tree node is selected.
 	 * 
@@ -107,5 +112,11 @@ public class TableOfContentsTreeFactory {
 			addNodesToParent(treeNode, tocReference.getChildren());
 			parent.add(treeNode);
 		}
+	}
+
+
+	@Override
+	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
+//		System.out.println("I should highlight the section " + sectionChangeEvent.getCurrentResource().getHref());
 	}
 }

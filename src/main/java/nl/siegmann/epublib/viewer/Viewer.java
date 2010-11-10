@@ -46,7 +46,7 @@ public class Viewer extends JPanel {
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 		
 		// setup the table of contents view
-		JTree tree = TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker);
+		JTree tree = new TableOfContentsPane(sectionWalker);
 		treeView = new JScrollPane(tree);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
@@ -63,15 +63,18 @@ public class Viewer extends JPanel {
 		htmlView.setMinimumSize(minimumSize);
 		treeView.setMinimumSize(minimumSize);
 		splitPane.setDividerLocation(100);
-		splitPane.setPreferredSize(new Dimension(500, 300));
+		splitPane.setPreferredSize(new Dimension(600, 800));
 
 		// Add the split pane to this panel.
 		add(splitPane);
+
+		htmlPane.displayPage(book.getCoverPage());
+//		sectionWalker.setCurrentResource(book.getCoverPage());
 	}
 
 	private void init(Book book) {
 		SectionWalker sectionWalker = book.createSectionWalker();
-		treeView = new JScrollPane(TableOfContentsTreeFactory.createTableOfContentsTree(sectionWalker));
+		treeView = new JScrollPane(new TableOfContentsPane(sectionWalker));
 
 		// setup the html view
 		ChapterPane htmlPane = new ChapterPane(sectionWalker);

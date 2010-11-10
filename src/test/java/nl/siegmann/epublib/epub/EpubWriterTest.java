@@ -29,7 +29,8 @@ public class EpubWriterTest extends TestCase {
 			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
 			Author author = new Author("Joe", "Tester");
 			book.getMetadata().addAuthor(author);
-			book.getMetadata().setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverPage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/cover.html"), "cover.html"));
+			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 			book.addSection("Chapter 1", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.addResource(new InputStreamResource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
 			TOCReference chapter2 = book.addSection("Second chapter", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));
@@ -41,8 +42,7 @@ public class EpubWriterTest extends TestCase {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			writer.write(book, out);
 			byte[] epubData = out.toByteArray();
-			new FileOutputStream("test2_book1.epub").write(epubData);
-
+			new FileOutputStream("/home/paul/writetest.epub").write(epubData);
 			assertNotNull(epubData);
 			assertTrue(epubData.length > 0);
 			

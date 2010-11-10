@@ -9,7 +9,7 @@ import java.io.InputStream;
  * @author paul
  *
  */
-public class PlaceholderResource extends ResourceBase implements Resource {
+public class PlaceholderResource extends ResourceBase {
 
 	public PlaceholderResource(String href) {
 		super(href);

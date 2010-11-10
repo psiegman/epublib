@@ -13,7 +13,7 @@ import org.apache.commons.vfs.FileObject;
  * @author paul
  *
  */
-public class FileObjectResource extends ResourceBase implements Resource {
+public class FileObjectResource extends ResourceBase {
 
 	private FileObject file;
 	

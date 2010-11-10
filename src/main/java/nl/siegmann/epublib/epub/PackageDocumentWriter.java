@@ -305,7 +305,6 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	private static void writeGuide(Book book, EpubWriter epubWriter, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(OPFTags.guide);
-		writeGuideReference(book.getGuide().getCoverReference(), writer);
 		for (GuideReference reference: book.getGuide().getReferences()) {
 			writeGuideReference(reference, writer);
 		}

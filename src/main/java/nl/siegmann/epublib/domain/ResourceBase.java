@@ -78,4 +78,21 @@ public abstract class ResourceBase implements Resource {
 	public String toString() {
 		return String.valueOf(id) + " (" + String.valueOf(mediaType) + "): '" + href + "'";
 	}
+	
+	public int hashCode() {
+		if (href == null) {
+			return 0;
+		}
+		return href.hashCode();
+	}
+	
+	public boolean equals(Object resourceObject) {
+		if (! (resourceObject instanceof Resource)) {
+			return false;
+		}
+		if (href == null) {
+			return false;
+		}
+		return href.equals(((Resource) resourceObject).getHref());
+	}
 }

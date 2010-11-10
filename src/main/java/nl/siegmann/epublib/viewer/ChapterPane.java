@@ -18,6 +18,7 @@ import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -32,7 +33,8 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 	private static final Logger log = Logger.getLogger(ChapterPane.class);
 	private ImageLoaderCache imageLoaderCache;
 	private SectionWalker sectionWalker;
-
+	private Resource currentResource;
+	
 	public ChapterPane(SectionWalker sectionWalker) {
 		this.sectionWalker = sectionWalker;
 		setEditable(false);
@@ -43,10 +45,11 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 		displayPage(sectionWalker.getCurrentResource());
 	}
 
-	private void displayPage(Resource resource) {
+	public void displayPage(Resource resource) {
 		if (resource == null) {
 			return;
 		}
+		currentResource = resource;
 		try {
 			log.debug("Reading resource " + resource.getHref());
 			Reader reader = new InputStreamReader(resource.getInputStream(),
@@ -64,11 +67,30 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 	
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			String resourceHref = event.getURL().toString().substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
-			displayPage(sectionWalker.getBook().getResources().getByCompleteHref(resourceHref));
+			String resourceHref = calculateTargetHref(event.getURL());
+			Resource resource = sectionWalker.getBook().getResources().getByCompleteHref(resourceHref);
+			if (resource == null) {
+				log.error("Resource with url " + resourceHref + " not found");
+			} else {
+				sectionWalker.gotoResource(resource);
+			}
 		}
 	}
 
+	
+	private String calculateTargetHref(URL clickUrl) {
+		String resourceHref = clickUrl.toString();
+		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
+
+		if (currentResource != null && StringUtils.isNotBlank(currentResource.getHref())) {
+			int lastSlashPos = currentResource.getHref().lastIndexOf('/');
+			if (lastSlashPos >= 0) {
+				resourceHref = currentResource.getHref().substring(0, lastSlashPos + 1) + resourceHref;
+			}
+		}
+		return resourceHref;
+	}
+	
 	private String stripHtml(String input) {
 		String result = removeControlTags(input);
 		result = result.replaceAll(

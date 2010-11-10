@@ -13,7 +13,7 @@ import nl.siegmann.epublib.service.MediatypeService;
  * @author paul
  *
  */
-public class FileResource extends ResourceBase implements Resource {
+public class FileResource extends ResourceBase {
 
 	private File file;
 	
