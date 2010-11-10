@@ -79,11 +79,20 @@ public class EpubWriter extends EpubProcessor {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
-		// create an NCX/table of contents document and add it as a resources to the book.
-		book.getSpine().setTocResource(NCXDocument.createNCXResource(this, book));
+		initTOCResource(book);
 		writeResources(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
+	}
+
+	private void initTOCResource(Book book) throws XMLStreamException, FactoryConfigurationError {
+		Resource tocResource = NCXDocument.createNCXResource(this, book);
+		Resource currentTocResource = book.getSpine().getTocResource();
+		if (currentTocResource != null) {
+			book.getResources().remove(currentTocResource.getHref());
+		}
+		book.getSpine().setTocResource(tocResource);
+		book.getResources().add(tocResource);
 	}
 	
 	private Book processBook(Book book) {
@@ -130,6 +139,12 @@ public class EpubWriter extends EpubProcessor {
 		xmlStreamWriter.flush();
 	}
 
+	/**
+	 * Writes the META-INF/container.xml file.
+	 * 
+	 * @param resultStream
+	 * @throws IOException
+	 */
 	private void writeContainer(ZipOutputStream resultStream) throws IOException {
 		resultStream.putNextEntry(new ZipEntry("META-INF/container.xml"));
 		Writer out = new OutputStreamWriter(resultStream);

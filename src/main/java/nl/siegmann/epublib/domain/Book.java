@@ -117,9 +117,18 @@ public class Book {
 	 * @return
 	 */
 	public Resource getCoverPage() {
-		return guide.getCoverPage();
+		Resource coverPage = guide.getCoverPage();
+		if (coverPage == null) {
+			coverPage = spine.getResource(0);
+		}
+		return coverPage;
 	}
+	
+	
 	public void setCoverPage(Resource coverPage) {
+		if (! resources.containsByHref(coverPage.getHref())) {
+			resources.add(coverPage);
+		}
 		guide.setCoverPage(coverPage);
 	}
 	
@@ -143,6 +152,9 @@ public class Book {
 	}
 
 	public void setCoverImage(Resource coverImage) {
+		if (! resources.containsByHref(coverImage.getHref())) {
+			resources.add(coverImage);
+		}
 		metadata.setCoverImage(coverImage);
 	}
 	

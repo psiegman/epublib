@@ -12,7 +12,7 @@ import nl.siegmann.epublib.service.MediatypeService;
  * @author paul
  *
  */
-public class SectionResource extends ResourceBase implements Resource {
+public class SectionResource extends ResourceBase {
 
 	private String title;
 	

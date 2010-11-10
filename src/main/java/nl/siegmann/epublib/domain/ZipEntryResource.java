@@ -12,7 +12,7 @@ import org.apache.commons.io.IOUtils;
  * @author paul
  *
  */
-public class ZipEntryResource extends ByteArrayResource implements Resource {
+public class ZipEntryResource extends ByteArrayResource {
 
 	public ZipEntryResource(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
 		super(zipEntry.getName(), IOUtils.toByteArray(zipInputStream));

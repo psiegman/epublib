@@ -96,4 +96,15 @@ public class Spine {
 	public Resource getTocResource() {
 		return tocResource;
 	}
+
+	public int getResourceIndex(Resource currentResource) {
+		int result = -1;
+		for (int i = 0; i < spineReferences.size(); i++) {
+			if (currentResource.getHref().equals(spineReferences.get(i).getResource().getHref())) {
+				result = i;
+				break;
+			}
+		}
+		return result;
+	}
 }
