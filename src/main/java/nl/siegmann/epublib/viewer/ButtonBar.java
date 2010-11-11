@@ -23,18 +23,26 @@ class ButtonBar extends JPanel {
 	private JButton nextPageButton = new JButton(">");
 	private JButton nextChapterButton = new JButton(">>");
 	private JButton endButton = new JButton(">|");
-	private ChapterPane chapterPane;
+	private ContentPane chapterPane;
 	private final ValueHolder<SectionWalker> sectionWalkerHolder = new ValueHolder<SectionWalker>();
 	
-	public ButtonBar(SectionWalker sectionWalker, ChapterPane chapterPane) {
-		super(new GridLayout(0, 6));
+	public ButtonBar(SectionWalker sectionWalker, ContentPane chapterPane) {
+		super(new GridLayout(0, 4));
 		this.chapterPane = chapterPane;
-		super.add(startButton);
-		super.add(previousChapterButton);
-		super.add(previousPageButton);
-		super.add(nextPageButton);
-		super.add(nextChapterButton);
-		super.add(endButton);
+		
+		JPanel bigPrevious = new JPanel(new GridLayout(0, 2));
+		bigPrevious.add(startButton);
+		bigPrevious.add(previousChapterButton);
+		add(bigPrevious);
+		
+		add(previousPageButton);
+		add(nextPageButton);
+		
+		JPanel bigNext = new JPanel(new GridLayout(0, 2));
+		bigNext.add(nextChapterButton);
+		bigNext.add(endButton);
+		add(bigNext);
+		
 		setSectionWalker(sectionWalker);
 	}
 	
