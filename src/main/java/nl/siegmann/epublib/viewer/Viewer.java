@@ -16,9 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTree;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.SectionWalker;
@@ -38,41 +36,34 @@ public class Viewer extends JPanel {
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
 		SectionWalker sectionWalker = book.createSectionWalker();
-
-		// setup the html view
-		ChapterPane htmlPane = new ChapterPane(sectionWalker);
 		
+		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
 		this.tableOfContents = new TableOfContentsPane(sectionWalker);
+		leftSplitPane.setBottomComponent(tableOfContents);
+		leftSplitPane.setDividerLocation(100);
+		leftSplitPane.setOneTouchExpandable(true);
 
+		JSplitPane rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+		ContentPane htmlPane = new ContentPane(sectionWalker);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
 		this.buttonBar = new ButtonBar(sectionWalker, htmlPane);
 		contentPanel.add(buttonBar, BorderLayout.SOUTH);
+		rightSplitPane.setTopComponent(contentPanel);
+		rightSplitPane.setBottomComponent(new MetadataPane(sectionWalker));
+		rightSplitPane.setOneTouchExpandable(true);
 
-		// Add the scroll panes to a split pane.
-		JSplitPane toc_html_splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		toc_html_splitPane.setTopComponent(tableOfContents);
-		toc_html_splitPane.setBottomComponent(contentPanel);
-		toc_html_splitPane.setOneTouchExpandable(true);
-//		Dimension minimumSize = new Dimension(100, 50);
-//		htmlView.setMinimumSize(minimumSize);
-//		treeView.setMinimumSize(minimumSize);
-		toc_html_splitPane.setDividerLocation(100);
-		toc_html_splitPane.setPreferredSize(new Dimension(600, 800));
-
-		
-		// Add the scroll panes to a split pane.
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setTopComponent(toc_html_splitPane);
-		splitPane.setBottomComponent(new MetadataPane(sectionWalker));
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(800);
-		splitPane.setPreferredSize(new Dimension(1000, 800));
-		
-		
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		mainSplitPane.setTopComponent(leftSplitPane);
+		mainSplitPane.setBottomComponent(rightSplitPane);
+		mainSplitPane.setOneTouchExpandable(true);
+//		toc_html_splitPane.setDividerLocation(100);
+		mainSplitPane.setPreferredSize(new Dimension(1000, 800));
 		
 		// Add the split pane to this panel.
-		add(splitPane);
+		add(mainSplitPane);
 
 		htmlPane.displayPage(book.getCoverPage());
 //		sectionWalker.setCurrentResource(book.getCoverPage());
@@ -83,7 +74,7 @@ public class Viewer extends JPanel {
 //		treeView = new JScrollPane(new TableOfContentsPane(sectionWalker));
 
 		// setup the html view
-		ChapterPane htmlPane = new ChapterPane(sectionWalker);
+		ContentPane htmlPane = new ContentPane(sectionWalker);
 		sectionWalker.addSectionChangeEventListener(htmlPane);
 //		htmlView = new ChapterPane(sectionWalker);
 		
