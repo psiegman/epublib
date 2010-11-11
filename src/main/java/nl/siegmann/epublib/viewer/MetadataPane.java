@@ -22,14 +22,14 @@ public class MetadataPane extends JPanel {
 	public MetadataPane(SectionWalker sectionWalker) {
 		super(new GridLayout(1, 0));
 		JTable table = new JTable(
-				foo(sectionWalker.getBook().getMetadata()),
+				createTableData(sectionWalker.getBook().getMetadata()),
 				new String[] {"", ""});
         table.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(table);
 		this.add(scrollPane);
 	}
 
-	private Object[][] foo(Metadata metadata) {
+	private Object[][] createTableData(Metadata metadata) {
 		List<String[]> result = new ArrayList<String[]>();
 		addStrings(metadata.getIdentifiers(), "Identifier", result);
 		addStrings(metadata.getTitles(), "Title", result);
@@ -42,6 +42,7 @@ public class MetadataPane extends JPanel {
 		addStrings(metadata.getSubjects(), "Subject", result);
 		addStrings(metadata.getTypes(), "Type", result);
 		addStrings(metadata.getRights(), "Rights", result);
+		result.add(new String[] {"Format", metadata.getFormat()});
 		return result.toArray(new Object[result.size()][2]);
 	}
 
