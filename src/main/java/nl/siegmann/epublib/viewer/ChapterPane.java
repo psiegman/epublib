@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.viewer;
 
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -8,6 +10,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
@@ -26,7 +30,7 @@ import org.apache.log4j.Logger;
  * 
  * @return
  */
-public class ChapterPane extends JEditorPane implements SectionChangeListener, HyperlinkListener {
+public class ChapterPane extends JPanel implements SectionChangeListener, HyperlinkListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
@@ -34,17 +38,28 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 	private ImageLoaderCache imageLoaderCache;
 	private SectionWalker sectionWalker;
 	private Resource currentResource;
+	private JEditorPane editorPane;
+	private JScrollPane scrollPane;
 	
 	public ChapterPane(SectionWalker sectionWalker) {
+		super(new GridLayout(1, 0));
 		this.sectionWalker = sectionWalker;
-		setEditable(false);
-		setContentType("text/html");
-		addHyperlinkListener(this);
-		imageLoaderCache = initImageLoader();
+		this.editorPane = createJEditorPane(this);
+		this.scrollPane = new JScrollPane(editorPane);
+		add(scrollPane);
+		initImageLoader();
 		sectionWalker.addSectionChangeEventListener(this);
 		displayPage(sectionWalker.getCurrentResource());
 	}
 
+	private static JEditorPane createJEditorPane(HyperlinkListener hyperlinkListener) {
+		JEditorPane editorPane = new JEditorPane(); 
+		editorPane.setEditable(false);
+		editorPane.setContentType("text/html");
+		editorPane.addHyperlinkListener(hyperlinkListener);
+		return editorPane;
+	}
+	
 	public void displayPage(Resource resource) {
 		if (resource == null) {
 			return;
@@ -57,8 +72,8 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 			imageLoaderCache.setContextResource(resource);
 			String pageContent = IOUtils.toString(reader);
 			pageContent = stripHtml(pageContent);
-			setText(pageContent);
-			setCaretPosition(0);
+			editorPane.setText(pageContent);
+			editorPane.setCaretPosition(0);
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
 					+ resource.getHref() + ") :" + e.getMessage(), e);
@@ -77,6 +92,32 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 		}
 	}
 
+	public void gotoPreviousPage() {
+		Point viewPosition = scrollPane.getViewport().getViewPosition();
+		if (viewPosition.getY() <= 0) {
+			sectionWalker.gotoPrevious();
+			return;
+		}
+		int viewportHeight = scrollPane.getViewport().getHeight();
+		int newY = (int) viewPosition.getY();
+		newY -= viewportHeight;
+		newY = Math.max(0, newY - viewportHeight);
+		scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+	}
+	
+	public void gotoNextPage() {
+		Point viewPosition = scrollPane.getViewport().getViewPosition();
+		int viewportHeight = scrollPane.getViewport().getHeight();
+		int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
+		if (viewPosition.getY() + viewportHeight >= scrollMax) {
+			sectionWalker.gotoNext();
+			return;
+		}
+		int newY = (int) viewPosition.getY();
+		newY += viewportHeight;
+		newY = Math.min(newY, (scrollMax - viewportHeight));
+		scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+	}
 	
 	private String calculateTargetHref(URL clickUrl) {
 		String resourceHref = clickUrl.toString();
@@ -132,8 +173,8 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 		}
 	}
 
-	private ImageLoaderCache initImageLoader() {
-		HTMLDocument document = (HTMLDocument) getDocument();
+	private void initImageLoader() {
+		HTMLDocument document = (HTMLDocument) editorPane.getDocument();
 		try {
 			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
 		} catch (MalformedURLException e) {
@@ -145,6 +186,7 @@ public class ChapterPane extends JEditorPane implements SectionChangeListener, H
 		}
 		ImageLoaderCache result = new ImageLoaderCache(sectionWalker.getBook(), cache);
 		document.getDocumentProperties().put("imageCache", result);
-		return result;
+		this.imageLoaderCache = result;
 	}
+
 }
