@@ -30,18 +30,18 @@ import org.apache.log4j.Logger;
  * 
  * @return
  */
-public class ChapterPane extends JPanel implements SectionChangeListener, HyperlinkListener {
+public class ContentPane extends JPanel implements SectionChangeListener, HyperlinkListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
-	private static final Logger log = Logger.getLogger(ChapterPane.class);
+	private static final Logger log = Logger.getLogger(ContentPane.class);
 	private ImageLoaderCache imageLoaderCache;
 	private SectionWalker sectionWalker;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
 	
-	public ChapterPane(SectionWalker sectionWalker) {
+	public ContentPane(SectionWalker sectionWalker) {
 		super(new GridLayout(1, 0));
 		this.sectionWalker = sectionWalker;
 		this.editorPane = createJEditorPane(this);
