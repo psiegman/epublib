@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -33,8 +32,7 @@ public class Viewer extends JPanel {
 	private static final long serialVersionUID = 1610691708767665447L;
 	
 	static final Logger log = Logger.getLogger(Viewer.class);
-	private JScrollPane treeView;
-	private JScrollPane htmlView;
+	private TableOfContentsPane tableOfContents;
 	private ButtonBar buttonBar;
 	
 	public Viewer(Book book) {
@@ -43,28 +41,36 @@ public class Viewer extends JPanel {
 
 		// setup the html view
 		ChapterPane htmlPane = new ChapterPane(sectionWalker);
-		JScrollPane htmlView = new JScrollPane(htmlPane);
 		
-		// setup the table of contents view
-		JTree tree = new TableOfContentsPane(sectionWalker);
-		treeView = new JScrollPane(tree);
+		this.tableOfContents = new TableOfContentsPane(sectionWalker);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.add(htmlView, BorderLayout.CENTER);
-		this.buttonBar = new ButtonBar(sectionWalker);
+		contentPanel.add(htmlPane, BorderLayout.CENTER);
+		this.buttonBar = new ButtonBar(sectionWalker, htmlPane);
 		contentPanel.add(buttonBar, BorderLayout.SOUTH);
 
 		// Add the scroll panes to a split pane.
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		splitPane.setTopComponent(treeView);
-		splitPane.setBottomComponent(contentPanel);
-		splitPane.setOneTouchExpandable(true);
-		Dimension minimumSize = new Dimension(100, 50);
-		htmlView.setMinimumSize(minimumSize);
-		treeView.setMinimumSize(minimumSize);
-		splitPane.setDividerLocation(100);
-		splitPane.setPreferredSize(new Dimension(600, 800));
+		JSplitPane toc_html_splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		toc_html_splitPane.setTopComponent(tableOfContents);
+		toc_html_splitPane.setBottomComponent(contentPanel);
+		toc_html_splitPane.setOneTouchExpandable(true);
+//		Dimension minimumSize = new Dimension(100, 50);
+//		htmlView.setMinimumSize(minimumSize);
+//		treeView.setMinimumSize(minimumSize);
+		toc_html_splitPane.setDividerLocation(100);
+		toc_html_splitPane.setPreferredSize(new Dimension(600, 800));
 
+		
+		// Add the scroll panes to a split pane.
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setTopComponent(toc_html_splitPane);
+		splitPane.setBottomComponent(new MetadataPane(sectionWalker));
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(800);
+		splitPane.setPreferredSize(new Dimension(1000, 800));
+		
+		
+		
 		// Add the split pane to this panel.
 		add(splitPane);
 
@@ -74,76 +80,15 @@ public class Viewer extends JPanel {
 
 	private void init(Book book) {
 		SectionWalker sectionWalker = book.createSectionWalker();
-		treeView = new JScrollPane(new TableOfContentsPane(sectionWalker));
+//		treeView = new JScrollPane(new TableOfContentsPane(sectionWalker));
 
 		// setup the html view
 		ChapterPane htmlPane = new ChapterPane(sectionWalker);
 		sectionWalker.addSectionChangeEventListener(htmlPane);
-		htmlView = new JScrollPane(htmlPane);
+//		htmlView = new ChapterPane(sectionWalker);
 		
 		buttonBar.setSectionWalker(sectionWalker);
 	}
-
-	/**
-	 * Creates a panel with the first,previous,next and last buttons.
-	 * 
-	 * @return
-	 */
-	private static class ButtonBar extends JPanel {
-		private static final long serialVersionUID = 6431437924245035812L;
-
-		private JButton firstButton = new JButton("|<");
-		private JButton previousButton = new JButton("<");
-		private JButton nextButton = new JButton(">");
-		private JButton lastButton = new JButton(">|");
-		private final ValueHolder<SectionWalker> sectionWalkerHolder = new ValueHolder<SectionWalker>();
-		
-		public ButtonBar(SectionWalker sectionWalker) {
-			super(new GridLayout(0, 4));
-			super.add(firstButton);
-			super.add(previousButton);
-			super.add(nextButton);
-			super.add(lastButton);
-			setSectionWalker(sectionWalker);
-		}
-		
-		public void setSectionWalker(SectionWalker sectionWalker) {
-			sectionWalkerHolder.setValue(sectionWalker);
-			
-			firstButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					sectionWalkerHolder.getValue().gotoFirst();
-				}
-			});
-			previousButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					sectionWalkerHolder.getValue().gotoPrevious();
-				}
-			});
-			
-			nextButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					sectionWalkerHolder.getValue().gotoNext();
-				}
-			});
-
-			lastButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					sectionWalkerHolder.getValue().gotoLast();
-				}
-			});
-		}
-	}
-
 
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
@@ -160,7 +105,7 @@ public class Viewer extends JPanel {
 		frame.add(viewer);
 
 		frame.setJMenuBar(createMenuBar(viewer));
-		// Display the window.
+        // Display the window.
 		frame.pack();
 		frame.setVisible(true);
 	}
