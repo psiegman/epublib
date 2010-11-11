@@ -1,7 +1,12 @@
 package nl.siegmann.epublib.viewer;
 
+import java.awt.GridLayout;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -9,10 +14,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 import nl.siegmann.epublib.domain.TOCReference;
+
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Creates a JTree for navigating a Book via its Table of Contents.
@@ -20,9 +30,30 @@ import nl.siegmann.epublib.domain.TOCReference;
  * @author paul
  *
  */
-public class TableOfContentsPane extends JTree implements SectionChangeListener {
+public class TableOfContentsPane extends JPanel implements SectionChangeListener {
 
 	private static final long serialVersionUID = 2277717264176049700L;
+	
+	private MultiMap href2treeNode = new MultiValueMap();
+	private JTree tree;
+	
+	/**
+	 * Creates a JTree that displays all the items in the table of contents from the book in SectionWalker.
+	 * Also sets up a selectionListener that updates the SectionWalker when an item in the tree is selected.
+	 * 
+	 * @param sectionWalker
+	 * @return
+	 */
+	public TableOfContentsPane(SectionWalker sectionWalker) {
+		super(new GridLayout(1, 0));
+		tree = new JTree(createTree(sectionWalker));
+		add(new JScrollPane(tree));
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//		tree.setRootVisible(false);
+		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
+		sectionWalker.addSectionChangeEventListener(this);
+	}
+	
 	
 	/**
 	 * Wrapper around a TOCReference that gives the TOCReference's title when toString() is called
@@ -47,27 +78,18 @@ public class TableOfContentsPane extends JTree implements SectionChangeListener 
 		}
 	}
 	
-	
-	/**
-	 * Creates a JTree that displays all the items in the table of contents from the book in SectionWalker.
-	 * Also sets up a selectionListener that updates the SectionWalker when an item in the tree is selected.
-	 * 
-	 * @param sectionWalker
-	 * @return
-	 */
-	public TableOfContentsPane(SectionWalker sectionWalker) {
-		super(createTree(sectionWalker));
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-//		tree.setRootVisible(false);
-		addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
-		sectionWalker.addSectionChangeEventListener(this);
+	private void addToHref2TreeNode(Resource resource, DefaultMutableTreeNode treeNode) {
+		if (resource == null || StringUtils.isBlank(resource.getHref())) {
+			return;
+		}
+		href2treeNode.put(resource.getHref(), treeNode);
 	}
-
 	
-	private static DefaultMutableTreeNode createTree(SectionWalker sectionWalker) {
+	private DefaultMutableTreeNode createTree(SectionWalker sectionWalker) {
 		Book book = sectionWalker.getBook();
 		TOCItem rootTOCItem = new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage()));
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(rootTOCItem);
+		addToHref2TreeNode(book.getCoverPage(), top);
 		createNodes(top, book);
 		return top;
 	}
@@ -98,17 +120,18 @@ public class TableOfContentsPane extends JTree implements SectionChangeListener 
 		}
 	}
 
-	private static void createNodes(DefaultMutableTreeNode top, Book book) {
+	private void createNodes(DefaultMutableTreeNode top, Book book) {
 		addNodesToParent(top, book.getTableOfContents().getTocReferences());
 	}
 	
-	private static void addNodesToParent(DefaultMutableTreeNode parent, List<TOCReference> tocReferences) {
+	private void addNodesToParent(DefaultMutableTreeNode parent, List<TOCReference> tocReferences) {
 		if (tocReferences == null) {
 			return;
 		}
 		for (TOCReference tocReference: tocReferences) {
 			TOCItem tocItem = new TOCItem(tocReference);
 			DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(tocItem);
+			addToHref2TreeNode(tocReference.getResource(), treeNode);
 			addNodesToParent(treeNode, tocReference.getChildren());
 			parent.add(treeNode);
 		}
@@ -118,5 +141,14 @@ public class TableOfContentsPane extends JTree implements SectionChangeListener 
 	@Override
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
 //		System.out.println("I should highlight the section " + sectionChangeEvent.getCurrentResource().getHref());
+		Collection treenodes = (Collection) href2treeNode.get(sectionChangeEvent.getCurrentResource().getHref());
+		if (treenodes == null || treenodes.isEmpty()) {
+			return;
+		}
+		for (Iterator iter = treenodes.iterator(); iter.hasNext();) {
+			DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) iter.next();
+//			System.out.println("treenode:" + treeNode);
+//			tree.setSelectionPath(treeNode.get);
+		}
 	}
 }
