@@ -41,7 +41,7 @@ public class MetadataPane extends JPanel {
 		addStrings(metadata.getDates(), "Date", result);
 		addStrings(metadata.getSubjects(), "Subject", result);
 		addStrings(metadata.getTypes(), "Type", result);
-		addStrings(metadata.getRights(), "Right", result);
+		addStrings(metadata.getRights(), "Rights", result);
 		return result.toArray(new Object[result.size()][2]);
 	}
 
