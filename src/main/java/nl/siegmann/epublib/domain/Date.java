@@ -2,6 +2,8 @@ package nl.siegmann.epublib.domain;
 
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang.StringUtils;
+
 import nl.siegmann.epublib.epub.PackageDocumentBase;
 
 /**
@@ -82,6 +84,13 @@ public class Date {
 	
 	public void setEvent(Event event) {
 		this.event = event;
+	}
+
+	public String toString() {
+		if (event == null) {
+			return dateString;
+		}
+		return "" + event + ":" + dateString;
 	}
 }
 
