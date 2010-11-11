@@ -104,4 +104,11 @@ public class Identifier {
 		return StringUtils.equals(scheme, ((Identifier) otherIdentifier).scheme)
 		&& StringUtils.equals(value, ((Identifier) otherIdentifier).value);
 	}
+	
+	public String toString() {
+		if (StringUtils.isBlank(scheme)) {
+			return "" + value;
+		}
+		return "" + scheme + ":" + value;
+	}
 }
