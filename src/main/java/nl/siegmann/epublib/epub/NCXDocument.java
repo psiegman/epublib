@@ -193,7 +193,7 @@ public class NCXDocument {
 
 		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
 		writer.writeAttribute("name", "dtb:depth");
-		writer.writeAttribute("content", "1");
+		writer.writeAttribute("content", String.valueOf(book.getTableOfContents().calculateDepth()));
 
 		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
 		writer.writeAttribute("name", "dtb:totalPageCount");

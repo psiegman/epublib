@@ -87,4 +87,19 @@ public class TableOfContents {
 		}
 		return result;
 	}
+	
+	public int calculateDepth() {
+		return calculateDepth(tocReferences, 0);
+	}
+
+	private int calculateDepth(List<TOCReference> tocReferences, int currentDepth) {
+		int maxChildDepth = 0;
+		for (TOCReference tocReference: tocReferences) {
+			int childDepth = calculateDepth(tocReference.getChildren(), 1);
+			if (childDepth > maxChildDepth) {
+				maxChildDepth = childDepth;
+			}
+		}
+		return currentDepth + maxChildDepth;
+	}
 }
