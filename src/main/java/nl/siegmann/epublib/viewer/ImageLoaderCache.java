@@ -8,11 +8,12 @@ import java.util.Enumeration;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.util.StringUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 class ImageLoaderCache extends Dictionary {
 
@@ -43,12 +44,14 @@ class ImageLoaderCache extends Dictionary {
 	}
 
 	public Object get(Object key) {
+		System.out.println("looking for image with key:" + key);
 		Image result = (Image) dictionary.get(key);
 		if (result != null) {
 			return result;
 		}
 		String resourceHref = ((URL) key).toString().substring(IMAGE_URL_PREFIX.length());
 		resourceHref = currentFolder + resourceHref;
+		resourceHref = StringUtil.collapsePathDots(resourceHref);
 		Resource imageResource = book.getResources().getByHref(resourceHref);
 		if (imageResource == null) {
 			return null;
