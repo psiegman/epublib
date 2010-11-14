@@ -42,7 +42,6 @@ public class EpubWriterTest extends TestCase {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			writer.write(book, out);
 			byte[] epubData = out.toByteArray();
-			new FileOutputStream("/home/paul/writetest.epub").write(epubData);
 			assertNotNull(epubData);
 			assertTrue(epubData.length > 0);
 			
