@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.filechooser.FileFilter;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.SectionWalker;
@@ -32,27 +33,16 @@ public class Viewer extends JPanel {
 	static final Logger log = Logger.getLogger(Viewer.class);
 	private TableOfContentsPane tableOfContents;
 	private ButtonBar buttonBar;
+	private JSplitPane leftSplitPane;
+	private JSplitPane rightSplitPane;
 	
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
-		SectionWalker sectionWalker = book.createSectionWalker();
-		
-		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
-		this.tableOfContents = new TableOfContentsPane(sectionWalker);
-		leftSplitPane.setBottomComponent(tableOfContents);
+		leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		leftSplitPane.setDividerLocation(100);
 		leftSplitPane.setOneTouchExpandable(true);
 
-		JSplitPane rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-		ContentPane htmlPane = new ContentPane(sectionWalker);
-		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.add(htmlPane, BorderLayout.CENTER);
-		this.buttonBar = new ButtonBar(sectionWalker, htmlPane);
-		contentPanel.add(buttonBar, BorderLayout.SOUTH);
-		rightSplitPane.setTopComponent(contentPanel);
-		rightSplitPane.setBottomComponent(new MetadataPane(sectionWalker));
+		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
 
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -64,22 +54,25 @@ public class Viewer extends JPanel {
 		
 		// Add the split pane to this panel.
 		add(mainSplitPane);
-
-		htmlPane.displayPage(book.getCoverPage());
-//		sectionWalker.setCurrentResource(book.getCoverPage());
+		init(book);
 	}
 
 	private void init(Book book) {
 		SectionWalker sectionWalker = book.createSectionWalker();
-//		treeView = new JScrollPane(new TableOfContentsPane(sectionWalker));
+		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
+		this.tableOfContents = new TableOfContentsPane(sectionWalker);
+		leftSplitPane.setBottomComponent(tableOfContents);
 
-		// setup the html view
 		ContentPane htmlPane = new ContentPane(sectionWalker);
-		sectionWalker.addSectionChangeEventListener(htmlPane);
-//		htmlView = new ChapterPane(sectionWalker);
-		
-		buttonBar.setSectionWalker(sectionWalker);
+		JPanel contentPanel = new JPanel(new BorderLayout());
+		contentPanel.add(htmlPane, BorderLayout.CENTER);
+		this.buttonBar = new ButtonBar(sectionWalker, htmlPane);
+		contentPanel.add(buttonBar, BorderLayout.SOUTH);
+		rightSplitPane.setTopComponent(contentPanel);
+		rightSplitPane.setBottomComponent(new MetadataPane(sectionWalker));
+		htmlPane.displayPage(book.getCoverPage());
 	}
+
 
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
@@ -105,6 +98,30 @@ public class Viewer extends JPanel {
 		return text;
 	}
 	
+	private static JFileChooser createFileChooser() {
+		File userHome = new File(System.getProperty("user.home"));
+		if (! userHome.exists()) {
+			userHome = null;
+		}
+		JFileChooser fileChooser = new JFileChooser(userHome);
+		fileChooser.setAcceptAllFileFilterUsed(true);
+		fileChooser.setFileFilter(new FileFilter() {
+			
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory() || 
+				file.getName().endsWith(".epub");
+			}
+			
+			@Override
+			public String getDescription() {
+				return "EPub files";
+			}
+			
+		});
+		return fileChooser;
+	}
+	
 	private static JMenuBar createMenuBar(final Viewer viewer) {
 		//Where the GUI is created:
 		final JMenuBar menuBar = new JMenuBar();
@@ -114,17 +131,14 @@ public class Viewer extends JPanel {
 		openFileMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				
-				String filename = File.separator+"tmp";
-				JFileChooser fc = new JFileChooser(new File(filename));
-				// Show open dialog; this method does not return until the dialog is closed
-				fc.showOpenDialog(menuBar);
-				File selFile = fc.getSelectedFile();
-				if (selFile == null) {
+				JFileChooser fileChooser = createFileChooser();
+				fileChooser.showOpenDialog(menuBar);
+				File selectedFile = fileChooser.getSelectedFile();
+				if (selectedFile == null) {
 					return;
 				}
 				try {
-					Book book = (new EpubReader()).readEpub(new FileInputStream(selFile));
+					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
 					viewer.init(book);
 				} catch (Exception e1) {
 					log.error(e1);
