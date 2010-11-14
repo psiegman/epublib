@@ -7,9 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -22,6 +19,7 @@ import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -135,40 +133,6 @@ public class CoverpageBookProcessor implements BookProcessor {
 	}
 	
 	
-	/**
-	 * Changes a path containing '..', '.' and empty dirs into a path that doesn't.
-	 * X/foo/../Y is changed into 'X/Y', etc.
-	 * Does not handle invalid paths like "../".
-	 * 
-	 * @param path
-	 * @return
-	 */
-	static String collapsePathDots(String path) {
-		String[] stringParts = path.split("/");
-		List<String> parts = new ArrayList<String>(Arrays.asList(stringParts));
-		for (int i = 0; i < parts.size() - 1; i++) {
-			String currentDir = parts.get(i);
-			if (currentDir.length() == 0 || currentDir.equals(".")) {
-				parts.remove(i);
-				i--;
-			} else if(currentDir.equals("..")) {
-				parts.remove(i - 1);
-				parts.remove(i - 1);
-				i--;
-			}
-		}
-		StringBuilder result = new StringBuilder();
-		if (path.startsWith("/")) {
-			result.append('/');
-		}
-		for (int i = 0; i < parts.size(); i++) {
-			result.append(parts.get(i));
-			if (i < (parts.size() - 1)) {
-				result.append('/');
-			}
-		}
-		return result.toString();
-	}
 	
 	// package
 	static String calculateAbsoluteImageHref(String relativeImageHref,
@@ -176,7 +140,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 		if (relativeImageHref.startsWith("/")) {
 			return relativeImageHref;
 		}
-		String result = collapsePathDots(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
+		String result = StringUtil.collapsePathDots(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
 		return result;
 	}
 

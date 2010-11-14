@@ -24,6 +24,7 @@ import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -54,7 +55,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
 		book.setSpine(readSpine(packageDocument, epubReader, book, resourcesById));
 		
-		// if we did not find a cover page then we make the first page of the book te cover page
+		// if we did not find a cover page then we make the first page of the book the cover page
 		if (book.getCoverPage() == null && book.getSpine().size() > 0) {
 			book.setCoverPage(book.getSpine().getResource(0));
 		}
@@ -83,6 +84,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			Element itemElement = (Element) itemElements.item(i);
 			String id = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.id);
 			String href = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.href);
+			href = StringUtil.unescapeHttp(href);
 			String mediaTypeName = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.media_type);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
@@ -99,6 +101,9 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		return result;
 	}	
+
+	
+	
 	
 	/**
 	 * Reads the book's guide.

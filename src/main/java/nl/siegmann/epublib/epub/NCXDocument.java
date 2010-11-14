@@ -29,6 +29,7 @@ import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
@@ -153,6 +154,7 @@ public class NCXDocument {
 	private static TOCReference readTOCReference(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
 		String name = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.navLabel + "/" + PREFIX_NCX + ":" + NCXTags.text, navpointElement);
 		String completeHref = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.content + "/@" + NCXAttributes.src, navpointElement);
+		completeHref = StringUtil.unescapeHttp(completeHref);
 		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
 		String fragmentId = StringUtils.substringAfter(completeHref, Constants.FRAGMENT_SEPARATOR);
 		Resource resource = book.getResources().getByHref(href);
