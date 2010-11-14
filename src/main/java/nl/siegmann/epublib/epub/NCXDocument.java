@@ -28,7 +28,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
-import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
@@ -49,16 +48,37 @@ public class NCXDocument {
 	public static final String NAMESPACE_NCX = "http://www.daisy.org/z3986/2005/ncx/";
 	public static final String PREFIX_NCX = "ncx";
 	public static final String NCX_ITEM_ID = "ncx";
-	public static final String NCX_HREF = "toc.ncx";
+	public static final String DEFAULT_NCX_HREF = "toc.ncx";
 
-	private static Logger log = Logger.getLogger(NCXDocument.class);
+	private static final Logger log = Logger.getLogger(NCXDocument.class);
+	private static final String NAVMAP_SELECTION_XPATH = PREFIX_NCX + ":" + NCXTags.ncx + "/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint;
 
 	private interface NCXTags {
+		String ncx = "ncx";
 		String meta = "meta";
 		String navPoint = "navPoint";
 		String navMap = "navMap";
+		String navLabel = "navLabel";
+		String content = "content";
+		String text = "text";
+		String docTitle = "docTitle";
+		String docAuthor = "docAuthor";
+	}
+	
+	private interface NCXAttributes {
+		String src = "src";
+		String name = "name";
+		String content = "content";
+		String id = "id";
+		String playOrder = "playOrder";
+		String clazz = "class";
 	}
 
+	private interface NCXAttributeValues {
+
+		String chapter = "chapter";
+		
+	}
 	// package
 	@SuppressWarnings("serial")
 	static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
@@ -110,7 +130,7 @@ public class NCXDocument {
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader.createDocumentBuilder());
 			XPath xPath = epubReader.getXpathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
-		    NodeList navmapNodes = (NodeList) xPath.evaluate(PREFIX_NCX + ":ncx/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint, ncxDocument, XPathConstants.NODESET);
+		    NodeList navmapNodes = (NodeList) xPath.evaluate(NAVMAP_SELECTION_XPATH, ncxDocument, XPathConstants.NODESET);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
@@ -131,8 +151,8 @@ public class NCXDocument {
 	}
 
 	private static TOCReference readTOCReference(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
-		String name = xPath.evaluate(PREFIX_NCX + ":navLabel/" + PREFIX_NCX + ":text", navpointElement);
-		String completeHref = xPath.evaluate(PREFIX_NCX + ":content/@src", navpointElement);
+		String name = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.navLabel + "/" + PREFIX_NCX + ":" + NCXTags.text, navpointElement);
+		String completeHref = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.content + "/@" + NCXAttributes.src, navpointElement);
 		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
 		String fragmentId = StringUtils.substringAfter(completeHref, Constants.FRAGMENT_SEPARATOR);
 		Resource resource = book.getResources().getByHref(href);
@@ -166,7 +186,7 @@ public class NCXDocument {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		XMLStreamWriter out = epubWriter.createXMLStreamWriter(data);
 		write(out, book);
-		Resource resource = new ByteArrayResource(NCX_ITEM_ID, data.toByteArray(), NCX_HREF, MediatypeService.NCX);
+		Resource resource = new ByteArrayResource(NCX_ITEM_ID, data.toByteArray(), DEFAULT_NCX_HREF, MediatypeService.NCX);
 		return resource;
 	}
 	
@@ -182,39 +202,26 @@ public class NCXDocument {
 		writer.writeStartElement(NAMESPACE_NCX, "head");
 
 		for(Identifier identifier: book.getMetadata().getIdentifiers()) {
-			writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-			writer.writeAttribute("name", "dtb:" + identifier.getScheme());
-			writer.writeAttribute("content", identifier.getValue());
+			writeMetaElement("dtb:" + identifier.getScheme(), identifier.getValue(), writer);
 		}
 		
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute("name", "dtb:generator");
-		writer.writeAttribute("content", Constants.EPUBLIB_GENERATOR_NAME);
-
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute("name", "dtb:depth");
-		writer.writeAttribute("content", String.valueOf(book.getTableOfContents().calculateDepth()));
-
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute("name", "dtb:totalPageCount");
-		writer.writeAttribute("content", "0");
-
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute("name", "dtb:maxPageNumber");
-		writer.writeAttribute("content", "0");
+		writeMetaElement("dtb:generator", Constants.EPUBLIB_GENERATOR_NAME, writer);
+		writeMetaElement("dtb:depth", String.valueOf(book.getTableOfContents().calculateDepth()), writer);
+		writeMetaElement("dtb:totalPageCount", "0", writer);
+		writeMetaElement("dtb:maxPageNumber", "0", writer);
 
 		writer.writeEndElement();
 		
-		writer.writeStartElement(NAMESPACE_NCX, "docTitle");
-		writer.writeStartElement(NAMESPACE_NCX, "text");
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.docTitle);
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
 		// write the first title
-		writer.writeCharacters(StringUtils.defaultString(CollectionUtil.first(book.getMetadata().getTitles())));
+		writer.writeCharacters(StringUtils.defaultString(book.getTitle()));
 		writer.writeEndElement(); // text
 		writer.writeEndElement(); // docTitle
 		
 		for(Author author: book.getMetadata().getAuthors()) {
-			writer.writeStartElement(NAMESPACE_NCX, "docAuthor");
-			writer.writeStartElement(NAMESPACE_NCX, "text");
+			writer.writeStartElement(NAMESPACE_NCX, NCXTags.docAuthor);
+			writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
 			writer.writeCharacters(author.getLastname() + ", " + author.getFirstname());
 			writer.writeEndElement();
 			writer.writeEndElement();
@@ -228,6 +235,12 @@ public class NCXDocument {
 	}
 
 
+	private static void writeMetaElement(String name, String content, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
+		writer.writeAttribute(NCXAttributes.name, name);
+		writer.writeAttribute(NCXAttributes.content, content);
+	}
+	
 	private static int writeNavPoints(List<TOCReference> tocReferences, int playOrder,
 			XMLStreamWriter writer) throws XMLStreamException {
 		for(TOCReference tocReference: tocReferences) {
@@ -244,16 +257,16 @@ public class NCXDocument {
 
 	private static void writeNavPointStart(TOCReference tocReference, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navPoint);
-		writer.writeAttribute("id", "navPoint-" + playOrder);
-		writer.writeAttribute("playOrder", String.valueOf(playOrder));
-		writer.writeAttribute("class", "chapter");
-		writer.writeStartElement(NAMESPACE_NCX, "navLabel");
-		writer.writeStartElement(NAMESPACE_NCX, "text");
+		writer.writeAttribute(NCXAttributes.id, "navPoint-" + playOrder);
+		writer.writeAttribute(NCXAttributes.playOrder, String.valueOf(playOrder));
+		writer.writeAttribute(NCXAttributes.clazz, NCXAttributeValues.chapter);
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navLabel);
+		writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
 		writer.writeCharacters(tocReference.getTitle());
 		writer.writeEndElement(); // text
 		writer.writeEndElement(); // navLabel
-		writer.writeEmptyElement(NAMESPACE_NCX, "content");
-		writer.writeAttribute("src", tocReference.getCompleteHref());
+		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.content);
+		writer.writeAttribute(NCXAttributes.src, tocReference.getCompleteHref());
 	}
 
 	private static void writeNavPointEnd(TOCReference tocReference, XMLStreamWriter writer) throws XMLStreamException {
