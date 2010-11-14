@@ -44,7 +44,6 @@ class ImageLoaderCache extends Dictionary {
 	}
 
 	public Object get(Object key) {
-		System.out.println("looking for image with key:" + key);
 		Image result = (Image) dictionary.get(key);
 		if (result != null) {
 			return result;
