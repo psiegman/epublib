@@ -2,8 +2,6 @@ package nl.siegmann.epublib.domain;
 
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang.StringUtils;
-
 import nl.siegmann.epublib.epub.PackageDocumentBase;
 
 /**

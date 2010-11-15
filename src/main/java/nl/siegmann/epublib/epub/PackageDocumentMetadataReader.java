@@ -133,5 +133,4 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		}
 		return result;
 	}
-
 }

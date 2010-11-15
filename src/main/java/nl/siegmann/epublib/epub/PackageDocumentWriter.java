@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.GuideReference;
-import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
@@ -47,7 +42,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeAttribute("version", "2.0");
 		writer.writeAttribute(OPFAttributes.uniqueIdentifier, BOOK_ID_ID);
 
-		writeMetaData(book, writer);
+		PackageDocumentMetadataWriter.writeMetaData(book, writer);
 
 		writeManifest(book, epubWriter, writer);
 
@@ -59,144 +54,6 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeEndDocument();
 	}
 
-	/**
-	 * Writes the book's metadata.
-	 * 
-	 * @param book
-	 * @param writer
-	 * @throws XMLStreamException
-	 */
-	private static void writeMetaData(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement(NAMESPACE_OPF, OPFTags.metadata);
-		writer.writeNamespace("dc", NAMESPACE_DUBLIN_CORE);
-		writer.writeNamespace("opf", NAMESPACE_OPF);
-		
-		writeIdentifiers(book.getMetadata().getIdentifiers(), writer);
-		
-		for(String title: book.getMetadata().getTitles()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.title);
-			writer.writeCharacters(title);
-			writer.writeEndElement(); // dc:title
-		}
-		
-		for(Author author: book.getMetadata().getAuthors()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.creator);
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
-			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
-			writer.writeEndElement(); // dc:creator
-		}
-
-		for(Author author: book.getMetadata().getContributors()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.contributor);
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
-			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
-			writer.writeEndElement(); // dc:contributor
-		}
-
-		for(String subject: book.getMetadata().getSubjects()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.subject);
-			writer.writeCharacters(subject);
-			writer.writeEndElement(); // dc:subject
-		}
-
-		for(String description: book.getMetadata().getDescriptions()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.description);
-			writer.writeCharacters(description);
-			writer.writeEndElement(); // dc:description
-		}
-
-		for(String publisher: book.getMetadata().getPublishers()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.publisher);
-			writer.writeCharacters(publisher);
-			writer.writeEndElement(); // dc:publisher
-		}
-
-		for(String type: book.getMetadata().getTypes()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.type);
-			writer.writeCharacters(type);
-			writer.writeEndElement(); // dc:type
-		}
-
-		for (Date date: book.getMetadata().getDates()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.date);
-			if (date.getEvent() != null) {
-				writer.writeAttribute(PREFIX_OPF, NAMESPACE_OPF, OPFAttributes.event, date.getEvent().toString());
-			}
-			writer.writeCharacters(date.getValue());
-			writer.writeEndElement(); // dc:date
-		}
-
-		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "language");
-			writer.writeCharacters(book.getMetadata().getLanguage());
-			writer.writeEndElement(); // dc:language
-		}
-
-		for(String right: book.getMetadata().getRights()) {
-			if(StringUtils.isNotEmpty(right)) {
-				writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "rights");
-				writer.writeCharacters(right);
-				writer.writeEndElement(); // dc:rights
-			}
-		}
-		
-		
-		if(book.getMetadata().getOtherProperties() != null) {
-			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
-				writer.writeStartElement(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
-				writer.writeCharacters(mapEntry.getValue());
-				writer.writeEndElement();
-				
-			}
-		}
-
-		if(book.getMetadata().getCoverImage() != null) { // write the cover image
-			writer.writeEmptyElement(OPFTags.meta);
-			writer.writeAttribute(OPFAttributes.name, OPFValues.meta_cover);
-			writer.writeAttribute(OPFAttributes.content, book.getMetadata().getCoverImage().getId());
-		}
-
-		writer.writeEmptyElement(OPFTags.meta);
-		writer.writeAttribute(OPFAttributes.name, OPFValues.generator);
-		writer.writeAttribute(OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
-		
-		writer.writeEndElement(); // dc:metadata
-	}
-
-
-	/**
-	 * Writes out the complete list of Identifiers to the package document.
-	 * The first identifier for which the bookId is true is made the bookId identifier.
-	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-	 * 
-	 * @param identifiers
-	 * @param writer
-	 * @throws XMLStreamException
-	 */
-	private static void writeIdentifiers(List<Identifier> identifiers, XMLStreamWriter writer) throws XMLStreamException {
-		Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);
-		if(bookIdIdentifier == null) {
-			return;
-		}
-		
-		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
-		writer.writeAttribute("id", BOOK_ID_ID);
-		writer.writeAttribute(NAMESPACE_OPF, "scheme", bookIdIdentifier.getScheme());
-		writer.writeCharacters(bookIdIdentifier.getValue());
-		writer.writeEndElement(); // dc:identifier
-
-		for(Identifier identifier: identifiers.subList(1, identifiers.size())) {
-			if(identifier == bookIdIdentifier) {
-				continue;
-			}
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
-			writer.writeAttribute(NAMESPACE_OPF, "scheme", identifier.getScheme());
-			writer.writeCharacters(identifier.getValue());
-			writer.writeEndElement(); // dc:identifier
-		}
-	}
 
 	/**
 	 * Writes the package's spine.
@@ -230,8 +87,16 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		writer.writeAttribute(OPFAttributes.href, epubWriter.getNcxHref());
 		writer.writeAttribute(OPFAttributes.media_type, epubWriter.getNcxMediaType());
 
-		writeCoverResources(book, writer);
-		writeItem(book, book.getSpine().getTocResource(), writer);
+//		writeCoverResources(book, writer);
+		
+		for(Resource resource: getAllResourcesSortById(book)) {
+			writeItem(book, resource, writer);
+		}
+		
+		writer.writeEndElement(); // manifest
+	}
+
+	private static List<Resource> getAllResourcesSortById(Book book) {
 		List<Resource> allResources = new ArrayList<Resource>(book.getResources().getAll());
 		Collections.sort(allResources, new Comparator<Resource>() {
 
@@ -240,13 +105,9 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 				return resource1.getId().compareToIgnoreCase(resource2.getId());
 			}
 		});
-		for(Resource resource: allResources) {
-			writeItem(book, resource, writer);
-		}
-		
-		writer.writeEndElement(); // manifest
+		return allResources;
 	}
-
+	
 	/**
 	 * Writes a resources as an item element
 	 * @param resource
@@ -272,10 +133,10 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			log.error("resource mediatype must not be empty (id: " + resource.getId() + ", href:" + resource.getHref() + ")");
 			return;
 		}
-		writer.writeEmptyElement("item");
-		writer.writeAttribute("id", resource.getId());
-		writer.writeAttribute("href", resource.getHref());
-		writer.writeAttribute("media-type", resource.getMediaType().getName());
+		writer.writeEmptyElement(OPFTags.item);
+		writer.writeAttribute(OPFAttributes.id, resource.getId());
+		writer.writeAttribute(OPFAttributes.href, resource.getHref());
+		writer.writeAttribute(OPFAttributes.media_type, resource.getMediaType().getName());
 	}
 
 	/**

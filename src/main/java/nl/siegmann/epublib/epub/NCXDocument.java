@@ -50,7 +50,8 @@ public class NCXDocument {
 	public static final String PREFIX_NCX = "ncx";
 	public static final String NCX_ITEM_ID = "ncx";
 	public static final String DEFAULT_NCX_HREF = "toc.ncx";
-
+	public static final String PREFIX_DTB = "dtb";
+	
 	private static final Logger log = Logger.getLogger(NCXDocument.class);
 	private static final String NAVMAP_SELECTION_XPATH = PREFIX_NCX + ":" + NCXTags.ncx + "/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint;
 
@@ -204,13 +205,13 @@ public class NCXDocument {
 		writer.writeStartElement(NAMESPACE_NCX, "head");
 
 		for(Identifier identifier: book.getMetadata().getIdentifiers()) {
-			writeMetaElement("dtb:" + identifier.getScheme(), identifier.getValue(), writer);
+			writeMetaElement(identifier.getScheme(), identifier.getValue(), writer);
 		}
 		
-		writeMetaElement("dtb:generator", Constants.EPUBLIB_GENERATOR_NAME, writer);
-		writeMetaElement("dtb:depth", String.valueOf(book.getTableOfContents().calculateDepth()), writer);
-		writeMetaElement("dtb:totalPageCount", "0", writer);
-		writeMetaElement("dtb:maxPageNumber", "0", writer);
+		writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, writer);
+		writeMetaElement("depth", String.valueOf(book.getTableOfContents().calculateDepth()), writer);
+		writeMetaElement("totalPageCount", "0", writer);
+		writeMetaElement("maxPageNumber", "0", writer);
 
 		writer.writeEndElement();
 		
@@ -237,9 +238,9 @@ public class NCXDocument {
 	}
 
 
-	private static void writeMetaElement(String name, String content, XMLStreamWriter writer) throws XMLStreamException {
+	private static void writeMetaElement(String dtbName, String content, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute(NCXAttributes.name, name);
+		writer.writeAttribute(NCXAttributes.name, PREFIX_DTB + ":" + dtbName);
 		writer.writeAttribute(NCXAttributes.content, content);
 	}
 	
