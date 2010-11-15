@@ -18,11 +18,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.epub.EpubReader;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -35,30 +37,36 @@ public class Viewer extends JPanel {
 	private ButtonBar buttonBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
+	private SectionWalker sectionWalker;
 	
 	public Viewer(Book book) {
 		super(new GridLayout(1, 0));
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		
 		leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		leftSplitPane.setDividerLocation(100);
 		leftSplitPane.setOneTouchExpandable(true);
+		leftSplitPane.setDividerLocation(0);
 
 		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
-
+		rightSplitPane.setDividerLocation(600);
+		
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		mainSplitPane.setTopComponent(leftSplitPane);
 		mainSplitPane.setBottomComponent(rightSplitPane);
 		mainSplitPane.setOneTouchExpandable(true);
 //		toc_html_splitPane.setDividerLocation(100);
 		mainSplitPane.setPreferredSize(new Dimension(1000, 800));
-		
+		mainSplitPane.setDividerLocation(200);
 		// Add the split pane to this panel.
-		add(mainSplitPane);
+		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
+		add(mainPanel);
 		init(book);
 	}
 
 	private void init(Book book) {
-		SectionWalker sectionWalker = book.createSectionWalker();
+		sectionWalker = book.createSectionWalker();
 		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
 		this.tableOfContents = new TableOfContentsPane(sectionWalker);
 		leftSplitPane.setBottomComponent(tableOfContents);
@@ -105,20 +113,8 @@ public class Viewer extends JPanel {
 		}
 		JFileChooser fileChooser = new JFileChooser(userHome);
 		fileChooser.setAcceptAllFileFilterUsed(true);
-		fileChooser.setFileFilter(new FileFilter() {
-			
-			@Override
-			public boolean accept(File file) {
-				return file.isDirectory() || 
-				file.getName().endsWith(".epub");
-			}
-			
-			@Override
-			public String getDescription() {
-				return "EPub files";
-			}
-			
-		});
+		fileChooser.setFileFilter(new FileNameExtensionFilter("EPub files", "epub"));
+				     
 		return fileChooser;
 	}
 	
@@ -132,7 +128,10 @@ public class Viewer extends JPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = createFileChooser();
-				fileChooser.showOpenDialog(menuBar);
+				int returnVal = fileChooser.showOpenDialog(viewer);
+				if(returnVal != JFileChooser.APPROVE_OPTION) {
+					return;
+				}
 				File selectedFile = fileChooser.getSelectedFile();
 				if (selectedFile == null) {
 					return;
@@ -146,22 +145,73 @@ public class Viewer extends JPanel {
 			}
 		});
 		fileMenu.add(openFileMenuItem);
+		
+		JMenuItem reloadMenuItem = new JMenuItem(getText("Reload"));
+		reloadMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				viewer.init(viewer.sectionWalker.getBook());
+			}
+		});
+		fileMenu.add(reloadMenuItem);
+
+		JMenuItem exitMenuItem = new JMenuItem(getText("Exit"));
+		exitMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		fileMenu.add(exitMenuItem);
+		
+		JMenu helpMenu = new JMenu(getText("Help"));
+		menuBar.add(helpMenu);
+		JMenuItem aboutMenuItem = new JMenuItem(getText("About"));
+		aboutMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				new AboutPanel();
+			}
+		});
+		helpMenu.add(aboutMenuItem);
+
 		return menuBar;
 	}
 	
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	private static Book readBook(String[] args) {
 		// jquery-fundamentals-book.epub
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/test2_book1.epub"));
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/three_men_in_a_boat_jerome_k_jerome.epub"));
-	
-		String bookFile = "/home/paul/test2_book1.epub";
-//		bookFile = "/home/paul/project/private/library/epub/this_dynamic_earth-AAH813.epub";
 		
+//		String bookFile = "/home/paul/test2_book1.epub";
+//		bookFile = "/home/paul/project/private/library/epub/this_dynamic_earth-AAH813.epub";
+	
+		String bookFile = null;
 		if (args.length > 0) {
 			bookFile = args[0];
 		}
-		final Book book = (new EpubReader()).readEpub(new FileInputStream(bookFile));
+		Book book = null;
+		if (! StringUtils.isBlank(bookFile)) {
+			try {
+				book = (new EpubReader()).readEpub(new FileInputStream(bookFile));
+			} catch (Exception e) {
+				log.error(e);
+			}
+		}
+		if (book == null) {
+			try {
+				book = (new EpubReader()).readEpub(Viewer.class.getResourceAsStream("/viewer/epublibviewer-help.epub"));
+			} catch (IOException e) {
+				log.error(e);
+			}
+		}
+		return book;
+	}
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+
+		final Book book = readBook(args);
+		
 		// Schedule a job for the event dispatch thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
