@@ -100,7 +100,7 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	 * @author paul
 	 *
 	 */
-	private static class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
+	private class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
 		
 		private SectionWalker sectionWalker;
 		
@@ -116,7 +116,7 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 				return;
 			}
 			TOCItem tocItem = (TOCItem) node.getUserObject();
-			sectionWalker.gotoResource(tocItem.getTOReference().getResource());
+			sectionWalker.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
 		}
 	}
 
