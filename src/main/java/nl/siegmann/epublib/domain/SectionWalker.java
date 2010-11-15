@@ -18,12 +18,19 @@ public class SectionWalker {
 	public static class SectionChangeEvent extends EventObject {
 		private static final long serialVersionUID = -6346750144308952762L;
 		
-		private Resource oldResource;
-		private int oldPosition;
+		private final Resource oldResource;
+		private final int oldPosition;
+		private final SectionWalker sectionWalker;
 		
-		public SectionChangeEvent(Object source, int oldPosition) {
+		public SectionChangeEvent(Object source, int oldPosition, Resource oldResource, SectionWalker sectionWalker) {
 			super(source);
 			this.oldPosition = oldPosition;
+			this.oldResource = oldResource;
+			this.sectionWalker = sectionWalker;
+		}
+	
+		public SectionWalker getSectionWalker() {
+			return sectionWalker;
 		}
 		
 		public int getPreviousSectionIndex() {
@@ -31,7 +38,7 @@ public class SectionWalker {
 		}
 		
 		public int getCurrentSectionIndex() {
-			return ((SectionWalker) getSource()).getCurrentIndex();
+			return sectionWalker.getCurrentIndex();
 		}
 		
 		public String getCurrentFragmentId() {
@@ -55,7 +62,7 @@ public class SectionWalker {
 		}
 		
 		public Resource getCurrentResource() {
-			return ((SectionWalker) getSource()).getCurrentResource();
+			return sectionWalker.getCurrentResource();
 		}
 	}
 
@@ -65,16 +72,18 @@ public class SectionWalker {
 	
 	public SectionWalker(Book book) {
 		this.book = book;
+		this.currentIndex = 0;
+		this.currentResource = book.getCoverPage();
 	}
 
-	public void handleEventListeners(int oldPosition, Resource oldResource) {
+	public void handleEventListeners(int oldPosition, Resource oldResource, Object source) {
 		if (eventListeners == null || eventListeners.isEmpty()) {
 			return;
 		}
 		if (oldPosition == currentIndex) {
 			return;
 		}
-		SectionChangeEvent sectionChangeEvent = new SectionChangeEvent(this, oldPosition);
+		SectionChangeEvent sectionChangeEvent = new SectionChangeEvent(source, oldPosition, oldResource, this);
 		for (SectionChangeListener sectionChangeListener: eventListeners) {
 			sectionChangeListener.sectionChanged(sectionChangeEvent);
 		}
@@ -89,15 +98,15 @@ public class SectionWalker {
 		return this.eventListeners.remove(sectionChangeListener);
 	}
 	
-	public int gotoFirst() {
-		return gotoSection(0);
+	public int gotoFirst(Object source) {
+		return gotoSection(0, source);
 	}
 
-	public int gotoPrevious() {
+	public int gotoPrevious(Object source) {
 		if (currentIndex < 0) {
-			return gotoSection(0);
+			return gotoSection(0, source);
 		} else {
-			return gotoSection(currentIndex - 1);
+			return gotoSection(currentIndex - 1, source);
 		}
 	}
 
@@ -109,33 +118,42 @@ public class SectionWalker {
 		return (currentIndex > 0);
 	}
 	
-	public int gotoNext() {
+	public int gotoNext(Object source) {
 		if (currentIndex < 0) {
-			return gotoSection(0);
+			return gotoSection(0, source);
 		} else {
-			return gotoSection(currentIndex + 1);
+			return gotoSection(currentIndex + 1, source);
 		}
 	}
 
-	public int gotoResource(Resource resource) {
+	public int gotoResource(String resourceHref, Object source) {
+		Resource resource = book.getResources().getByCompleteHref(resourceHref);
+		return gotoResource(resource, source);
+	}
+	
+	
+	public int gotoResource(Resource resource, Object source) {
+		if (resource == null) {
+			return -1;
+		}
 		Resource oldResource = currentResource;
 		this.currentResource = resource;
 
 		int oldIndex = currentIndex;
 		this.currentIndex = book.getSpine().getResourceIndex(currentResource);
 		
-		handleEventListeners(oldIndex, oldResource);
+		handleEventListeners(oldIndex, oldResource, source);
 		
 		return currentIndex;
 	}
 	
 	
-	public int gotoResourceId(String resourceId) {
-		return gotoSection(book.getSpine().findFirstResourceById(resourceId));
+	public int gotoResourceId(String resourceId, Object source) {
+		return gotoSection(book.getSpine().findFirstResourceById(resourceId), source);
 	}
 	
 	
-	public int gotoSection(int newIndex) {
+	public int gotoSection(int newIndex, Object source) {
 		if (newIndex == currentIndex) {
 			return currentIndex;
 		}
@@ -146,12 +164,12 @@ public class SectionWalker {
 		Resource oldResource = currentResource;
 		currentIndex = newIndex;
 		currentResource = book.getSpine().getResource(currentIndex);
-		handleEventListeners(oldIndex, oldResource);
+		handleEventListeners(oldIndex, oldResource, source);
 		return currentIndex;
 	}
 
-	public int gotoLast() {
-		return gotoSection(book.getSpine().size() - 1);
+	public int gotoLast(Object source) {
+		return gotoSection(book.getSpine().size() - 1, source);
 	}
 	
 	public int getCurrentIndex() {
@@ -178,6 +196,13 @@ public class SectionWalker {
 		return book;
 	}
 
+	/**
+	 * Sets the current index and resource without calling the eventlisteners.
+	 * 
+	 * If you want the eventListeners called use gotoSection(index);
+	 * 
+	 * @param currentIndex
+	 */
 	public int setCurrentResource(Resource currentResource) {
 		this.currentIndex = book.getSpine().getResourceIndex(currentResource);
 		this.currentResource = currentResource;

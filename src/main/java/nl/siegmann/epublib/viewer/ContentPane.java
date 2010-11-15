@@ -2,6 +2,8 @@ package nl.siegmann.epublib.viewer;
 
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
@@ -52,11 +54,33 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 		displayPage(sectionWalker.getCurrentResource());
 	}
 
-	private static JEditorPane createJEditorPane(HyperlinkListener hyperlinkListener) {
+	private static JEditorPane createJEditorPane(final ContentPane contentPane) {
 		JEditorPane editorPane = new JEditorPane(); 
 		editorPane.setEditable(false);
 		editorPane.setContentType("text/html");
-		editorPane.addHyperlinkListener(hyperlinkListener);
+		editorPane.addHyperlinkListener(contentPane);
+		editorPane.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent keyEvent) {
+				// TODO Auto-generated method stub
+				if (keyEvent.getKeyChar() == ' ') {
+					contentPane.gotoNextPage();
+				}
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		return editorPane;
 	}
 	
@@ -87,7 +111,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 			if (resource == null) {
 				log.error("Resource with url " + resourceHref + " not found");
 			} else {
-				sectionWalker.gotoResource(resource);
+				sectionWalker.gotoResource(resource, this);
 			}
 		}
 	}
@@ -95,7 +119,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 	public void gotoPreviousPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		if (viewPosition.getY() <= 0) {
-			sectionWalker.gotoPrevious();
+			sectionWalker.gotoPrevious(this);
 			return;
 		}
 		int viewportHeight = scrollPane.getViewport().getHeight();
@@ -110,7 +134,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 		int viewportHeight = scrollPane.getViewport().getHeight();
 		int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
 		if (viewPosition.getY() + viewportHeight >= scrollMax) {
-			sectionWalker.gotoNext();
+			sectionWalker.gotoNext(this);
 			return;
 		}
 		int newY = (int) viewPosition.getY();
@@ -148,17 +172,17 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 	 */
 	private static String removeControlTags(String input) {
 		StringBuilder result = new StringBuilder();
-		boolean inXml = false;
+		boolean inControlTag = false;
 		for (int i = 0; i < input.length(); i++) {
 			char c = input.charAt(i);
-			if (inXml) {
+			if (inControlTag) {
 				if (c == '>') {
-					inXml = false;
+					inControlTag = false;
 				}
 			} else if (c == '<' // look for &lt;! or &lt;?
 					&& i < input.length() - 1
 					&& (input.charAt(i + 1) == '!' || input.charAt(i + 1) == '?')) {
-				inXml = true;
+				inControlTag = true;
 			} else {
 				result.append(c);
 			}
@@ -168,8 +192,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
 		if (sectionChangeEvent.isSectionChanged()) {
-			displayPage(((SectionWalker) sectionChangeEvent.getSource())
-					.getCurrentResource());
+			displayPage(sectionChangeEvent.getSectionWalker().getCurrentResource());
 		}
 	}
 
