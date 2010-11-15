@@ -2,7 +2,7 @@ package nl.siegmann.epublib.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -17,7 +18,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import nl.siegmann.epublib.domain.Book;
@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
-public class Viewer extends JPanel {
+public class Viewer extends JFrame {
 	
 	private static final long serialVersionUID = 1610691708767665447L;
 	
@@ -38,9 +38,13 @@ public class Viewer extends JPanel {
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private SectionWalker sectionWalker;
+	private BrowserHistory browserHistory;
 	
 	public Viewer(Book book) {
-		super(new GridLayout(1, 0));
+		super(book.getTitle());
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		setJMenuBar(createMenuBar(this));
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		
@@ -57,16 +61,48 @@ public class Viewer extends JPanel {
 		mainSplitPane.setBottomComponent(rightSplitPane);
 		mainSplitPane.setOneTouchExpandable(true);
 //		toc_html_splitPane.setDividerLocation(100);
-		mainSplitPane.setPreferredSize(new Dimension(1000, 800));
+		mainSplitPane.setPreferredSize(new Dimension(1000, 750));
 		mainSplitPane.setDividerLocation(200);
-		// Add the split pane to this panel.
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
+
+		mainPanel.add(createTopNavBar(), BorderLayout.NORTH);
 		add(mainPanel);
 		init(book);
+		pack();
+		setVisible(true);
 	}
 
+	private JPanel createTopNavBar() {
+		JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JButton previousButton = new JButton("<");
+		previousButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Viewer.this.browserHistory.move(-1);
+			}
+		});
+		
+		result.add(previousButton);
+		
+		JButton nextButton = new JButton(">");
+		nextButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Viewer.this.browserHistory.move(1);
+			}
+		});
+		result.add(nextButton);
+		return result;
+	}
+	
+	
 	private void init(Book book) {
 		sectionWalker = book.createSectionWalker();
+		
+		this.browserHistory = new BrowserHistory(sectionWalker);
+		
 		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
 		this.tableOfContents = new TableOfContentsPane(sectionWalker);
 		leftSplitPane.setBottomComponent(tableOfContents);
@@ -79,27 +115,6 @@ public class Viewer extends JPanel {
 		rightSplitPane.setTopComponent(contentPanel);
 		rightSplitPane.setBottomComponent(new MetadataPane(sectionWalker));
 		htmlPane.displayPage(book.getCoverPage());
-	}
-
-
-	/**
-	 * Create the GUI and show it. For thread safety, this method should be
-	 * invoked from the event dispatch thread.
-	 */
-	private static void createAndShowGUI(Book book) {
-
-		// Create and set up the window.
-		JFrame frame = new JFrame(book.getTitle());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		Viewer viewer = new Viewer(book);
-		// Add content to the window.
-		frame.add(viewer);
-
-		frame.setJMenuBar(createMenuBar(viewer));
-        // Display the window.
-		frame.pack();
-		frame.setVisible(true);
 	}
 
 	private static String getText(String text) {
@@ -170,7 +185,7 @@ public class Viewer extends JPanel {
 		aboutMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				new AboutPanel();
+				new AboutDialog(viewer);
 			}
 		});
 		helpMenu.add(aboutMenuItem);
@@ -208,6 +223,8 @@ public class Viewer extends JPanel {
 		}
 		return book;
 	}
+	
+	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 
 		final Book book = readBook(args);
@@ -216,7 +233,7 @@ public class Viewer extends JPanel {
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				createAndShowGUI(book);
+				new Viewer(book);
 			}
 		});
 	}
