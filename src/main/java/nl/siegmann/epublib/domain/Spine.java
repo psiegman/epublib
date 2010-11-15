@@ -25,6 +25,11 @@ public class Spine {
 		this(new ArrayList<SpineReference>());
 	}
 	
+	/**
+	 * Creates a spine out of all the resources in the table of contents.
+	 * 
+	 * @param tableOfContents
+	 */
 	public Spine(TableOfContents tableOfContents) {
 		this.spineReferences = createSpineReferences(tableOfContents.getAllUniqueResources());
 	}
@@ -48,7 +53,13 @@ public class Spine {
 		this.spineReferences = spineReferences;
 	}
 
-	
+	/**
+	 * Gets the resource at the given index.
+	 * Null if not found.
+	 * 
+	 * @param index
+	 * @return
+	 */
 	public Resource getResource(int index) {
 		if (index < 0 || index >= spineReferences.size()) {
 			return null;
@@ -56,7 +67,14 @@ public class Spine {
 		return spineReferences.get(index).getResource();
 	}
 	
-	
+	/**
+	 * Finds the first resource that has the given resourceId.
+	 * 
+	 * Null if not found.
+	 * 
+	 * @param resourceId
+	 * @return
+	 */
 	public int findFirstResourceById(String resourceId) {
 		if (StringUtils.isBlank(resourceId)) {
 			return -1;
@@ -71,6 +89,12 @@ public class Spine {
 		return -1;
 	}
 	
+	/**
+	 * Adds the given spineReference to the spine references and returns it.
+	 * 
+	 * @param spineReference
+	 * @return
+	 */
 	public SpineReference addSpineReference(SpineReference spineReference) {
 		if (spineReferences == null) {
 			this.spineReferences = new ArrayList<SpineReference>();
@@ -79,10 +103,22 @@ public class Spine {
 		return spineReference;
 	}
 
+	/**
+	 * The number of elements in the spine.
+	 * 
+	 * @return
+	 */
 	public int size() {
 		return spineReferences.size();
 	}
 
+	/**
+	 * As per the epub file format the spine officially maintains a reference to the Table of Contents.
+	 * The epubwriter will look for it here first, followed by some clever tricks to find it elsewhere if not found.
+	 * Put it here to be sure of the expected behaviours.
+	 * 
+	 * @param tocResource
+	 */
 	public void setTocResource(Resource tocResource) {
 		this.tocResource = tocResource;
 	}
@@ -97,10 +133,33 @@ public class Spine {
 		return tocResource;
 	}
 
+	/**
+	 * The position within the spine of the given resource.
+	 * 
+	 * @param currentResource
+	 * @return something &lt; 0 if not found.
+	 * 
+	 */
 	public int getResourceIndex(Resource currentResource) {
+		if (currentResource == null) {
+			return -1;
+		}
+		return getResourceIndex(currentResource.getHref());
+	}
+
+	/**
+	 * The first position within the spine of a resource with the given href.
+	 * 
+	 * @return something &lt; 0 if not found.
+	 * 
+	 */
+	public int getResourceIndex(String resourceHref) {
 		int result = -1;
+		if (StringUtils.isBlank(resourceHref)) {
+			return result;
+		}
 		for (int i = 0; i < spineReferences.size(); i++) {
-			if (currentResource.getHref().equals(spineReferences.get(i).getResource().getHref())) {
+			if (resourceHref.equals(spineReferences.get(i).getResource().getHref())) {
 				result = i;
 				break;
 			}
