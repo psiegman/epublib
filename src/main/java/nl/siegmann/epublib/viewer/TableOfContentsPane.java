@@ -11,6 +11,8 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import nl.siegmann.epublib.domain.Book;
@@ -140,15 +142,15 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 
 	@Override
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
-//		System.out.println("I should highlight the section " + sectionChangeEvent.getCurrentResource().getHref());
 		Collection treenodes = (Collection) href2treeNode.get(sectionChangeEvent.getCurrentResource().getHref());
 		if (treenodes == null || treenodes.isEmpty()) {
 			return;
 		}
 		for (Iterator iter = treenodes.iterator(); iter.hasNext();) {
 			DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) iter.next();
-//			System.out.println("treenode:" + treeNode);
-//			tree.setSelectionPath(treeNode.get);
+			TreeNode[] path = treeNode.getPath();
+			TreePath treePath = new TreePath(path);
+			tree.setSelectionPath(treePath);
 		}
 	}
 }
