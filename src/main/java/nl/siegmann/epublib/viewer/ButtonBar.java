@@ -17,12 +17,12 @@ import nl.siegmann.epublib.domain.SectionWalker;
 class ButtonBar extends JPanel {
 	private static final long serialVersionUID = 6431437924245035812L;
 
-	private JButton startButton = new JButton("|<");
-	private JButton previousChapterButton = new JButton("<<");
-	private JButton previousPageButton = new JButton("<");
-	private JButton nextPageButton = new JButton(">");
-	private JButton nextChapterButton = new JButton(">>");
-	private JButton endButton = new JButton(">|");
+	private JButton startButton = ViewerUtil.createButton("start", "|<");
+	private JButton previousChapterButton = ViewerUtil.createButton("previous_chapter", "<<");
+	private JButton previousPageButton = ViewerUtil.createButton("previous_page", "<");
+	private JButton nextPageButton = ViewerUtil.createButton("next_page", ">");
+	private JButton nextChapterButton = ViewerUtil.createButton("next_chapter", ">>");
+	private JButton endButton = ViewerUtil.createButton("end", ">|");
 	private ContentPane chapterPane;
 	private final ValueHolder<SectionWalker> sectionWalkerHolder = new ValueHolder<SectionWalker>();
 	
