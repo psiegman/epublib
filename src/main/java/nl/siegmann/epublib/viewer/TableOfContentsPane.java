@@ -144,6 +144,10 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
 		Collection treenodes = (Collection) href2treeNode.get(sectionChangeEvent.getCurrentResource().getHref());
 		if (treenodes == null || treenodes.isEmpty()) {
+			if (sectionChangeEvent.getCurrentSectionIndex() == (sectionChangeEvent.getPreviousSectionIndex() + 1)) {
+				return;
+			}
+			tree.setSelectionPath(null);
 			return;
 		}
 		for (Iterator iter = treenodes.iterator(); iter.hasNext();) {
