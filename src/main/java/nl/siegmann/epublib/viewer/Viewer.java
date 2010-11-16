@@ -2,9 +2,11 @@ package nl.siegmann.epublib.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +20,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import nl.siegmann.epublib.domain.Book;
@@ -138,7 +142,8 @@ public class Viewer extends JFrame {
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu(getText("File"));
 		menuBar.add(fileMenu);
-		JMenuItem openFileMenuItem = new JMenuItem(getText("Open file"));
+		JMenuItem openFileMenuItem = new JMenuItem(getText("Open"));
+		openFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
 		openFileMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -162,6 +167,7 @@ public class Viewer extends JFrame {
 		fileMenu.add(openFileMenuItem);
 		
 		JMenuItem reloadMenuItem = new JMenuItem(getText("Reload"));
+		reloadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 		reloadMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -171,6 +177,7 @@ public class Viewer extends JFrame {
 		fileMenu.add(reloadMenuItem);
 
 		JMenuItem exitMenuItem = new JMenuItem(getText("Exit"));
+		exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
 		exitMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -226,6 +233,11 @@ public class Viewer extends JFrame {
 	
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			log.error(e);
+		}
 
 		final Book book = readBook(args);
 		
