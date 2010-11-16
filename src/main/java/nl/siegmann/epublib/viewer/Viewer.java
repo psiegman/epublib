@@ -3,10 +3,11 @@ package nl.siegmann.epublib.viewer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
-import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,6 +21,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -76,9 +78,13 @@ public class Viewer extends JFrame {
 		setVisible(true);
 	}
 
-	private JPanel createTopNavBar() {
-		JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JButton previousButton = new JButton("<");
+	private JToolBar createTopNavBar() {
+		JToolBar result = new JToolBar();
+		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
+		JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
+//		previousButton.setFont(historyButtonFont);
+//		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
+			
 		previousButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -89,7 +95,8 @@ public class Viewer extends JFrame {
 		
 		result.add(previousButton);
 		
-		JButton nextButton = new JButton(">");
+		JButton nextButton = ViewerUtil.createButton("1rightarrow", "\u21E8");
+		nextButton.setFont(historyButtonFont);
 		nextButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -138,7 +145,6 @@ public class Viewer extends JFrame {
 	}
 	
 	private static JMenuBar createMenuBar(final Viewer viewer) {
-		//Where the GUI is created:
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu(getText("File"));
 		menuBar.add(fileMenu);
