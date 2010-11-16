@@ -2,7 +2,7 @@ package nl.siegmann.epublib.bookprocessor;
 
 import junit.framework.TestCase;
 
-public class CoverPageBookProcessorTest extends TestCase {
+public class CoverpageBookProcessorTest extends TestCase {
 
 	public void testCalculateAbsoluteImageHref1() {
 		String[] testData = new String[] {
