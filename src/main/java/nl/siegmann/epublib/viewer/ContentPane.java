@@ -1,13 +1,16 @@
 package nl.siegmann.epublib.viewer;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -18,6 +21,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
@@ -55,7 +59,8 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 	}
 
 	private static JEditorPane createJEditorPane(final ContentPane contentPane) {
-		JEditorPane editorPane = new JEditorPane(); 
+		JEditorPane editorPane = new JEditorPane();
+		editorPane.setBackground(Color.white);
 		editorPane.setEditable(false);
 		editorPane.setContentType("text/html");
 		editorPane.addHyperlinkListener(contentPane);
@@ -137,14 +142,17 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 			sectionWalker.gotoNext(this);
 			return;
 		}
-		int newY = (int) viewPosition.getY();
-		newY += viewportHeight;
-		newY = Math.min(newY, (scrollMax - viewportHeight));
+		int newY = ((int) viewPosition.getY()) + viewportHeight;
 		scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
 	}
 	
 	private String calculateTargetHref(URL clickUrl) {
 		String resourceHref = clickUrl.toString();
+		try {
+			resourceHref = URLDecoder.decode(resourceHref, Constants.ENCODING.name());
+		} catch (UnsupportedEncodingException e) {
+			log.error(e);
+		}
 		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
 
 		if (currentResource != null && StringUtils.isNotBlank(currentResource.getHref())) {
