@@ -1,19 +1,17 @@
-package nl.siegmann.epublib.viewer;
+package nl.siegmann.epublib.browsersupport;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.siegmann.epublib.browsersupport.Navigator;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
+
 
 /**
- * A history of locations with the epub.
+ * A history of the user's locations with the epub.
  * 
  * @author paul.siegmann
  *
  */
-public class BrowserHistory implements SectionChangeListener {
+public class NavigationHistory implements NavigationEventListener {
 
 	public static final int DEFAULT_MAX_HISTORY_SIZE = 1000;
 	
@@ -25,6 +23,7 @@ public class BrowserHistory implements SectionChangeListener {
 			this.href = href;
 		}
 
+		@SuppressWarnings("unused")
 		public void setHref(String href) {
 			this.href = href;
 		}
@@ -35,15 +34,15 @@ public class BrowserHistory implements SectionChangeListener {
 	}
 	
 	private List<Location> locations = new ArrayList<Location>();
-	private Navigator sectionWalker;
+	private Navigator navigator;
 	private int currentPos = -1;
 	private int currentSize = 0;
 	private int maxHistorySize = DEFAULT_MAX_HISTORY_SIZE;
 	
-	public BrowserHistory(Navigator sectionWalker) {
-		this.sectionWalker = sectionWalker;
-		sectionWalker.addSectionChangeEventListener(this);
-		init(sectionWalker);
+	public NavigationHistory(Navigator navigator) {
+		this.navigator = navigator;
+		navigator.addNavigationEventListener(this);
+		init(navigator);
 	}
 	
 	public int getCurrentPos() {
@@ -55,12 +54,12 @@ public class BrowserHistory implements SectionChangeListener {
 		return currentSize;
 	}
 	
-	public void init(Navigator sectionWalker) {
-		this.sectionWalker = sectionWalker;
+	public void init(Navigator navigator) {
+		this.navigator = navigator;
 		locations = new ArrayList<Location>();
 		currentPos = 0;
 		currentSize = 1;
-		locations.add(new Location(sectionWalker.getCurrentResource().getHref()));
+		locations.add(new Location(navigator.getCurrentResource().getHref()));
 	}
 	
 	/**
@@ -128,20 +127,20 @@ public class BrowserHistory implements SectionChangeListener {
 			return false;
 		}
 		currentPos += delta;
-		sectionWalker.gotoResource(getLocationHref(currentPos), this);
+		navigator.gotoResource(getLocationHref(currentPos), this);
 		return true;
 	}
 	
 	
 	/**
-	 * If this is not the source of the sectionChangeEvent then the addLocation will be called with the href of the currentResource in the sectionChangeEvent.
+	 * If this is not the source of the navigationEvent then the addLocation will be called with the href of the currentResource in the navigationEvent.
 	 */
 	@Override
-	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
-		if (sectionChangeEvent.getSource() == this) {
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (this == navigationEvent.getSource()) {
 			return;
 		}
-		addLocation(sectionChangeEvent.getCurrentResource().getHref());
+		addLocation(navigationEvent.getCurrentResource().getHref());
 	}
 
 	public String getCurrentHref() {

@@ -15,9 +15,9 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class TableOfContentsPane extends JPanel implements SectionChangeListener {
+public class TableOfContentsPane extends JPanel implements NavigationEventListener {
 
 	private static final long serialVersionUID = 2277717264176049700L;
 	
@@ -43,19 +43,19 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	 * Creates a JTree that displays all the items in the table of contents from the book in SectionWalker.
 	 * Also sets up a selectionListener that updates the SectionWalker when an item in the tree is selected.
 	 * 
-	 * @param sectionWalker
+	 * @param navigator
 	 * @return
 	 */
-	public TableOfContentsPane(Navigator sectionWalker) {
+	public TableOfContentsPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
-		tree = new JTree(createTree(sectionWalker));
+		tree = new JTree(createTree(navigator));
 		add(new JScrollPane(tree));
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 //		tree.setRootVisible(false);
-		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(sectionWalker));
-		sectionWalker.addSectionChangeEventListener(this);
+		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(navigator));
+		navigator.addNavigationEventListener(this);
+		tree.setSelectionRow(0);
 	}
-	
 	
 	/**
 	 * Wrapper around a TOCReference that gives the TOCReference's title when toString() is called
@@ -87,8 +87,8 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 		href2treeNode.put(resource.getHref(), treeNode);
 	}
 	
-	private DefaultMutableTreeNode createTree(Navigator sectionWalker) {
-		Book book = sectionWalker.getBook();
+	private DefaultMutableTreeNode createTree(Navigator navigator) {
+		Book book = navigator.getBook();
 		TOCItem rootTOCItem = new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage()));
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(rootTOCItem);
 		addToHref2TreeNode(book.getCoverPage(), top);
@@ -97,17 +97,17 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	}
 	
 	/**
-	 * Updates the SectionWalker when a tree node is selected.
+	 * Tells the navigator when a tree node is selected.
 	 * 
 	 * @author paul
 	 *
 	 */
 	private class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
 		
-		private Navigator sectionWalker;
+		private Navigator navigator;
 		
-		public TableOfContentsTreeSelectionListener(Navigator sectionWalker) {
-			this.sectionWalker = sectionWalker;
+		public TableOfContentsTreeSelectionListener(Navigator navigator) {
+			this.navigator = navigator;
 		}
 		
 		public void valueChanged(TreeSelectionEvent e) {
@@ -118,7 +118,7 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 				return;
 			}
 			TOCItem tocItem = (TOCItem) node.getUserObject();
-			sectionWalker.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
+			navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
 		}
 	}
 
@@ -139,12 +139,12 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 		}
 	}
 
-
+	
 	@Override
-	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
-		Collection treenodes = (Collection) href2treeNode.get(sectionChangeEvent.getCurrentResource().getHref());
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		Collection treenodes = (Collection) href2treeNode.get(navigationEvent.getCurrentResource().getHref());
 		if (treenodes == null || treenodes.isEmpty()) {
-			if (sectionChangeEvent.getCurrentSectionIndex() == (sectionChangeEvent.getPreviousSectionIndex() + 1)) {
+			if (navigationEvent.getCurrentSpinePos() == (navigationEvent.getOldSpinePos() + 1)) {
 				return;
 			}
 			tree.setSelectionPath(null);

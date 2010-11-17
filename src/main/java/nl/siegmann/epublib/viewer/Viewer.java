@@ -7,11 +7,11 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,6 +26,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -34,23 +35,40 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
-public class Viewer extends JFrame {
+public class Viewer {
 	
 	private static final long serialVersionUID = 1610691708767665447L;
 	
 	static final Logger log = Logger.getLogger(Viewer.class);
+	private final JFrame mainWindow;
 	private TableOfContentsPane tableOfContents;
 	private ButtonBar buttonBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
-	private Navigator sectionWalker;
-	private BrowserHistory browserHistory;
+	private Navigator navigator;
+	private NavigationHistory browserHistory;
 	
-	public Viewer(Book book) {
-		super(book.getTitle());
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public Viewer(InputStream bookStream) {
+		mainWindow = createMainWindow();
+		Book book;
+		try {
+			book = (new EpubReader()).readEpub(bookStream);
+			init(book);
+		} catch (IOException e) {
+			log.error(e);
+		}
+	}
 
-		setJMenuBar(createMenuBar(this));
+	public Viewer(Book book) {
+		mainWindow = createMainWindow();
+		init(book);
+	}
+
+	private JFrame createMainWindow() {
+		JFrame result = new JFrame();
+		result.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		result.setJMenuBar(createMenuBar());
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		
@@ -72,12 +90,13 @@ public class Viewer extends JFrame {
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 
 		mainPanel.add(createTopNavBar(), BorderLayout.NORTH);
-		add(mainPanel);
-		init(book);
-		pack();
-		setVisible(true);
+		result.add(mainPanel);
+		result.pack();
+		result.setVisible(true);
+		return result;
 	}
-
+	
+	
 	private JToolBar createTopNavBar() {
 		JToolBar result = new JToolBar();
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
@@ -110,21 +129,22 @@ public class Viewer extends JFrame {
 	
 	
 	private void init(Book book) {
-		sectionWalker = book.createSectionWalker();
+		mainWindow.setTitle(book.getTitle());
+		navigator = new Navigator(book);
 		
-		this.browserHistory = new BrowserHistory(sectionWalker);
+		this.browserHistory = new NavigationHistory(navigator);
 		
-		leftSplitPane.setTopComponent(new GuidePane(sectionWalker));
-		this.tableOfContents = new TableOfContentsPane(sectionWalker);
+		leftSplitPane.setTopComponent(new GuidePane(navigator));
+		this.tableOfContents = new TableOfContentsPane(navigator);
 		leftSplitPane.setBottomComponent(tableOfContents);
 
-		ContentPane htmlPane = new ContentPane(sectionWalker);
+		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
-		this.buttonBar = new ButtonBar(sectionWalker, htmlPane);
+		this.buttonBar = new ButtonBar(navigator, htmlPane);
 		contentPanel.add(buttonBar, BorderLayout.SOUTH);
 		rightSplitPane.setTopComponent(contentPanel);
-		rightSplitPane.setBottomComponent(new MetadataPane(sectionWalker));
+		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
 		htmlPane.displayPage(book.getCoverPage());
 	}
 
@@ -144,7 +164,7 @@ public class Viewer extends JFrame {
 		return fileChooser;
 	}
 	
-	private static JMenuBar createMenuBar(final Viewer viewer) {
+	private JMenuBar createMenuBar() {
 		final JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu(getText("File"));
 		menuBar.add(fileMenu);
@@ -154,7 +174,7 @@ public class Viewer extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = createFileChooser();
-				int returnVal = fileChooser.showOpenDialog(viewer);
+				int returnVal = fileChooser.showOpenDialog(mainWindow);
 				if(returnVal != JFileChooser.APPROVE_OPTION) {
 					return;
 				}
@@ -164,7 +184,7 @@ public class Viewer extends JFrame {
 				}
 				try {
 					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
-					viewer.init(book);
+					init(book);
 				} catch (Exception e1) {
 					log.error(e1);
 				}
@@ -177,7 +197,7 @@ public class Viewer extends JFrame {
 		reloadMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				viewer.init(viewer.sectionWalker.getBook());
+				init(navigator.getBook());
 			}
 		});
 		fileMenu.add(reloadMenuItem);
@@ -198,7 +218,7 @@ public class Viewer extends JFrame {
 		aboutMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				new AboutDialog(viewer);
+				new AboutDialog(Viewer.this.mainWindow);
 			}
 		});
 		helpMenu.add(aboutMenuItem);
@@ -237,21 +257,26 @@ public class Viewer extends JFrame {
 		return book;
 	}
 	
-	
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+
+    public static void main(String[] args) throws FileNotFoundException, IOException {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			log.error(e);
 		}
 
-		final Book book = readBook(args);
+//		final Book book = readBook(args);
 		
 		// Schedule a job for the event dispatch thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new Viewer(book);
+				try {
+					new Viewer(new FileInputStream("/home/paul/oz.epub"));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}
