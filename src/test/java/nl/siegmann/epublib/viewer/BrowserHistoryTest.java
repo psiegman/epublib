@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.PlaceholderResource;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.SectionWalker;
 
 public class BrowserHistoryTest extends TestCase {
 
@@ -20,7 +20,7 @@ public class BrowserHistoryTest extends TestCase {
 	}
 	
 	
-	private static class MockSectionWalker extends SectionWalker {
+	private static class MockSectionWalker extends Navigator {
 		
 		private Map<String, Resource> resourcesByHref = new HashMap<String, Resource>();
 

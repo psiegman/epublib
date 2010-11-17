@@ -10,8 +10,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Metadata;
-import nl.siegmann.epublib.domain.SectionWalker;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -19,7 +19,7 @@ public class MetadataPane extends JPanel {
 
 	private static final long serialVersionUID = -2810193923996466948L;
 
-	public MetadataPane(SectionWalker sectionWalker) {
+	public MetadataPane(Navigator sectionWalker) {
 		super(new GridLayout(1, 0));
 		JTable table = new JTable(
 				createTableData(sectionWalker.getBook().getMetadata()),
@@ -68,7 +68,7 @@ public class MetadataPane extends JPanel {
 
 	}
 	
-	private TableModel createTableModel(SectionWalker sectionWalker) {
+	private TableModel createTableModel(Navigator sectionWalker) {
 		return new AbstractTableModel() {
 			
 			@Override

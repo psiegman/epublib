@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import nl.siegmann.epublib.domain.SectionWalker;
+import nl.siegmann.epublib.browsersupport.Navigator;
 
 /**
  * Creates a panel with the first,previous,next and last buttons.
@@ -24,9 +24,9 @@ class ButtonBar extends JPanel {
 	private JButton nextChapterButton = ViewerUtil.createButton("next_chapter", ">>");
 	private JButton endButton = ViewerUtil.createButton("end", ">|");
 	private ContentPane chapterPane;
-	private final ValueHolder<SectionWalker> sectionWalkerHolder = new ValueHolder<SectionWalker>();
+	private final ValueHolder<Navigator> sectionWalkerHolder = new ValueHolder<Navigator>();
 	
-	public ButtonBar(SectionWalker sectionWalker, ContentPane chapterPane) {
+	public ButtonBar(Navigator sectionWalker, ContentPane chapterPane) {
 		super(new GridLayout(0, 4));
 		this.chapterPane = chapterPane;
 		
@@ -46,7 +46,7 @@ class ButtonBar extends JPanel {
 		setSectionWalker(sectionWalker);
 	}
 	
-	public void setSectionWalker(SectionWalker sectionWalker) {
+	public void setSectionWalker(Navigator sectionWalker) {
 		sectionWalkerHolder.setValue(sectionWalker);
 		
 		startButton.addActionListener(new ActionListener() {

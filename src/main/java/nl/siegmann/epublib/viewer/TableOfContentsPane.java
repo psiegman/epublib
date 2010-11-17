@@ -15,11 +15,11 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.SectionWalker;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 import nl.siegmann.epublib.domain.TOCReference;
 
 import org.apache.commons.collections.MultiMap;
@@ -46,7 +46,7 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	 * @param sectionWalker
 	 * @return
 	 */
-	public TableOfContentsPane(SectionWalker sectionWalker) {
+	public TableOfContentsPane(Navigator sectionWalker) {
 		super(new GridLayout(1, 0));
 		tree = new JTree(createTree(sectionWalker));
 		add(new JScrollPane(tree));
@@ -87,7 +87,7 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 		href2treeNode.put(resource.getHref(), treeNode);
 	}
 	
-	private DefaultMutableTreeNode createTree(SectionWalker sectionWalker) {
+	private DefaultMutableTreeNode createTree(Navigator sectionWalker) {
 		Book book = sectionWalker.getBook();
 		TOCItem rootTOCItem = new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage()));
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(rootTOCItem);
@@ -104,9 +104,9 @@ public class TableOfContentsPane extends JPanel implements SectionChangeListener
 	 */
 	private class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
 		
-		private SectionWalker sectionWalker;
+		private Navigator sectionWalker;
 		
-		public TableOfContentsTreeSelectionListener(SectionWalker sectionWalker) {
+		public TableOfContentsTreeSelectionListener(Navigator sectionWalker) {
 			this.sectionWalker = sectionWalker;
 		}
 		

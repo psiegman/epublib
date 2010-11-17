@@ -26,8 +26,8 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.SectionWalker;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +43,7 @@ public class Viewer extends JFrame {
 	private ButtonBar buttonBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
-	private SectionWalker sectionWalker;
+	private Navigator sectionWalker;
 	private BrowserHistory browserHistory;
 	
 	public Viewer(Book book) {

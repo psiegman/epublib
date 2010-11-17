@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.domain;
 
+import nl.siegmann.epublib.browsersupport.Navigator;
+
 
 
 /**
@@ -17,8 +19,8 @@ public class Book {
 	private Guide guide = new Guide();
 	
 	
-	public SectionWalker createSectionWalker() {
-		return new SectionWalker(this);
+	public Navigator createSectionWalker() {
+		return new Navigator(this);
 	}
 	
 	/**

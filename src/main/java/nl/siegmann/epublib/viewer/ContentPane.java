@@ -22,10 +22,10 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 
 import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.SectionWalker;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,12 +42,12 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 
 	private static final Logger log = Logger.getLogger(ContentPane.class);
 	private ImageLoaderCache imageLoaderCache;
-	private SectionWalker sectionWalker;
+	private Navigator sectionWalker;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
 	
-	public ContentPane(SectionWalker sectionWalker) {
+	public ContentPane(Navigator sectionWalker) {
 		super(new GridLayout(1, 0));
 		this.sectionWalker = sectionWalker;
 		this.editorPane = createJEditorPane(this);
