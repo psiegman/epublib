@@ -24,9 +24,9 @@ class ButtonBar extends JPanel {
 	private JButton nextChapterButton = ViewerUtil.createButton("next_chapter", ">>");
 	private JButton endButton = ViewerUtil.createButton("end", ">|");
 	private ContentPane chapterPane;
-	private final ValueHolder<Navigator> sectionWalkerHolder = new ValueHolder<Navigator>();
+	private final ValueHolder<Navigator> navigatorHolder = new ValueHolder<Navigator>();
 	
-	public ButtonBar(Navigator sectionWalker, ContentPane chapterPane) {
+	public ButtonBar(Navigator navigator, ContentPane chapterPane) {
 		super(new GridLayout(0, 4));
 		this.chapterPane = chapterPane;
 		
@@ -43,25 +43,25 @@ class ButtonBar extends JPanel {
 		bigNext.add(endButton);
 		add(bigNext);
 		
-		setSectionWalker(sectionWalker);
+		setSectionWalker(navigator);
 	}
 	
-	public void setSectionWalker(Navigator sectionWalker) {
-		sectionWalkerHolder.setValue(sectionWalker);
+	public void setSectionWalker(Navigator navigator) {
+		navigatorHolder.setValue(navigator);
 		
 		startButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				sectionWalkerHolder.getValue().gotoFirst(ButtonBar.this);
+				navigatorHolder.getValue().gotoFirst(ButtonBar.this);
 			}
 		});
 		previousChapterButton.addActionListener(new ActionListener() {
 						
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sectionWalkerHolder.getValue().gotoPrevious(ButtonBar.this);
+				navigatorHolder.getValue().gotoPrevious(ButtonBar.this);
 			}
 		});
 		previousPageButton.addActionListener(new ActionListener() {
@@ -83,7 +83,7 @@ class ButtonBar extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sectionWalkerHolder.getValue().gotoNext(ButtonBar.this);
+				navigatorHolder.getValue().gotoNext(ButtonBar.this);
 			}
 		});
 
@@ -91,7 +91,7 @@ class ButtonBar extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sectionWalkerHolder.getValue().gotoLast(ButtonBar.this);
+				navigatorHolder.getValue().gotoLast(ButtonBar.this);
 			}
 		});
 	}

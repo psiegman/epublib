@@ -1,6 +1,5 @@
 package nl.siegmann.epublib.domain;
 
-import nl.siegmann.epublib.browsersupport.Navigator;
 
 
 
@@ -18,10 +17,6 @@ public class Book {
 	private TableOfContents tableOfContents = new TableOfContents();
 	private Guide guide = new Guide();
 	
-	
-	public Navigator createSectionWalker() {
-		return new Navigator(this);
-	}
 	
 	/**
 	 * Adds the resource to the table of contents of the book as a child section of the given parentSection

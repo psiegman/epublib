@@ -1,15 +1,16 @@
-package nl.siegmann.epublib.viewer;
+package nl.siegmann.epub.browsersupport;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.PlaceholderResource;
 import nl.siegmann.epublib.domain.Resource;
 
-public class BrowserHistoryTest extends TestCase {
+public class NavigationHistoryTest extends TestCase {
 
 	private static final Resource mockResource = new PlaceholderResource("mockResource");
 	
@@ -64,13 +65,13 @@ public class BrowserHistoryTest extends TestCase {
 		public int gotoLast(Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public int getCurrentIndex() {
+		public int getCurrentSpinePos() {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
 		public Resource getCurrentResource() {
 			return resourcesByHref.values().iterator().next();
 		}
-		public void setCurrentIndex(int currentIndex) {
+		public void setCurrentSpinePos(int currentIndex) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
 		public Book getBook() {
@@ -89,14 +90,14 @@ public class BrowserHistoryTest extends TestCase {
 	}
 	
 	public void test1() {
-		MockSectionWalker sectionWalker = new MockSectionWalker(new MockBook()); 
-		BrowserHistory browserHistory = new BrowserHistory(sectionWalker);
+		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
+		NavigationHistory browserHistory = new NavigationHistory(navigator);
 		
-		assertEquals(sectionWalker.getCurrentResource().getHref(), browserHistory.getCurrentHref());
+		assertEquals(navigator.getCurrentResource().getHref(), browserHistory.getCurrentHref());
 		assertEquals(0, browserHistory.getCurrentPos());
 		assertEquals(1, browserHistory.getCurrentSize());
 
-		browserHistory.addLocation(sectionWalker.getMockResource().getHref());
+		browserHistory.addLocation(navigator.getMockResource().getHref());
 		assertEquals(0, browserHistory.getCurrentPos());
 		assertEquals(1, browserHistory.getCurrentSize());
 
@@ -139,8 +140,8 @@ public class BrowserHistoryTest extends TestCase {
 	
 	
 	public void test2() {
-		MockSectionWalker sectionWalker = new MockSectionWalker(new MockBook()); 
-		BrowserHistory browserHistory = new BrowserHistory(sectionWalker);
+		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
+		NavigationHistory browserHistory = new NavigationHistory(navigator);
 		
 		assertEquals(0, browserHistory.getCurrentPos());
 		assertEquals(1, browserHistory.getCurrentSize());
@@ -176,8 +177,8 @@ public class BrowserHistoryTest extends TestCase {
 	}
 	
 	public void test3() {
-		MockSectionWalker sectionWalker = new MockSectionWalker(new MockBook()); 
-		BrowserHistory browserHistory = new BrowserHistory(sectionWalker);
+		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
+		NavigationHistory browserHistory = new NavigationHistory(navigator);
 		
 		assertEquals(0, browserHistory.getCurrentPos());
 		assertEquals(1, browserHistory.getCurrentSize());

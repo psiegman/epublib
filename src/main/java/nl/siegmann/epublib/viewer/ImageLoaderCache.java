@@ -15,6 +15,15 @@ import nl.siegmann.epublib.util.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+/**
+ * This class is installed as the JEditorPane's image cache.
+ * Whenever it is requested an image it will try to load that image from the epub.
+ * 
+ * It's a trick to get the JEditorKit to load its images from the epub file instead of from the given url.
+ * 
+ * @author paul
+ *
+ */
 class ImageLoaderCache extends Dictionary {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";

@@ -22,9 +22,9 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 
 import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.io.IOUtils;
@@ -36,26 +36,26 @@ import org.apache.log4j.Logger;
  * 
  * @return
  */
-public class ContentPane extends JPanel implements SectionChangeListener, HyperlinkListener {
+public class ContentPane extends JPanel implements NavigationEventListener, HyperlinkListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
 	private static final Logger log = Logger.getLogger(ContentPane.class);
 	private ImageLoaderCache imageLoaderCache;
-	private Navigator sectionWalker;
+	private Navigator navigator;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
 	
-	public ContentPane(Navigator sectionWalker) {
+	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
-		this.sectionWalker = sectionWalker;
+		this.navigator = navigator;
 		this.editorPane = createJEditorPane(this);
 		this.scrollPane = new JScrollPane(editorPane);
 		add(scrollPane);
 		initImageLoader();
-		sectionWalker.addSectionChangeEventListener(this);
-		displayPage(sectionWalker.getCurrentResource());
+		navigator.addNavigationEventListener(this);
+		displayPage(navigator.getCurrentResource());
 	}
 
 	private static JEditorPane createJEditorPane(final ContentPane contentPane) {
@@ -112,11 +112,11 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String resourceHref = calculateTargetHref(event.getURL());
-			Resource resource = sectionWalker.getBook().getResources().getByCompleteHref(resourceHref);
+			Resource resource = navigator.getBook().getResources().getByCompleteHref(resourceHref);
 			if (resource == null) {
 				log.error("Resource with url " + resourceHref + " not found");
 			} else {
-				sectionWalker.gotoResource(resource, this);
+				navigator.gotoResource(resource, this);
 			}
 		}
 	}
@@ -124,7 +124,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 	public void gotoPreviousPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		if (viewPosition.getY() <= 0) {
-			sectionWalker.gotoPrevious(this);
+			navigator.gotoPrevious(this);
 			return;
 		}
 		int viewportHeight = scrollPane.getViewport().getHeight();
@@ -139,7 +139,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 		int viewportHeight = scrollPane.getViewport().getHeight();
 		int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
 		if (viewPosition.getY() + viewportHeight >= scrollMax) {
-			sectionWalker.gotoNext(this);
+			navigator.gotoNext(this);
 			return;
 		}
 		int newY = ((int) viewPosition.getY()) + viewportHeight;
@@ -198,9 +198,9 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 		return result.toString();
 	}
 
-	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
-		if (sectionChangeEvent.isSectionChanged()) {
-			displayPage(sectionChangeEvent.getSectionWalker().getCurrentResource());
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (navigationEvent.isSpinePosChanged()) {
+			displayPage(navigationEvent.getSectionWalker().getCurrentResource());
 		}
 	}
 
@@ -215,7 +215,7 @@ public class ContentPane extends JPanel implements SectionChangeListener, Hyperl
 		if (cache == null) {
 			cache = new Hashtable();
 		}
-		ImageLoaderCache result = new ImageLoaderCache(sectionWalker.getBook(), cache);
+		ImageLoaderCache result = new ImageLoaderCache(navigator.getBook(), cache);
 		document.getDocumentProperties().put("imageCache", result);
 		this.imageLoaderCache = result;
 	}

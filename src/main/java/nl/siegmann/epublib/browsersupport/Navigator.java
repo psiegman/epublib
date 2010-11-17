@@ -2,80 +2,31 @@ package nl.siegmann.epublib.browsersupport;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EventObject;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
-import org.apache.commons.lang.StringUtils;
 
-
+/**
+ * A helper class for epub browser applications.
+ * 
+ * It helps moving from one resource to the other, from one resource to the other and keeping other
+ * elements of the application up-to-date by calling the NavigationEventListeners.
+ * 
+ * @author paul
+ *
+ */
 public class Navigator {
 	
 	private Book book;
-	private int currentIndex;
+	private int currentSpinePos;
 	private Resource currentResource;
 	
-	private Collection<SectionChangeListener> eventListeners = new ArrayList<SectionChangeListener>();
-	
-	public static class SectionChangeEvent extends EventObject {
-		private static final long serialVersionUID = -6346750144308952762L;
-		
-		private final Resource oldResource;
-		private final int oldPosition;
-		private final Navigator sectionWalker;
-		
-		public SectionChangeEvent(Object source, int oldPosition, Resource oldResource, Navigator sectionWalker) {
-			super(source);
-			this.oldPosition = oldPosition;
-			this.oldResource = oldResource;
-			this.sectionWalker = sectionWalker;
-		}
-	
-		public Navigator getSectionWalker() {
-			return sectionWalker;
-		}
-		
-		public int getPreviousSectionIndex() {
-			return oldPosition;
-		}
-		
-		public int getCurrentSectionIndex() {
-			return sectionWalker.getCurrentIndex();
-		}
-		
-		public String getCurrentFragmentId() {
-			return "";
-		}
-		
-		public String getPreviousFragmentId() {
-			return "";
-		}
-		
-		public boolean isSectionChanged() {
-			return getPreviousSectionIndex() != getCurrentSectionIndex();
-		}
-
-		public boolean isFragmentChanged() {
-			return StringUtils.equals(getPreviousFragmentId(), getCurrentFragmentId());
-		}
-
-		public Resource getOldResource() {
-			return oldResource;
-		}
-		
-		public Resource getCurrentResource() {
-			return sectionWalker.getCurrentResource();
-		}
-	}
-
-	public interface SectionChangeListener {
-		public void sectionChanged(SectionChangeEvent sectionChangeEvent);
-	}
+	private Collection<NavigationEventListener> eventListeners = new ArrayList<NavigationEventListener>();
 	
 	public Navigator(Book book) {
 		this.book = book;
-		this.currentIndex = 0;
+		this.currentSpinePos = 0;
 		this.currentResource = book.getCoverPage();
 	}
 
@@ -83,22 +34,22 @@ public class Navigator {
 		if (eventListeners == null || eventListeners.isEmpty()) {
 			return;
 		}
-		if (oldPosition == currentIndex) {
+		if (oldPosition == currentSpinePos) {
 			return;
 		}
-		SectionChangeEvent sectionChangeEvent = new SectionChangeEvent(source, oldPosition, oldResource, this);
-		for (SectionChangeListener sectionChangeListener: eventListeners) {
-			sectionChangeListener.sectionChanged(sectionChangeEvent);
+		NavigationEvent navigationEvent = new NavigationEvent(source, oldPosition, oldResource, this);
+		for (NavigationEventListener navigationEventListener: eventListeners) {
+			navigationEventListener.navigationPerformed(navigationEvent);
 		}
 	}
 
-	public boolean addSectionChangeEventListener(SectionChangeListener sectionChangeListener) {
-		return this.eventListeners.add(sectionChangeListener);
+	public boolean addNavigationEventListener(NavigationEventListener navigationEventListener) {
+		return this.eventListeners.add(navigationEventListener);
 	}
 
 	
-	public boolean removeSectionChangeEventListener(SectionChangeListener sectionChangeListener) {
-		return this.eventListeners.remove(sectionChangeListener);
+	public boolean removeNavigationEventListener(NavigationEventListener navigationEventListener) {
+		return this.eventListeners.remove(navigationEventListener);
 	}
 	
 	public int gotoFirst(Object source) {
@@ -106,26 +57,26 @@ public class Navigator {
 	}
 
 	public int gotoPrevious(Object source) {
-		if (currentIndex < 0) {
+		if (currentSpinePos < 0) {
 			return gotoSection(0, source);
 		} else {
-			return gotoSection(currentIndex - 1, source);
+			return gotoSection(currentSpinePos - 1, source);
 		}
 	}
 
 	public boolean hasNext() {
-		return (currentIndex < (book.getSpine().size() - 1));
+		return (currentSpinePos < (book.getSpine().size() - 1));
 	}
 	
 	public boolean hasPrevious() {
-		return (currentIndex > 0);
+		return (currentSpinePos > 0);
 	}
 	
 	public int gotoNext(Object source) {
-		if (currentIndex < 0) {
+		if (currentSpinePos < 0) {
 			return gotoSection(0, source);
 		} else {
-			return gotoSection(currentIndex + 1, source);
+			return gotoSection(currentSpinePos + 1, source);
 		}
 	}
 
@@ -142,12 +93,12 @@ public class Navigator {
 		Resource oldResource = currentResource;
 		this.currentResource = resource;
 
-		int oldIndex = currentIndex;
-		this.currentIndex = book.getSpine().getResourceIndex(currentResource);
+		int oldIndex = currentSpinePos;
+		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
 		
 		handleEventListeners(oldIndex, oldResource, source);
 		
-		return currentIndex;
+		return currentSpinePos;
 	}
 	
 	
@@ -156,27 +107,40 @@ public class Navigator {
 	}
 	
 	
-	public int gotoSection(int newIndex, Object source) {
-		if (newIndex == currentIndex) {
-			return currentIndex;
+	/**
+	 * Go to a specific section.
+	 * Illegal spine positions are silently ignored.
+	 * 
+	 * @param newSpinePos
+	 * @param source
+	 * @return
+	 */
+	public int gotoSection(int newSpinePos, Object source) {
+		if (newSpinePos == currentSpinePos) {
+			return currentSpinePos;
 		}
-		if (newIndex < 0 || newIndex >= book.getSpine().size()) {
-			return currentIndex;
+		if (newSpinePos < 0 || newSpinePos >= book.getSpine().size()) {
+			return currentSpinePos;
 		}
-		int oldIndex = currentIndex;
+		int oldIndex = currentSpinePos;
 		Resource oldResource = currentResource;
-		currentIndex = newIndex;
-		currentResource = book.getSpine().getResource(currentIndex);
+		currentSpinePos = newSpinePos;
+		currentResource = book.getSpine().getResource(currentSpinePos);
 		handleEventListeners(oldIndex, oldResource, source);
-		return currentIndex;
+		return currentSpinePos;
 	}
 
 	public int gotoLast(Object source) {
 		return gotoSection(book.getSpine().size() - 1, source);
 	}
 	
-	public int getCurrentIndex() {
-		return currentIndex;
+	/**
+	 * The current position within the spine.
+	 * 
+	 * @return something < 0 if the current position is not within the spine.
+	 */
+	public int getCurrentSpinePos() {
+		return currentSpinePos;
 	}
 	
 	public Resource getCurrentResource() {
@@ -190,8 +154,8 @@ public class Navigator {
 	 * 
 	 * @param currentIndex
 	 */
-	public void setCurrentIndex(int currentIndex) {
-		this.currentIndex = currentIndex;
+	public void setCurrentSpinePos(int currentIndex) {
+		this.currentSpinePos = currentIndex;
 		this.currentResource = book.getSpine().getResource(currentIndex);
 	}
 
@@ -204,11 +168,11 @@ public class Navigator {
 	 * 
 	 * If you want the eventListeners called use gotoSection(index);
 	 * 
-	 * @param currentIndex
+	 * @param currentSpinePos
 	 */
 	public int setCurrentResource(Resource currentResource) {
-		this.currentIndex = book.getSpine().getResourceIndex(currentResource);
+		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
 		this.currentResource = currentResource;
-		return currentIndex;
+		return currentSpinePos;
 	}
 }

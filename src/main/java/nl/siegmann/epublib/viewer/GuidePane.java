@@ -8,9 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
-import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.GuideReference;
 
@@ -20,14 +20,14 @@ import nl.siegmann.epublib.domain.GuideReference;
  * @author paul
  *
  */
-public class GuidePane extends JPanel implements SectionChangeListener {
+public class GuidePane extends JPanel implements NavigationEventListener {
 
 	private static final long serialVersionUID = -8988054938907109295L;
 
-	public GuidePane(Navigator sectionWalker) {
+	public GuidePane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		JTable table = new JTable(
-				createTableData(sectionWalker.getBook().getGuide()),
+				createTableData(navigator.getBook().getGuide()),
 				new String[] {"", ""});
         table.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -43,7 +43,7 @@ public class GuidePane extends JPanel implements SectionChangeListener {
 	}
 
 	@Override
-	public void sectionChanged(SectionChangeEvent sectionChangeEvent) {
+	public void navigationPerformed(NavigationEvent navigationEvent) {
 		// TODO Auto-generated method stub
 		
 	}

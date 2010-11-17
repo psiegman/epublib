@@ -19,10 +19,10 @@ public class MetadataPane extends JPanel {
 
 	private static final long serialVersionUID = -2810193923996466948L;
 
-	public MetadataPane(Navigator sectionWalker) {
+	public MetadataPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		JTable table = new JTable(
-				createTableData(sectionWalker.getBook().getMetadata()),
+				createTableData(navigator.getBook().getMetadata()),
 				new String[] {"", ""});
         table.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -68,7 +68,7 @@ public class MetadataPane extends JPanel {
 
 	}
 	
-	private TableModel createTableModel(Navigator sectionWalker) {
+	private TableModel createTableModel(Navigator navigator) {
 		return new AbstractTableModel() {
 			
 			@Override
