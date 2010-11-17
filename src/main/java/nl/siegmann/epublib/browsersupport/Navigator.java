@@ -1,13 +1,16 @@
-package nl.siegmann.epublib.domain;
+package nl.siegmann.epublib.browsersupport;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventObject;
 
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
+
 import org.apache.commons.lang.StringUtils;
 
 
-public class SectionWalker {
+public class Navigator {
 	
 	private Book book;
 	private int currentIndex;
@@ -20,16 +23,16 @@ public class SectionWalker {
 		
 		private final Resource oldResource;
 		private final int oldPosition;
-		private final SectionWalker sectionWalker;
+		private final Navigator sectionWalker;
 		
-		public SectionChangeEvent(Object source, int oldPosition, Resource oldResource, SectionWalker sectionWalker) {
+		public SectionChangeEvent(Object source, int oldPosition, Resource oldResource, Navigator sectionWalker) {
 			super(source);
 			this.oldPosition = oldPosition;
 			this.oldResource = oldResource;
 			this.sectionWalker = sectionWalker;
 		}
 	
-		public SectionWalker getSectionWalker() {
+		public Navigator getSectionWalker() {
 			return sectionWalker;
 		}
 		
@@ -70,7 +73,7 @@ public class SectionWalker {
 		public void sectionChanged(SectionChangeEvent sectionChangeEvent);
 	}
 	
-	public SectionWalker(Book book) {
+	public Navigator(Book book) {
 		this.book = book;
 		this.currentIndex = 0;
 		this.currentResource = book.getCoverPage();

@@ -3,9 +3,9 @@ package nl.siegmann.epublib.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.siegmann.epublib.domain.SectionWalker;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
+import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 
 /**
  * A history of locations with the epub.
@@ -35,12 +35,12 @@ public class BrowserHistory implements SectionChangeListener {
 	}
 	
 	private List<Location> locations = new ArrayList<Location>();
-	private SectionWalker sectionWalker;
+	private Navigator sectionWalker;
 	private int currentPos = -1;
 	private int currentSize = 0;
 	private int maxHistorySize = DEFAULT_MAX_HISTORY_SIZE;
 	
-	public BrowserHistory(SectionWalker sectionWalker) {
+	public BrowserHistory(Navigator sectionWalker) {
 		this.sectionWalker = sectionWalker;
 		sectionWalker.addSectionChangeEventListener(this);
 		init(sectionWalker);
@@ -55,7 +55,7 @@ public class BrowserHistory implements SectionChangeListener {
 		return currentSize;
 	}
 	
-	public void init(SectionWalker sectionWalker) {
+	public void init(Navigator sectionWalker) {
 		this.sectionWalker = sectionWalker;
 		locations = new ArrayList<Location>();
 		currentPos = 0;

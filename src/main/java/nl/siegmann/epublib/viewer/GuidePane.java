@@ -8,11 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeEvent;
+import nl.siegmann.epublib.browsersupport.Navigator.SectionChangeListener;
 import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.GuideReference;
-import nl.siegmann.epublib.domain.SectionWalker;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeEvent;
-import nl.siegmann.epublib.domain.SectionWalker.SectionChangeListener;
 
 /**
  * Creates a Panel for navigating a Book via its Guide
@@ -24,7 +24,7 @@ public class GuidePane extends JPanel implements SectionChangeListener {
 
 	private static final long serialVersionUID = -8988054938907109295L;
 
-	public GuidePane(SectionWalker sectionWalker) {
+	public GuidePane(Navigator sectionWalker) {
 		super(new GridLayout(1, 0));
 		JTable table = new JTable(
 				createTableData(sectionWalker.getBook().getGuide()),
