@@ -153,12 +153,14 @@ public class Viewer {
 		return text;
 	}
 	
-	private static JFileChooser createFileChooser() {
-		File userHome = new File(System.getProperty("user.home"));
-		if (! userHome.exists()) {
-			userHome = null;
+	private static JFileChooser createFileChooser(File startDir) {
+		if (startDir == null) {
+			startDir = new File(System.getProperty("user.home"));
+			if (! startDir.exists()) {
+				startDir = null;
+			}
 		}
-		JFileChooser fileChooser = new JFileChooser(userHome);
+		JFileChooser fileChooser = new JFileChooser(startDir);
 		fileChooser.setAcceptAllFileFilterUsed(true);
 		fileChooser.setFileFilter(new FileNameExtensionFilter("EPub files", "epub"));
 				     
@@ -173,8 +175,10 @@ public class Viewer {
 		openFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
 		openFileMenuItem.addActionListener(new ActionListener() {
 
+			private File previousDir;
+			
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = createFileChooser();
+				JFileChooser fileChooser = createFileChooser(previousDir);
 				int returnVal = fileChooser.showOpenDialog(mainWindow);
 				if(returnVal != JFileChooser.APPROVE_OPTION) {
 					return;
@@ -182,6 +186,9 @@ public class Viewer {
 				File selectedFile = fileChooser.getSelectedFile();
 				if (selectedFile == null) {
 					return;
+				}
+				if (! selectedFile.isDirectory()) {
+					previousDir = selectedFile.getParentFile();
 				}
 				try {
 					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
