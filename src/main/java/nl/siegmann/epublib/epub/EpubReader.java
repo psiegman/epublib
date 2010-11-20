@@ -10,7 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
@@ -20,7 +19,8 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -34,10 +34,14 @@ import org.xml.sax.SAXException;
 public class EpubReader extends EpubProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(EpubReader.class);
-	private XPathFactory xpathFactory;
+	private EpubCleaner epubCleaner;
 	
 	public EpubReader() {
-		this.xpathFactory = XPathFactory.newInstance();
+		this(null);
+	}
+
+	public EpubReader(EpubCleaner epubCleaner) {
+		this.epubCleaner = epubCleaner;
 	}
 	
 	public Book readEpub(InputStream in) throws IOException {
@@ -51,6 +55,9 @@ public class EpubReader extends EpubProcessor {
 		String packageResourceHref = getPackageResourceHref(result, resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
 		processNcxResource(packageResource, result);
+		if (epubCleaner != null) {
+			result = epubCleaner.cleanEpub(result);
+		}
 		return result;
 	}
 
@@ -118,10 +125,5 @@ public class EpubReader extends EpubProcessor {
 			result.put(resource.getHref(), resource);
 		}
 		return result;
-	}
-
-
-	public XPathFactory getXpathFactory() {
-		return xpathFactory;
 	}
 }

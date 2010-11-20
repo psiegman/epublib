@@ -10,16 +10,17 @@ import java.util.List;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 import nl.siegmann.epublib.util.ResourceUtil;
 
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpublibXmlSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagNode.ITagNodeCondition;
 import org.htmlcleaner.XmlSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cleans up regular html into xhtml. Uses HtmlCleaner to do this.
@@ -56,7 +57,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 
 	@SuppressWarnings("unchecked")
 	public byte[] processHtml(Resource resource, Book book,
-			EpubWriter epubWriter, Charset outputEncoding) throws IOException {
+			EpubProcessor epubProcessor, Charset outputEncoding) throws IOException {
 		Charset inputEncoding = resource.getInputEncoding();
 		if (inputEncoding == null) {
 			inputEncoding = Constants.ENCODING;

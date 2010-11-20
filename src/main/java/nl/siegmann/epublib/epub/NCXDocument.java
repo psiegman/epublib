@@ -130,7 +130,7 @@ public class NCXDocument {
 				return;
 			}
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader);
-			XPath xPath = epubReader.getXpathFactory().newXPath();
+			XPath xPath = epubReader.getXPathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
 		    NodeList navmapNodes = (NodeList) xPath.evaluate(NAVMAP_SELECTION_XPATH, ncxDocument, XPathConstants.NODESET);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));

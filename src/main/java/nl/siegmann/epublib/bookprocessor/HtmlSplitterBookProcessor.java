@@ -1,7 +1,7 @@
 package nl.siegmann.epublib.bookprocessor;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
 /**
  * In the future this will split up too large html documents into smaller ones.
@@ -12,7 +12,7 @@ import nl.siegmann.epublib.epub.EpubWriter;
 public class HtmlSplitterBookProcessor implements BookProcessor {
 
 	@Override
-	public Book processBook(Book book, EpubWriter epubWriter) {
+	public Book processBook(Book book, EpubProcessor epubProcessor) {
 		return book;
 	}
 

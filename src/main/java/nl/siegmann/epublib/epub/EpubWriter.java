@@ -5,31 +5,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.bookprocessor.BookProcessor;
-import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
-import nl.siegmann.epublib.bookprocessor.FixIdentifierBookProcessor;
-import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -42,35 +32,14 @@ public class EpubWriter extends EpubProcessor {
 	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
 	
 	private HtmlProcessor htmlProcessor;
-	private List<BookProcessor> bookProcessingPipeline;
 	private MediatypeService mediatypeService = new MediatypeService();
-	private XMLOutputFactory xmlOutputFactory;
+	private EpubCleaner epubCleaner;
 
 	public EpubWriter() {
-		this(createDefaultBookProcessingPipeline());
 	}
 	
-	public EpubWriter(List<BookProcessor> bookProcessingPipeline) {
-		this.bookProcessingPipeline = bookProcessingPipeline;
-		this.xmlOutputFactory = createXMLOutputFactory();
-	}
-	
-	private static XMLOutputFactory createXMLOutputFactory() {
-		XMLOutputFactory result = XMLOutputFactory.newInstance();
-//		result.setProperty(name, value)
-		return result;
-	}
-	
-	
-	private static List<BookProcessor> createDefaultBookProcessingPipeline() {
-		List<BookProcessor> result = new ArrayList<BookProcessor>();
-		result.addAll(Arrays.asList(new BookProcessor[] {
-			new SectionHrefSanityCheckBookProcessor(),
-			new HtmlCleanerBookProcessor(),
-			new CoverpageBookProcessor(),
-			new FixIdentifierBookProcessor()
-		}));
-		return result;
+	public EpubWriter(EpubCleaner epubCleaner) {
+		this.epubCleaner = epubCleaner;
 	}
 	
 	
@@ -85,6 +54,13 @@ public class EpubWriter extends EpubProcessor {
 		resultStream.close();
 	}
 
+	private Book processBook(Book book) {
+		if (epubCleaner != null) {
+			book = epubCleaner.cleanEpub(book);
+		}
+		return book;
+	}
+
 	private void initTOCResource(Book book) throws XMLStreamException, FactoryConfigurationError {
 		Resource tocResource = NCXDocument.createNCXResource(this, book);
 		Resource currentTocResource = book.getSpine().getTocResource();
@@ -95,13 +71,6 @@ public class EpubWriter extends EpubProcessor {
 		book.getResources().add(tocResource);
 	}
 	
-	private Book processBook(Book book) {
-		for(BookProcessor bookProcessor: bookProcessingPipeline) {
-			book = bookProcessor.processBook(book, this);
-		}
-		return book;
-	}
-
 
 	private void writeResources(Book book, ZipOutputStream resultStream) throws IOException {
 		for(Resource resource: book.getResources().getAll()) {
@@ -178,14 +147,6 @@ public class EpubWriter extends EpubProcessor {
 		crc.update(data);
 		return crc.getValue();
 	}
-	
-	XMLEventFactory createXMLEventFactory() {
-		return XMLEventFactory.newInstance();
-	}
-	
-	XMLStreamWriter createXMLStreamWriter(OutputStream out) throws XMLStreamException {
-		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING.name());
-	}
 
 	String getNcxId() {
 		return "ncx";
@@ -208,15 +169,6 @@ public class EpubWriter extends EpubProcessor {
 		this.htmlProcessor = htmlProcessor;
 	}
 
-
-	public List<BookProcessor> getBookProcessingPipeline() {
-		return bookProcessingPipeline;
-	}
-
-
-	public void setBookProcessingPipeline(List<BookProcessor> bookProcessingPipeline) {
-		this.bookProcessingPipeline = bookProcessingPipeline;
-	}
 
 
 	public MediatypeService getMediatypeService() {

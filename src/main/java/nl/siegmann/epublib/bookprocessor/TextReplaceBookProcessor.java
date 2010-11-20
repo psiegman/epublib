@@ -12,10 +12,11 @@ import java.util.List;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cleans up regular html into xhtml.
@@ -33,7 +34,7 @@ public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookP
 	}
 
 	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book, EpubWriter epubWriter, Charset outputEncoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, Charset outputEncoding) throws IOException {
 		Reader reader;
 		Charset inputEncoding = resource.getInputEncoding();
 		if(inputEncoding == null) {

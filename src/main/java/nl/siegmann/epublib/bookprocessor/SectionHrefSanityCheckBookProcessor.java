@@ -7,7 +7,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
 /**
  * Removes Sections from the page flow that differ only from the previous section's href by the '#' in the url.
@@ -18,7 +18,7 @@ import nl.siegmann.epublib.epub.EpubWriter;
 public class SectionHrefSanityCheckBookProcessor implements BookProcessor {
 
 	@Override
-	public Book processBook(Book book, EpubWriter epubWriter) {
+	public Book processBook(Book book, EpubProcessor epubProcessor) {
 		book.getSpine().setSpineReferences(checkSpineReferences(book.getSpine()));
 		return book;
 	}
