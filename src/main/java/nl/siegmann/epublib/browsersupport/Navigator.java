@@ -81,7 +81,7 @@ public class Navigator {
 	}
 
 	public int gotoResource(String resourceHref, Object source) {
-		Resource resource = book.getResources().getByCompleteHref(resourceHref);
+		Resource resource = book.getResources().getByHref(resourceHref);
 		return gotoResource(resource, source);
 	}
 	

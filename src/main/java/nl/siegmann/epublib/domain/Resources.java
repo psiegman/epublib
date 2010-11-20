@@ -102,6 +102,18 @@ public class Resources {
 		return false;
 	}
 	
+
+	public Resource getById(String id) {
+		if (StringUtils.isBlank(id)) {
+			return null;
+		}
+		for (Resource resource: resources.values()) {
+			if (id.equals(resource.getId())) {
+				return resource;
+			}
+		}
+		return null;
+	}
 	
 	public Resource remove(String href) {
 		return resources.remove(href);
@@ -158,7 +170,10 @@ public class Resources {
 	
 	
 	public boolean containsByHref(String href) {
-		return resources.containsKey(href);
+		if (StringUtils.isBlank(href)) {
+			return false;
+		}
+		return resources.containsKey(StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR));
 	}
 	
 	public void set(Collection<Resource> resources) {
@@ -177,21 +192,43 @@ public class Resources {
 		this.resources = new HashMap<String, Resource>(resources);
 	}
 	
-	public Resource getByCompleteHref(String completeHref) {
-		return getByHref(StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR));
-	}
 	
-	
+	/**
+	 * Gets the resource with the given href.
+	 * If the given href contains a fragmentId then that fragment id will be ignored.
+	 * 
+	 * @param href
+	 * @return null if not found.
+	 */
 	public Resource getByHref(String href) {
+		if (StringUtils.isBlank(href)) {
+			return null;
+		}
 		href = StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR);
 		Resource result = resources.get(href);
 		return result;
 	}
 	
+	/**
+	 * Gets the first resource (random order) with the give mediatype.
+	 * 
+	 * Useful for looking up the table of contents as it's supposed to be the only resource with NCX mediatype.
+	 * 
+	 * @param mediaType
+	 * @return
+	 */
 	public Resource findFirstResourceByMediaType(MediaType mediaType) {
 		return findFirstResourceByMediaType(resources.values(), mediaType);
 	}
 	
+	/**
+	 * Gets the first resource (random order) with the give mediatype.
+	 * 
+	 * Useful for looking up the table of contents as it's supposed to be the only resource with NCX mediatype.
+	 * 
+	 * @param mediaType
+	 * @return
+	 */
 	public static Resource findFirstResourceByMediaType(Collection<Resource> resources, MediaType mediaType) {
 		for (Resource resource: resources) {
 			if (resource.getMediaType() == mediaType) {

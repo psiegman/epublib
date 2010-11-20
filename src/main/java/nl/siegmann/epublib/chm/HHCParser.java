@@ -139,7 +139,7 @@ public class HHCParser {
 			return result;
 		}
 		if(! StringUtils.isBlank(name)) {
-			Resource resource = resources.getByCompleteHref(href);
+			Resource resource = resources.getByHref(href);
 			if (resource == null) {
 				resource = new SectionResource(null, name, href);
 				resources.add(resource);
