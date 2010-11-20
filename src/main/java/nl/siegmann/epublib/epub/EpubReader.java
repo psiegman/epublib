@@ -87,7 +87,7 @@ public class EpubReader extends EpubProcessor {
 			return result;
 		}
 		try {
-			Document document = ResourceUtil.getAsDocument(containerResource, createDocumentBuilder());
+			Document document = ResourceUtil.getAsDocument(containerResource, this);
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
 			result = rootFileElement.getAttribute("full-path");
 		} catch (Exception e) {
