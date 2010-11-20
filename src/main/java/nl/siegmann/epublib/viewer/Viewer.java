@@ -32,14 +32,15 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Viewer {
 	
 	private static final long serialVersionUID = 1610691708767665447L;
 	
-	static final Logger log = Logger.getLogger(Viewer.class);
+	static final Logger log = LoggerFactory.getLogger(Viewer.class);
 	private final JFrame mainWindow;
 	private TableOfContentsPane tableOfContents;
 	private ButtonBar buttonBar;
@@ -55,7 +56,7 @@ public class Viewer {
 			book = (new EpubReader()).readEpub(bookStream);
 			init(book);
 		} catch (IOException e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -72,7 +73,7 @@ public class Viewer {
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		
-		leftSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		leftSplitPane.setOneTouchExpandable(true);
 		leftSplitPane.setDividerLocation(0);
 
@@ -134,9 +135,9 @@ public class Viewer {
 		
 		this.browserHistory = new NavigationHistory(navigator);
 		
-		leftSplitPane.setTopComponent(new GuidePane(navigator));
+		leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		this.tableOfContents = new TableOfContentsPane(navigator);
-		leftSplitPane.setBottomComponent(tableOfContents);
+		leftSplitPane.setTopComponent(tableOfContents);
 
 		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
@@ -186,7 +187,7 @@ public class Viewer {
 					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
 					init(book);
 				} catch (Exception e1) {
-					log.error(e1);
+					log.error(e1.getMessage(), e1);
 				}
 			}
 		});
@@ -227,7 +228,7 @@ public class Viewer {
 	}
 	
 
-	private static Book readBook(String[] args) {
+	private static InputStream getBookInputStream(String[] args) {
 		// jquery-fundamentals-book.epub
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/test2_book1.epub"));
 //		final Book book = (new EpubReader()).readEpub(new FileInputStream("/home/paul/three_men_in_a_boat_jerome_k_jerome.epub"));
@@ -239,22 +240,18 @@ public class Viewer {
 		if (args.length > 0) {
 			bookFile = args[0];
 		}
-		Book book = null;
+		InputStream result = null;
 		if (! StringUtils.isBlank(bookFile)) {
 			try {
-				book = (new EpubReader()).readEpub(new FileInputStream(bookFile));
+				result = new FileInputStream(bookFile);
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Unable to open " + bookFile, e);
 			}
 		}
-		if (book == null) {
-			try {
-				book = (new EpubReader()).readEpub(Viewer.class.getResourceAsStream("/viewer/epublibviewer-help.epub"));
-			} catch (IOException e) {
-				log.error(e);
-			}
+		if (result == null) {
+			result = Viewer.class.getResourceAsStream("/viewer/epublibviewer-help.epub");
 		}
-		return book;
+		return result;
 	}
 	
 
@@ -262,21 +259,17 @@ public class Viewer {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Unable to set native look and feel", e);
 		}
 
+		final InputStream bookStream = getBookInputStream(args);
 //		final Book book = readBook(args);
 		
 		// Schedule a job for the event dispatch thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					new Viewer(new FileInputStream("/home/paul/oz.epub"));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				new Viewer(bookStream);
 			}
 		});
 	}
