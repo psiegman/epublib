@@ -46,7 +46,6 @@ public class MetadataPane extends JPanel {
 	private void setCoverImage(JPanel contentPanel, Navigator navigator) {
 		Resource coverImageResource = navigator.getBook().getCoverImage();
 		if (coverImageResource == null) {
-			System.out.println("no cover image");
 			return;
 		}
 		try {
