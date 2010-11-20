@@ -7,9 +7,12 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Resources;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -25,9 +28,9 @@ import org.w3c.dom.NodeList;
 // package
 class PackageDocumentMetadataReader extends PackageDocumentBase {
 
-	private static final Logger log = Logger.getLogger(PackageDocumentMetadataReader.class);
+	private static final Logger log = LoggerFactory.getLogger(PackageDocumentMetadataReader.class);
 
-	public static Metadata readMetadata(Document packageDocument) {
+	public static Metadata readMetadata(Document packageDocument, Resources resources) {
 		Metadata result = new Metadata();
 		Element metadataElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.metadata);
 		if(metadataElement == null) {
@@ -44,6 +47,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		result.setAuthors(readCreators(metadataElement));
 		result.setContributors(readContributors(metadataElement));
 		result.setDates(readDates(metadataElement));
+		if (result.getCoverImage() == null) {
+			result.setCoverImage(readCoverImage(metadataElement, resources));
+		}
 		return result;
 	}
 	
@@ -56,6 +62,19 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		String result = packageElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.uniqueIdentifier);
 		return result;
 	}
+	
+	private static Resource readCoverImage(Element metadataElement, Resources resources) {
+		String coverResourceId = DOMUtil.getFindAttributeValue(metadataElement.getOwnerDocument(), NAMESPACE_OPF, OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover, OPFAttributes.content);
+		if (StringUtils.isBlank(coverResourceId)) {
+			return null;
+		}
+		Resource coverResource = resources.getById(coverResourceId);
+		if (coverResource == null) {
+			coverResource = resources.getByHref(coverResourceId);
+		}
+		return coverResource;
+	}
+	
 	
 	private static List<Author> readCreators(Element metadataElement) {
 		return readAuthors(DCTags.creator, metadataElement);
@@ -89,7 +108,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 				date = new Date(DOMUtil.getTextChild(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
 				result.add(date);
 			} catch(IllegalArgumentException e) {
-				log.error(e);
+				log.error(e.getMessage());
 			}
 		}
 		return result;
