@@ -166,4 +166,8 @@ public class Spine {
 		}
 		return result;
 	}
+
+	public boolean isEmpty() {
+		return spineReferences.isEmpty();
+	}
 }

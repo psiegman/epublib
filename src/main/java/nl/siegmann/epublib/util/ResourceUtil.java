@@ -8,8 +8,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,7 +43,8 @@ public class ResourceUtil {
 			log.error("null resource passed to getReader");
 			return null;
 		}
-//		XmlStreamReader xmlStreamReader = new XmlStreamReader(resource.getInputStream(), true, resource.getInputEncoding().name());
+//		XmlStreamReader xmlStreamReader = new XmlStreamReader(resource.getInputStream(), false, resource.getInputEncoding().name());
+//		System.out.println("file contents:");
 //		IOUtils.copy(xmlStreamReader, System.out);
 //		xmlStreamReader = new XmlStreamReader(resource.getInputStream(), true, resource.getInputEncoding().name());
 //		return xmlStreamReader;
@@ -58,6 +61,11 @@ public class ResourceUtil {
 		}
 		InputSource inputSource = new InputSource(reader);
 		return inputSource;
+	}
+	
+	
+	public static Document getAsDocument(Resource resource, EpubProcessor epubProcessor) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
+		return getAsDocument(resource, epubProcessor.createDocumentBuilder());
 	}
 	
 	

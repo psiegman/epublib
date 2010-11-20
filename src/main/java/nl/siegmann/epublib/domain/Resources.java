@@ -194,6 +194,22 @@ public class Resources {
 	
 	
 	/**
+	 * First tries to find a resource with as id the given idOrHref, if that 
+	 * fails it tries to find one with the idOrHref as href.
+	 * 
+	 * @param idOrHref
+	 * @return
+	 */
+	public Resource getByIdOrHref(String idOrHref) {
+		Resource resource = getById(idOrHref);
+		if (resource == null) {
+			resource = getByHref(idOrHref);
+		}
+		return resource;
+	}
+	
+	
+	/**
 	 * Gets the resource with the given href.
 	 * If the given href contains a fragmentId then that fragment id will be ignored.
 	 * 
@@ -236,5 +252,9 @@ public class Resources {
 			}
 		}
 		return null;
+	}
+
+	public Collection<String> getAllHrefs() {
+		return resources.keySet();
 	}
 }
