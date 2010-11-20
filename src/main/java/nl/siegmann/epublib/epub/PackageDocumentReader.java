@@ -46,14 +46,14 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	
 	
 	public static void read(Resource packageResource, EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
-		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader.createDocumentBuilder());
+		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader);
 		String packageHref = packageResource.getHref();
 		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
 		readGuide(packageDocument, epubReader, book, resourcesByHref);
-		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref);
+		book.setResources(readManifest(packageDocument, packageHref, epubReader, resourcesByHref));
 		readCover(packageDocument, book);
 		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument, book.getResources()));
-		book.setSpine(readSpine(packageDocument, epubReader, book, resourcesById));
+		book.setSpine(readSpine(packageDocument, epubReader, book.getResources()));
 		
 		// if we did not find a cover page then we make the first page of the book the cover page
 		if (book.getCoverPage() == null && book.getSpine().size() > 0) {
@@ -71,15 +71,15 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesByHref
 	 * @return a Map with resources, with their id's as key.
 	 */
-	private static Map<String, Resource> readManifest(Document packageDocument, String packageHref,
-			EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) {
+	private static Resources readManifest(Document packageDocument, String packageHref,
+			EpubReader epubReader, Map<String, Resource> resourcesByHref) {
 		Element manifestElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.manifest);
+		Resources result = new Resources();
 		if(manifestElement == null) {
 			log.error("Package document does not contain element " + OPFTags.manifest);
-			return Collections.<String, Resource>emptyMap();
+			return result;
 		}
 		NodeList itemElements = manifestElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.item);
-		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(int i = 0; i < itemElements.getLength(); i++) {
 			Element itemElement = (Element) itemElements.item(i);
 			String id = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.id);
@@ -96,8 +96,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if(mediaType != null) {
 				resource.setMediaType(mediaType);
 			}
-			book.getResources().add(resource);
-			result.put(id, resource);
+			result.add(resource);
 		}
 		return result;
 	}	
@@ -184,16 +183,15 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesById
 	 * @return
 	 */
-	private static Spine readSpine(Document packageDocument,
-			EpubReader epubReader, Book book, Map<String, Resource> resourcesById) {
+	private static Spine readSpine(Document packageDocument, EpubReader epubReader, Resources resources) {
 		
 		Element spineElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.spine);
 		if (spineElement == null) {
 			log.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
-			return generateSpineFromResources(resourcesById);
+			return generateSpineFromResources(resources);
 		}
 		Spine result = new Spine();
-		result.setTocResource(findTableOfContentsResource(spineElement, resourcesById));
+		result.setTocResource(findTableOfContentsResource(spineElement, resources));
 		NodeList spineNodes = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.itemref);
 		List<SpineReference> spineReferences = new ArrayList<SpineReference>(spineNodes.getLength());
 		for(int i = 0; i < spineNodes.getLength(); i++) {
@@ -203,7 +201,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				log.error("itemref with missing or empty idref"); // XXX
 				continue;
 			}
-			Resource resource = resourcesById.get(itemref);
+			Resource resource = resources.getByIdOrHref(itemref);
 			if(resource == null) {
 				log.error("resource with id \'" + itemref + "\' not found");
 				continue;
@@ -212,26 +210,30 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				continue;
 			}
 			
-			// if the resource is the coverpage then it will be added to the spine later.
-			if (book.getCoverPage() != null
-					&& book.getCoverPage().getId() != null
-					&& book.getCoverPage().getId().equals(resource.getId())) {
-				continue;
-			}
 			SpineReference spineReference = new SpineReference(resource);
+			if (OPFValues.no.equalsIgnoreCase(DOMUtil.getAttribute(spineItem, NAMESPACE_OPF, OPFAttributes.linear))) {
+				spineReference.setLinear(false);
+			}
 			spineReferences.add(spineReference);
 		}
 		result.setSpineReferences(spineReferences);
 		return result;
 	}
 
-	private static Spine generateSpineFromResources(Map<String, Resource> resourcesById) {
+	/**
+	 * Creates a spine out of all resources in the resources.
+	 * The generated spine consists of all XHTML pages in order of their href.
+	 * 
+	 * @param resources
+	 * @return
+	 */
+	private static Spine generateSpineFromResources(Resources resources) {
 		Spine result = new Spine();
-		List<String> resourceIds = new ArrayList<String>();
-		resourceIds.addAll(resourcesById.keySet());
-		Collections.sort(resourceIds, String.CASE_INSENSITIVE_ORDER);
-		for (String resourceId: resourceIds) {
-			Resource resource = resourcesById.get(resourceId);
+		List<String> resourceHrefs = new ArrayList<String>();
+		resourceHrefs.addAll(resources.getAllHrefs());
+		Collections.sort(resourceHrefs, String.CASE_INSENSITIVE_ORDER);
+		for (String resourceHref: resourceHrefs) {
+			Resource resource = resources.getByHref(resourceHref);
 			if (resource.getMediaType() == MediatypeService.NCX) {
 				result.setTocResource(resource);
 			} else if (resource.getMediaType() == MediatypeService.XHTML) {
@@ -252,11 +254,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesById
 	 * @return
 	 */
-	private static Resource findTableOfContentsResource(Element spineElement, Map<String, Resource> resourcesById) {
+	private static Resource findTableOfContentsResource(Element spineElement, Resources resources) {
 		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
 		Resource tocResource = null;
 		if (! StringUtils.isBlank(tocResourceId)) {
-			tocResource = resourcesById.get(tocResourceId);
+			tocResource = resources.getByIdOrHref(tocResourceId);
 		}
 		
 		if (tocResource != null) {
@@ -264,18 +266,18 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		
 		for (int i = 0; i < POSSIBLE_NCX_ITEM_IDS.length; i++) {
-			tocResource = resourcesById.get(POSSIBLE_NCX_ITEM_IDS[i]);
+			tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i]);
 			if (tocResource != null) {
 				return tocResource;
 			}
-			tocResource = resourcesById.get(POSSIBLE_NCX_ITEM_IDS[i].toUpperCase());
+			tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i].toUpperCase());
 			if (tocResource != null) {
 				return tocResource;
 			}
 		}
 		
 		// get the first resource with the NCX mediatype
-		tocResource = Resources.findFirstResourceByMediaType(resourcesById.values(), MediatypeService.NCX);
+		tocResource = resources.findFirstResourceByMediaType(MediatypeService.NCX);
 
 		if (tocResource == null) {
 			log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + "', " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
