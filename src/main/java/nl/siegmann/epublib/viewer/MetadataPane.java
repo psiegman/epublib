@@ -51,7 +51,6 @@ public class MetadataPane extends JPanel {
 		try {
 			Image image = ImageIO.read(coverImageResource.getInputStream());
 			image = image.getScaledInstance(200, -1, Image.SCALE_SMOOTH);
-			System.out.println("added cover image");
 			JLabel label = new JLabel(new ImageIcon(image));
 			label.setSize(100, 100);
 			contentPanel.add(label, BorderLayout.NORTH);
