@@ -55,6 +55,10 @@ public class CoverpageBookProcessor implements BookProcessor {
 			return book;
 		}
 		Resource coverPage = book.getCoverPage();
+		if (coverPage == null) {
+			coverPage = findCoverPage(book);
+			book.setCoverPage(coverPage);
+		}
 		Resource coverImage = book.getCoverImage();
 		if(coverPage == null) {
 			if(coverImage == null) {
@@ -89,6 +93,16 @@ public class CoverpageBookProcessor implements BookProcessor {
 //		return "cover" + coverImageResource.getMediaType().getDefaultExtension();
 //	}
 	
+	private Resource findCoverPage(Book book) {
+		if (book.getCoverPage() != null) {
+			return book.getCoverPage();
+		}
+		if (! (book.getSpine().isEmpty())) {
+			return book.getSpine().getResource(0);
+		}
+		return null;
+	}
+
 	private void setCoverResourceIds(Book book) {
 		if(book.getCoverImage() != null) {
 			fixCoverResourceId(book, book.getCoverImage(), DEFAULT_COVER_IMAGE_ID);
@@ -117,7 +131,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 	
 	private Resource getFirstImageSource(EpubWriter epubWriter, Resource titlePageResource, Resources resources) {
 		try {
-			Document titlePageDocument = ResourceUtil.getAsDocument(titlePageResource, epubWriter.createDocumentBuilder());
+			Document titlePageDocument = ResourceUtil.getAsDocument(titlePageResource, epubWriter);
 			NodeList imageElements = titlePageDocument.getElementsByTagName("img");
 			for (int i = 0; i < imageElements.getLength(); i++) {
 				String relativeImageHref = ((Element) imageElements.item(i)).getAttribute("src");
