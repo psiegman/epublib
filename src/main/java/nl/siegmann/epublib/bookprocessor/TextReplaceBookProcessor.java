@@ -15,7 +15,7 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * Cleans up regular html into xhtml.
@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookProcessor {
 
 	@SuppressWarnings("unused")
-	private final static Logger log = Logger.getLogger(TextReplaceBookProcessor.class);
+	private final static Logger log = LoggerFactory.getLogger(TextReplaceBookProcessor.class);
 	
 	public TextReplaceBookProcessor() {
 	}

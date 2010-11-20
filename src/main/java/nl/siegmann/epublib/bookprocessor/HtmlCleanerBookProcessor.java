@@ -2,7 +2,6 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -12,14 +11,15 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.util.ResourceUtil;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpublibXmlSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XmlSerializer;
 import org.htmlcleaner.TagNode.ITagNodeCondition;
+import org.htmlcleaner.XmlSerializer;
 
 /**
  * Cleans up regular html into xhtml. Uses HtmlCleaner to do this.
@@ -31,8 +31,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 		BookProcessor {
 
 	@SuppressWarnings("unused")
-	private final static Logger log = Logger
-			.getLogger(HtmlCleanerBookProcessor.class);
+	private final static Logger log = LoggerFactory.getLogger(HtmlCleanerBookProcessor.class);
 
 	private HtmlCleaner htmlCleaner;
 	private XmlSerializer newXmlSerializer;
@@ -62,8 +61,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 		if (inputEncoding == null) {
 			inputEncoding = Constants.ENCODING;
 		}
-		Reader reader = new InputStreamReader(resource.getInputStream(),
-				inputEncoding);
+		Reader reader = ResourceUtil.getReader(resource);
 		TagNode node = htmlCleaner.clean(reader);
 		node.removeAttribute("xmlns:xml");
 		setCharsetMeta(node, outputEncoding);

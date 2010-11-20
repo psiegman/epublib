@@ -8,14 +8,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class EpubProcessor {
 	
-	private static final Logger LOG = Logger.getLogger(EpubProcessor.class);
+	private static final Logger log = LoggerFactory.getLogger(EpubProcessor.class);
 	
 	protected DocumentBuilderFactory documentBuilderFactory;
 
@@ -61,7 +61,7 @@ public class EpubProcessor {
 			result = documentBuilderFactory.newDocumentBuilder();
 			result.setEntityResolver(entityResolver);
 		} catch (ParserConfigurationException e) {
-			LOG.error(e);
+			log.error(e.getMessage());
 		}
 		return result;
 	}

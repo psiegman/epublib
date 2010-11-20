@@ -29,7 +29,7 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class EpubWriter extends EpubProcessor {
 	
-	private final static Logger log = Logger.getLogger(EpubWriter.class); 
+	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
 	
 	private HtmlProcessor htmlProcessor;
 	private List<BookProcessor> bookProcessingPipeline;
@@ -127,7 +127,7 @@ public class EpubWriter extends EpubProcessor {
 			IOUtils.copy(inputStream, resultStream);
 			inputStream.close();
 		} catch(Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 	}
 	
