@@ -123,6 +123,9 @@ public class Book {
 	
 	
 	public void setCoverPage(Resource coverPage) {
+		if (coverPage == null) {
+			return;
+		}
 		if (! resources.containsByHref(coverPage.getHref())) {
 			resources.add(coverPage);
 		}
