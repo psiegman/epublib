@@ -2,7 +2,7 @@ package nl.siegmann.epublib.bookprocessor;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -15,7 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 public class FixIdentifierBookProcessor implements BookProcessor {
 
 	@Override
-	public Book processBook(Book book, EpubWriter epubWriter) {
+	public Book processBook(Book book, EpubProcessor epubProcessor) {
 		if(CollectionUtils.isEmpty(book.getMetadata().getIdentifiers())) {
 			book.getMetadata().addIdentifier(new Identifier());
 		}

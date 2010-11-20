@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubCleaner;
 import nl.siegmann.epublib.epub.EpubReader;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,12 +49,13 @@ public class Viewer {
 	private JSplitPane rightSplitPane;
 	private Navigator navigator;
 	private NavigationHistory browserHistory;
+	private EpubCleaner epubCleaner = new EpubCleaner();
 	
 	public Viewer(InputStream bookStream) {
 		mainWindow = createMainWindow();
 		Book book;
 		try {
-			book = (new EpubReader()).readEpub(bookStream);
+			book = (new EpubReader(epubCleaner)).readEpub(bookStream);
 			init(book);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
@@ -75,7 +77,7 @@ public class Viewer {
 		
 		leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		leftSplitPane.setOneTouchExpandable(true);
-		leftSplitPane.setDividerLocation(0);
+		leftSplitPane.setDividerLocation(600);
 
 		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
@@ -191,7 +193,7 @@ public class Viewer {
 					previousDir = selectedFile.getParentFile();
 				}
 				try {
-					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
+					Book book = (new EpubReader(epubCleaner)).readEpub(new FileInputStream(selectedFile));
 					init(book);
 				} catch (Exception e1) {
 					log.error(e1.getMessage(), e1);

@@ -13,6 +13,7 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.InputStreamResource;
+import nl.siegmann.epublib.epub.EpubCleaner;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
@@ -60,10 +61,10 @@ public class Fileset2Epub {
 		if(StringUtils.isBlank(inputLocation) || StringUtils.isBlank(outLocation)) {
 			usage();
 		}
-		EpubWriter epubWriter = new EpubWriter();
-
+		EpubCleaner epubCleaner = new EpubCleaner();
+		EpubWriter epubWriter = new EpubWriter(epubCleaner);
 		if(! StringUtils.isBlank(xslFile)) {
-			epubWriter.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
+			epubCleaner.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
 		}
 		
 		Book book;
@@ -78,7 +79,7 @@ public class Fileset2Epub {
 		if(StringUtils.isNotBlank(coverImage)) {
 //			book.getResourceByHref(book.getCoverImage());
 			book.getMetadata().setCoverImage(new InputStreamResource(VFSUtil.resolveInputStream(coverImage), coverImage));
-			epubWriter.getBookProcessingPipeline().add(new CoverpageBookProcessor());
+			epubCleaner.getBookProcessingPipeline().add(new CoverpageBookProcessor());
 		}
 		
 		if(StringUtils.isNotBlank(title)) {

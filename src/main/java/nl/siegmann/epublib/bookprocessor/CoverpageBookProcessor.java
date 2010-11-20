@@ -15,7 +15,7 @@ import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.epub.EpubProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
@@ -49,7 +49,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 	public static final String DEFAULT_COVER_IMAGE_HREF = "images/cover.png";
 	
 	@Override
-	public Book processBook(Book book, EpubWriter epubWriter) {
+	public Book processBook(Book book, EpubProcessor epubProcessor) {
 		Metadata metadata = book.getMetadata();
 		if(book.getCoverPage() == null && book.getCoverImage() == null) {
 			return book;
@@ -73,7 +73,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 			}
 		} else { // coverPage != null
 			if(book.getCoverImage() == null) {
-				coverImage = getFirstImageSource(epubWriter, coverPage, book.getResources());
+				coverImage = getFirstImageSource(epubProcessor, coverPage, book.getResources());
 				book.setCoverImage(coverImage);
 				if (coverImage != null) {
 					book.getResources().remove(coverImage.getHref());
@@ -129,9 +129,9 @@ public class CoverpageBookProcessor implements BookProcessor {
 		return DEFAULT_COVER_IMAGE_HREF;
 	}
 	
-	private Resource getFirstImageSource(EpubWriter epubWriter, Resource titlePageResource, Resources resources) {
+	private Resource getFirstImageSource(EpubProcessor epubProcessor, Resource titlePageResource, Resources resources) {
 		try {
-			Document titlePageDocument = ResourceUtil.getAsDocument(titlePageResource, epubWriter);
+			Document titlePageDocument = ResourceUtil.getAsDocument(titlePageResource, epubProcessor);
 			NodeList imageElements = titlePageDocument.getElementsByTagName("img");
 			for (int i = 0; i < imageElements.getLength(); i++) {
 				String relativeImageHref = ((Element) imageElements.item(i)).getAttribute("src");
