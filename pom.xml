@@ -10,20 +10,20 @@
     <groupId>nl.siegmann.epublib</groupId>
     <artifactId>epublib</artifactId>
     <name>epublib</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
-	<url>http://github.com/psiegman/epublib</url>
+	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j.version>1.6.1</slf4j.version>
 	</properties>
 
 	<licenses>
 	  <license>
-		<name>Apache 2</name>
-		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		<name>LGPL</name>
+		<url>http://www.gnu.org/licenses/lgpl.html</url>
 		<distribution>repo</distribution>
-		<comments>A business-friendly OSS license</comments>
 	  </license>
 	</licenses>
 
@@ -73,7 +73,17 @@
 		<dependency>
 		  <groupId>commons-io</groupId>
 		  <artifactId>commons-io</artifactId>
-		  <version>1.4</version>
+		  <version>2.0</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-api</artifactId>
+		  <version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-log4j12</artifactId>
+		  <version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 		  <groupId>commons-collections</groupId>
@@ -93,6 +103,53 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+            <plugin>
+                <groupId>org.dstovall</groupId>
+                <artifactId>onejar-maven-plugin</artifactId>
+                <version>1.4.4</version>
+                <executions>
+                    <execution>
+                    	<id>epublib commandline</id>
+                        <configuration>
+							<mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
+							<filename>epublib-commandline-${version}.jar</filename>
+                        </configuration>
+                        <goals>
+                            <goal>one-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                    	<id>epublib viewer</id>
+                        <configuration>
+                            <mainClass>nl.siegmann.epublib.viewer.Viewer</mainClass>
+							<filename>epublib-viewer-${version}.jar</filename>
+                        </configuration>
+                        <goals>
+                            <goal>one-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
 	<repositories>
 		<repository>
 			<id>net.java.repository</id>
@@ -111,41 +168,6 @@
 		</repository>
 	</repositories>
 
-    <build>
-        <plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-            <plugin>
-                <groupId>org.dstovall</groupId>
-                <artifactId>onejar-maven-plugin</artifactId>
-                <version>1.4.4</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
-                        </configuration>
-                        <goals>
-                            <goal>one-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
 	<pluginRepositories>
         <pluginRepository>
             <id>onejar-maven-plugin.googlecode.com</id>
