@@ -68,10 +68,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		if (StringUtils.isBlank(coverResourceId)) {
 			return null;
 		}
-		Resource coverResource = resources.getById(coverResourceId);
-		if (coverResource == null) {
-			coverResource = resources.getByHref(coverResourceId);
-		}
+		Resource coverResource = resources.getByIdOrHref(coverResourceId);
 		return coverResource;
 	}
 	
