@@ -18,7 +18,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class PackageDocumentWriter extends PackageDocumentBase {
 
-	private static final Logger log = Logger.getLogger(PackageDocumentWriter.class);
+	private static final Logger log = LoggerFactory.getLogger(PackageDocumentWriter.class);
 
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);

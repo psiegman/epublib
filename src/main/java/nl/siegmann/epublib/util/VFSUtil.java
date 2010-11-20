@@ -8,7 +8,7 @@ import java.io.InputStream;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * Utitilies for making working with apache commons VFS easier.
@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class VFSUtil {
 	
-	private static final Logger log = Logger.getLogger(VFSUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(VFSUtil.class);
 
 	/**
 	 * First tries to load the inputLocation via VFS; if that doesn't work it tries to load it as a local File
@@ -34,8 +34,8 @@ public class VFSUtil {
 			try {
 				result = VFS.getManager().resolveFile(new File("."), inputLocation);
 			} catch (Exception e1) {
-				log.error(e);
-				log.error(e1);
+				log.error(e.getMessage(), e);
+				log.error(e1.getMessage(), e);
 			}
 		}
 		return result;
@@ -57,8 +57,8 @@ public class VFSUtil {
 			try {
 				result = new FileInputStream(inputLocation);
 			} catch (FileNotFoundException e1) {
-				log.error(e);
-				log.error(e1);
+				log.error(e.getMessage(), e);
+				log.error(e1.getMessage(), e);
 			}
 		}
 		return result;

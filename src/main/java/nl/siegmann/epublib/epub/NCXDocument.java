@@ -33,7 +33,7 @@ import nl.siegmann.epublib.util.StringUtil;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -52,7 +52,7 @@ public class NCXDocument {
 	public static final String DEFAULT_NCX_HREF = "toc.ncx";
 	public static final String PREFIX_DTB = "dtb";
 	
-	private static final Logger log = Logger.getLogger(NCXDocument.class);
+	private static final Logger log = LoggerFactory.getLogger(NCXDocument.class);
 	private static final String NAVMAP_SELECTION_XPATH = PREFIX_NCX + ":" + NCXTags.ncx + "/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint;
 
 	private interface NCXTags {
@@ -136,7 +136,7 @@ public class NCXDocument {
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 	}
 

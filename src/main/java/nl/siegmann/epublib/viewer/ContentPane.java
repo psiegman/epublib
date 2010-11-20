@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -26,10 +25,13 @@ import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Displays a page
@@ -40,7 +42,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
-	private static final Logger log = Logger.getLogger(ContentPane.class);
+	private static final Logger log = LoggerFactory.getLogger(ContentPane.class);
 	private ImageLoaderCache imageLoaderCache;
 	private Navigator navigator;
 	private Resource currentResource;
@@ -96,8 +98,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		currentResource = resource;
 		try {
 			log.debug("Reading resource " + resource.getHref());
-			Reader reader = new InputStreamReader(resource.getInputStream(),
-					resource.getInputEncoding());
+			Reader reader = ResourceUtil.getReader(resource);
 			imageLoaderCache.setContextResource(resource);
 			String pageContent = IOUtils.toString(reader);
 			pageContent = stripHtml(pageContent);
@@ -112,7 +113,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String resourceHref = calculateTargetHref(event.getURL());
-			Resource resource = navigator.getBook().getResources().getByCompleteHref(resourceHref);
+			Resource resource = navigator.getBook().getResources().getByHref(resourceHref);
 			if (resource == null) {
 				log.error("Resource with url " + resourceHref + " not found");
 			} else {
@@ -151,7 +152,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		try {
 			resourceHref = URLDecoder.decode(resourceHref, Constants.ENCODING.name());
 		} catch (UnsupportedEncodingException e) {
-			log.error(e);
+			log.error(e.getMessage());
 		}
 		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
 
@@ -209,7 +210,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		try {
 			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
 		} catch (MalformedURLException e) {
-			log.error(e);
+			log.error(e.getMessage());
 		}
 		Dictionary cache = (Dictionary) document.getProperty("imageCache");
 		if (cache == null) {

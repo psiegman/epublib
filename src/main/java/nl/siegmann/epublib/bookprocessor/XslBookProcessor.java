@@ -21,7 +21,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 
 /**
@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor {
 
-	private final static Logger log = Logger.getLogger(XslBookProcessor.class); 
+	private final static Logger log = LoggerFactory.getLogger(XslBookProcessor.class); 
 
 	private Transformer transformer;
 	
@@ -51,7 +51,7 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 		try {
 			transformer.transform(htmlSource, streamResult);
 		} catch (TransformerException e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 			throw new IOException(e);
 		}
 		byte[] result = out.toByteArray();

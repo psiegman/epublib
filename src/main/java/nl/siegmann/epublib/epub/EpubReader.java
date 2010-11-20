@@ -20,7 +20,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  */
 public class EpubReader extends EpubProcessor {
 
-	private static final Logger log = Logger.getLogger(EpubReader.class);
+	private static final Logger log = LoggerFactory.getLogger(EpubReader.class);
 	private XPathFactory xpathFactory;
 	
 	public EpubReader() {
@@ -91,7 +91,7 @@ public class EpubReader extends EpubProcessor {
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
 			result = rootFileElement.getAttribute("full-path");
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 		if(StringUtils.isBlank(result)) {
 			result = defaultResult;

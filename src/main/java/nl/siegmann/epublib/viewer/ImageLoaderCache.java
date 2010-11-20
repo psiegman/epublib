@@ -13,7 +13,7 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * This class is installed as the JEditorPane's image cache.
@@ -28,7 +28,7 @@ class ImageLoaderCache extends Dictionary {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";
 
-	private static final Logger log = Logger.getLogger(ImageLoaderCache.class);
+	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
 	
 	private Dictionary dictionary;
 	private Book book;
@@ -68,7 +68,7 @@ class ImageLoaderCache extends Dictionary {
 			result = ImageIO.read(imageResource.getInputStream());
 			dictionary.put(key, result);
 		} catch (IOException e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 		}
 		return result;
 	}
