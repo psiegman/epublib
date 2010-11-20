@@ -206,9 +206,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				log.error("resource with id \'" + itemref + "\' not found");
 				continue;
 			}
-			if(resource == Resource.NULL_RESOURCE) {
-				continue;
-			}
 			
 			SpineReference spineReference = new SpineReference(resource);
 			if (OPFValues.no.equalsIgnoreCase(DOMUtil.getAttribute(spineItem, NAMESPACE_OPF, OPFAttributes.linear))) {
