@@ -36,7 +36,7 @@ public class MetadataPane extends JPanel {
 				createTableData(navigator.getBook().getMetadata()),
 				new String[] {"", ""});
         table.setFillsViewportHeight(true);
-        JPanel contentPanel = new JPanel(new BorderLayout());
+        JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         contentPanel.add(table, BorderLayout.CENTER);
         setCoverImage(contentPanel, navigator);
