@@ -44,7 +44,7 @@ public class Viewer {
 	static final Logger log = LoggerFactory.getLogger(Viewer.class);
 	private final JFrame mainWindow;
 	private TableOfContentsPane tableOfContents;
-	private ButtonBar buttonBar;
+	private BrowseBar browseBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private Navigator navigator;
@@ -144,8 +144,8 @@ public class Viewer {
 		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
-		this.buttonBar = new ButtonBar(navigator, htmlPane);
-		contentPanel.add(buttonBar, BorderLayout.SOUTH);
+		this.browseBar = new BrowseBar(navigator, htmlPane);
+		contentPanel.add(browseBar, BorderLayout.SOUTH);
 		rightSplitPane.setTopComponent(contentPanel);
 		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
 		htmlPane.displayPage(book.getCoverPage());
