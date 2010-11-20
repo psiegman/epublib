@@ -129,7 +129,7 @@ public class NCXDocument {
 			if(ncxResource == null) {
 				return;
 			}
-			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader.createDocumentBuilder());
+			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader);
 			XPath xPath = epubReader.getXpathFactory().newXPath();
 			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
 		    NodeList navmapNodes = (NodeList) xPath.evaluate(NAVMAP_SELECTION_XPATH, ncxDocument, XPathConstants.NODESET);
