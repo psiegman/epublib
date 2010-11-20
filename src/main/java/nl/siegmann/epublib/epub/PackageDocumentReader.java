@@ -27,7 +27,7 @@ import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  */
 public class PackageDocumentReader extends PackageDocumentBase {
 	
-	private static final Logger log = Logger.getLogger(PackageDocumentReader.class);
+	private static final Logger log = LoggerFactory.getLogger(PackageDocumentReader.class);
 	private static final String[] POSSIBLE_NCX_ITEM_IDS = new String[] {"toc", "ncx"};
 	
 	
@@ -52,7 +52,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		readGuide(packageDocument, epubReader, book, resourcesByHref);
 		Map<String, Resource> resourcesById = readManifest(packageDocument, packageHref, epubReader, book, resourcesByHref);
 		readCover(packageDocument, book);
-		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
+		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument, book.getResources()));
 		book.setSpine(readSpine(packageDocument, epubReader, book, resourcesById));
 		
 		// if we did not find a cover page then we make the first page of the book the cover page
