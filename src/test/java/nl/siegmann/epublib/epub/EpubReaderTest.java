@@ -19,7 +19,7 @@ public class EpubReaderTest extends TestCase {
 			(new EpubWriter()).write(book, out);
 			byte[] epubData = out.toByteArray();
 			Book readBook = new EpubReader().readEpub(new ByteArrayInputStream(epubData));
-			assertNotNull(readBook.getCoverPage());
+			assertNotNull(readBook.getCoverImage());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
