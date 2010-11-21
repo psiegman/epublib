@@ -13,6 +13,8 @@ import java.nio.charset.Charset;
  */
 public interface Resource {
 	
+	String getTitle();
+	
 	void setId(String id);
 	
 	/**

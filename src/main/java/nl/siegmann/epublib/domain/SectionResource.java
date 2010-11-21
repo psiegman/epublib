@@ -21,6 +21,9 @@ public class SectionResource extends ResourceBase {
 		this.title = title;
 	}
 
+	public String getTitle() {
+		return title;
+	}
 	
 	@Override
 	public InputStream getInputStream() throws IOException {
