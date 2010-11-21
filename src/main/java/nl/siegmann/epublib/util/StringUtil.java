@@ -7,35 +7,6 @@ import java.util.List;
 public class StringUtil {
 
 	/**
-	 * Poor mans http decoder, decodes %{digit}{digit} things into their source character.
-	 * 
-	 * Example: 'abc%20de' =&gt; 'abc de'
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static String unescapeHttp(String input) {
-
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-			if (c == '%') {
-				if (i < input.length() - 2) {
-					result.append(
-							(char) (
-									(16 * (input.charAt(++i) - '0'))
-									+ (input.charAt(++i) - '0')
-							)
-					);
-				}
-			} else {
-				result.append(c);
-			}
-		}
-		return result.toString();
-	}
-
-	/**
 	 * Changes a path containing '..', '.' and empty dirs into a path that doesn't.
 	 * X/foo/../Y is changed into 'X/Y', etc.
 	 * Does not handle invalid paths like "../".
