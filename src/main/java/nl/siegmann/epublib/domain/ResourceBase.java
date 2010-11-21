@@ -7,6 +7,9 @@ import java.nio.charset.Charset;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * Utility base class for several types of resources.
  * 
@@ -16,6 +19,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 public abstract class ResourceBase implements Resource {
 	
 	private String id;
+	private String title;
 	private String href;
 	private MediaType mediaType;
 	private Charset inputEncoding = Constants.ENCODING;
@@ -37,6 +41,34 @@ public abstract class ResourceBase implements Resource {
 		this.inputEncoding = inputEncoding;
 	}
 
+	public String getTitle() {
+		if (title != null) {
+			return title;
+		}
+		if (MediatypeService.XHTML == mediaType) {
+			try {
+				String content = IOUtils.toString(getInputStream(), getInputEncoding().name());
+				String lowerContent = content.toLowerCase();
+				int titleStart = lowerContent.indexOf("<title>");
+				if (titleStart >= 0) {
+					int titleEnd = lowerContent.indexOf("<", titleStart + "<title>".length());
+					if (titleEnd < 0) {
+						titleEnd = lowerContent.length();
+					}
+					title = content.substring(titleStart + "<title>".length(), titleEnd);
+					title = StringEscapeUtils.unescapeHtml(title);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (title == null) {
+			title = href;
+		}
+		return title;
+	}
+	
 	public String getId() {
 		return id;
 	}
