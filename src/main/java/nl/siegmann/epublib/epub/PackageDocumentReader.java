@@ -2,6 +2,7 @@ package nl.siegmann.epublib.epub;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,10 +51,15 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		String packageHref = packageResource.getHref();
 		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
 		readGuide(packageDocument, epubReader, book, resourcesByHref);
-		book.setResources(readManifest(packageDocument, packageHref, epubReader, resourcesByHref));
+		
+		// Books sometimes use non-identifier ids. We map these here to legal ones
+		Map<String, String> idMapping = new HashMap<String, String>();
+		
+		Resources resources = readManifest(packageDocument, packageHref, epubReader, resourcesByHref, idMapping);
+		book.setResources(resources);
 		readCover(packageDocument, book);
 		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument, book.getResources()));
-		book.setSpine(readSpine(packageDocument, epubReader, book.getResources()));
+		book.setSpine(readSpine(packageDocument, epubReader, book.getResources(), idMapping));
 		
 		// if we did not find a cover page then we make the first page of the book the cover page
 		if (book.getCoverPage() == null && book.getSpine().size() > 0) {
@@ -72,7 +78,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @return a Map with resources, with their id's as key.
 	 */
 	private static Resources readManifest(Document packageDocument, String packageHref,
-			EpubReader epubReader, Map<String, Resource> resourcesByHref) {
+			EpubReader epubReader, Map<String, Resource> resourcesByHref, Map<String, String> idMapping) {
 		Element manifestElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.manifest);
 		Resources result = new Resources();
 		if(manifestElement == null) {
@@ -84,7 +90,13 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			Element itemElement = (Element) itemElements.item(i);
 			String id = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.id);
 			String href = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.href);
-			href = StringUtil.unescapeHttp(href);
+			System.out.println(PackageDocumentReader.class.getName() + ": before:" + href);
+			try {
+				href = URLDecoder.decode(href, Constants.ENCODING.name());
+			} catch (UnsupportedEncodingException e) {
+				log.error(e.getMessage());
+			}
+			System.out.println(PackageDocumentReader.class.getName() + ": unescaped:" + href);
 			String mediaTypeName = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.media_type);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
@@ -97,6 +109,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				resource.setMediaType(mediaType);
 			}
 			result.add(resource);
+			idMapping.put(id, resource.getId());
 		}
 		return result;
 	}	
@@ -183,7 +196,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesById
 	 * @return
 	 */
-	private static Spine readSpine(Document packageDocument, EpubReader epubReader, Resources resources) {
+	private static Spine readSpine(Document packageDocument, EpubReader epubReader, Resources resources, Map<String, String> idMapping) {
 		
 		Element spineElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.spine);
 		if (spineElement == null) {
@@ -201,9 +214,13 @@ public class PackageDocumentReader extends PackageDocumentBase {
 				log.error("itemref with missing or empty idref"); // XXX
 				continue;
 			}
-			Resource resource = resources.getByIdOrHref(itemref);
+			String id = idMapping.get(itemref);
+			if (id == null) {
+				id = itemref;
+			}
+			Resource resource = resources.getByIdOrHref(id);
 			if(resource == null) {
-				log.error("resource with id \'" + itemref + "\' not found");
+				log.error("resource with id \'" + id + "\' not found");
 				continue;
 			}
 			
