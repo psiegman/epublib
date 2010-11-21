@@ -32,11 +32,13 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class TableOfContentsPane extends JPanel implements NavigationEventListener {
+public class TableOfContentsPane extends JPanel implements NavigationEventListener, TreeSelectionListener {
 
 	private static final long serialVersionUID = 2277717264176049700L;
 	
 	private MultiMap href2treeNode = new MultiValueMap();
+	private JScrollPane scrollPane;
+	private Navigator navigator;
 	private JTree tree;
 	
 	/**
@@ -48,13 +50,12 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 	 */
 	public TableOfContentsPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
-		tree = new JTree(createTree(navigator));
-		add(new JScrollPane(tree));
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-//		tree.setRootVisible(false);
-		tree.addTreeSelectionListener(new TableOfContentsTreeSelectionListener(navigator));
+		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
-		tree.setSelectionRow(0);
+
+		this.scrollPane = new JScrollPane();
+		add(scrollPane);
+		initBook(navigator.getBook());
 	}
 	
 	/**
@@ -87,8 +88,7 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 		href2treeNode.put(resource.getHref(), treeNode);
 	}
 	
-	private DefaultMutableTreeNode createTree(Navigator navigator) {
-		Book book = navigator.getBook();
+	private DefaultMutableTreeNode createTree(Book book) {
 		TOCItem rootTOCItem = new TOCItem(new TOCReference(book.getTitle(), book.getCoverPage()));
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(rootTOCItem);
 		addToHref2TreeNode(book.getCoverPage(), top);
@@ -96,30 +96,15 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 		return top;
 	}
 	
-	/**
-	 * Tells the navigator when a tree node is selected.
-	 * 
-	 * @author paul
-	 *
-	 */
-	private class TableOfContentsTreeSelectionListener implements TreeSelectionListener {
+	public void valueChanged(TreeSelectionEvent e) {
+		JTree tree = (JTree) e.getSource();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		
-		private Navigator navigator;
-		
-		public TableOfContentsTreeSelectionListener(Navigator navigator) {
-			this.navigator = navigator;
+		if (node == null) {
+			return;
 		}
-		
-		public void valueChanged(TreeSelectionEvent e) {
-			JTree tree = (JTree) e.getSource();
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			
-			if (node == null) {
-				return;
-			}
-			TOCItem tocItem = (TOCItem) node.getUserObject();
-			navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
-		}
+		TOCItem tocItem = (TOCItem) node.getUserObject();
+		navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
 	}
 
 	private void createNodes(DefaultMutableTreeNode top, Book book) {
@@ -142,6 +127,19 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 	
 	@Override
 	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (this == navigationEvent.getSource()) {
+			return;
+		}
+		if (navigationEvent.isBookChanged()) {
+			initBook(navigationEvent.getCurrentBook());
+			return;
+		}
+		if (this.tree == null) {
+			return;
+		}
+		if (navigationEvent.getCurrentResource() == null) {
+			return;
+		}
 		Collection treenodes = (Collection) href2treeNode.get(navigationEvent.getCurrentResource().getHref());
 		if (treenodes == null || treenodes.isEmpty()) {
 			if (navigationEvent.getCurrentSpinePos() == (navigationEvent.getOldSpinePos() + 1)) {
@@ -156,5 +154,18 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 			TreePath treePath = new TreePath(path);
 			tree.setSelectionPath(treePath);
 		}
+	}
+
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		this.tree = new JTree(createTree(book));
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//		tree.setRootVisible(false);
+		tree.setSelectionRow(0);
+		tree.addTreeSelectionListener(this);
+		this.scrollPane.getViewport().removeAll();
+		this.scrollPane.getViewport().add(tree);
 	}
 }

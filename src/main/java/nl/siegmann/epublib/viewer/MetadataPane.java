@@ -16,7 +16,10 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 
@@ -24,32 +27,50 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MetadataPane extends JPanel {
+public class MetadataPane extends JPanel implements NavigationEventListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MetadataPane.class);
 	
 	private static final long serialVersionUID = -2810193923996466948L;
+	private JScrollPane scrollPane; 
 
 	public MetadataPane(Navigator navigator) {
 		super(new GridLayout(0, 1));
-		JTable table = new JTable(
-				createTableData(navigator.getBook().getMetadata()),
-				new String[] {"", ""});
-        table.setFillsViewportHeight(true);
-        JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
-        contentPanel.add(table, BorderLayout.CENTER);
-        setCoverImage(contentPanel, navigator);
+		scrollPane = new JScrollPane();
 		this.add(scrollPane);
+		navigator.addNavigationEventListener(this);
+		initBook(navigator.getBook());
 	}
 
-	private void setCoverImage(JPanel contentPanel, Navigator navigator) {
-		Resource coverImageResource = navigator.getBook().getCoverImage();
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		JTable table = new JTable(
+				createTableData(book.getMetadata()),
+				new String[] {"", ""});
+		table.setFillsViewportHeight(true);
+		JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
+		contentPanel.add(table, BorderLayout.CENTER);
+		setCoverImage(contentPanel, book);
+		scrollPane.getViewport().removeAll();
+		this.scrollPane.getViewport().add(contentPanel);
+	}
+
+	private void setCoverImage(JPanel contentPanel, Book book) {
+		if (book == null) {
+			return;
+		}
+		Resource coverImageResource = book.getCoverImage();
 		if (coverImageResource == null) {
 			return;
 		}
 		try {
 			Image image = ImageIO.read(coverImageResource.getInputStream());
+			if (image == null) {
+				log.error("Unable to load cover image from book");
+				return;
+			}
 			image = image.getScaledInstance(200, -1, Image.SCALE_SMOOTH);
 			JLabel label = new JLabel(new ImageIcon(image));
 			label.setSize(100, 100);
@@ -118,5 +139,12 @@ public class MetadataPane extends JPanel {
 				return 2;
 			}
 		};
+	}
+
+	@Override
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (navigationEvent.isBookChanged()) {
+			initBook(navigationEvent.getCurrentBook());
+		}
 	}
 }
