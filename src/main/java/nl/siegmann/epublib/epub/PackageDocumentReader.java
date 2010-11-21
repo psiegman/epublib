@@ -25,10 +25,10 @@ import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
-import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -90,13 +90,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			Element itemElement = (Element) itemElements.item(i);
 			String id = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.id);
 			String href = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.href);
-			System.out.println(PackageDocumentReader.class.getName() + ": before:" + href);
 			try {
 				href = URLDecoder.decode(href, Constants.ENCODING.name());
 			} catch (UnsupportedEncodingException e) {
 				log.error(e.getMessage());
 			}
-			System.out.println(PackageDocumentReader.class.getName() + ": unescaped:" + href);
 			String mediaTypeName = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.media_type);
 			Resource resource = resourcesByHref.remove(href);
 			if(resource == null) {
