@@ -42,7 +42,6 @@ public class NavigationHistory implements NavigationEventListener {
 	public NavigationHistory(Navigator navigator) {
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
-		init(navigator);
 	}
 	
 	public int getCurrentPos() {
@@ -138,6 +137,9 @@ public class NavigationHistory implements NavigationEventListener {
 	@Override
 	public void navigationPerformed(NavigationEvent navigationEvent) {
 		if (this == navigationEvent.getSource()) {
+			return;
+		}
+		if (navigationEvent.getCurrentResource() == null) {
 			return;
 		}
 		addLocation(navigationEvent.getCurrentResource().getHref());

@@ -1,16 +1,15 @@
 package nl.siegmann.epublib.viewer;
 
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.GuideReference;
 
@@ -20,18 +19,27 @@ import nl.siegmann.epublib.domain.GuideReference;
  * @author paul
  *
  */
-public class GuidePane extends JPanel implements NavigationEventListener {
+public class GuidePane extends JScrollPane implements NavigationEventListener {
 
 	private static final long serialVersionUID = -8988054938907109295L;
-
+	private Navigator navigator;
+	
 	public GuidePane(Navigator navigator) {
-		super(new GridLayout(1, 0));
+		this.navigator = navigator;
+		navigator.addNavigationEventListener(this);
+		initBook(navigator.getBook());
+	}
+
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		getViewport().removeAll();
 		JTable table = new JTable(
 				createTableData(navigator.getBook().getGuide()),
 				new String[] {"", ""});
-        table.setFillsViewportHeight(true);
-        JScrollPane scrollPane = new JScrollPane(table);
-		this.add(scrollPane);
+		table.setFillsViewportHeight(true);
+		getViewport().add(table);
 	}
 
 	private Object[][] createTableData(Guide guide) {
@@ -44,8 +52,8 @@ public class GuidePane extends JPanel implements NavigationEventListener {
 
 	@Override
 	public void navigationPerformed(NavigationEvent navigationEvent) {
-		// TODO Auto-generated method stub
-		
+		if (navigationEvent.isBookChanged()) {
+			initBook(navigationEvent.getCurrentBook());
+		}
 	}
-	
 }

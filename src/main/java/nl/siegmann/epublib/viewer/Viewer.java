@@ -21,11 +21,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
@@ -47,16 +50,17 @@ public class Viewer {
 	private BrowseBar browseBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
-	private Navigator navigator;
+	private Navigator navigator = new Navigator();
 	private NavigationHistory browserHistory;
 	private EpubCleaner epubCleaner = new EpubCleaner();
+	private NavigationBar navigationBar;
 	
 	public Viewer(InputStream bookStream) {
 		mainWindow = createMainWindow();
 		Book book;
 		try {
 			book = (new EpubReader(epubCleaner)).readEpub(bookStream);
-			init(book);
+			gotoBook(book);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -64,7 +68,7 @@ public class Viewer {
 
 	public Viewer(Book book) {
 		mainWindow = createMainWindow();
-		init(book);
+		gotoBook(book);
 	}
 
 	private JFrame createMainWindow() {
@@ -76,12 +80,22 @@ public class Viewer {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		
 		leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		leftSplitPane.setTopComponent(new TableOfContentsPane(navigator));
+		leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		leftSplitPane.setOneTouchExpandable(true);
 		leftSplitPane.setDividerLocation(600);
 
 		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
 		rightSplitPane.setDividerLocation(600);
+		ContentPane htmlPane = new ContentPane(navigator);
+		htmlPane.initNavigation(navigator);
+		JPanel contentPanel = new JPanel(new BorderLayout());
+		contentPanel.add(htmlPane, BorderLayout.CENTER);
+		this.browseBar = new BrowseBar(navigator, htmlPane);
+		contentPanel.add(browseBar, BorderLayout.SOUTH);
+		rightSplitPane.setTopComponent(contentPanel);
+		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
 		
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		mainSplitPane.setTopComponent(leftSplitPane);
@@ -92,63 +106,73 @@ public class Viewer {
 		mainSplitPane.setDividerLocation(200);
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 
-		mainPanel.add(createTopNavBar(), BorderLayout.NORTH);
+		this.navigationBar = new NavigationBar(this);
+		mainPanel.add(navigationBar, BorderLayout.NORTH);
 		result.add(mainPanel);
 		result.pack();
 		result.setVisible(true);
-		return result;
-	}
+		return result;	}
 	
 	
-	private JToolBar createTopNavBar() {
-		JToolBar result = new JToolBar();
-		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
-		JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
-//		previousButton.setFont(historyButtonFont);
-//		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
+	private class NavigationBar extends JToolBar implements NavigationEventListener {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1166410773448311544L;
+		private JTextField titleField;
+		
+		public NavigationBar(final Viewer viewer) {
+			Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
+			JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
+	//		previousButton.setFont(historyButtonFont);
+	//		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
+				
+			previousButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					viewer.browserHistory.move(-1);
+				}
+			});
 			
-		previousButton.addActionListener(new ActionListener() {
+			add(previousButton);
 			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Viewer.this.browserHistory.move(-1);
-			}
-		});
-		
-		result.add(previousButton);
-		
-		JButton nextButton = ViewerUtil.createButton("1rightarrow", "\u21E8");
-		nextButton.setFont(historyButtonFont);
-		nextButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Viewer.this.browserHistory.move(1);
-			}
-		});
-		result.add(nextButton);
-		return result;
-	}
-	
-	
-	private void init(Book book) {
-		mainWindow.setTitle(book.getTitle());
-		navigator = new Navigator(book);
-		
-		this.browserHistory = new NavigationHistory(navigator);
-		
-		leftSplitPane.setBottomComponent(new GuidePane(navigator));
-		this.tableOfContents = new TableOfContentsPane(navigator);
-		leftSplitPane.setTopComponent(tableOfContents);
+			JButton nextButton = ViewerUtil.createButton("1rightarrow", "\u21E8");
+			nextButton.setFont(historyButtonFont);
+			nextButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					viewer.browserHistory.move(1);
+				}
+			});
+			add(nextButton);
+			titleField = new JTextField();
+			add(titleField);
+		}
 
-		ContentPane htmlPane = new ContentPane(navigator);
-		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.add(htmlPane, BorderLayout.CENTER);
-		this.browseBar = new BrowseBar(navigator, htmlPane);
-		contentPanel.add(browseBar, BorderLayout.SOUTH);
-		rightSplitPane.setTopComponent(contentPanel);
-		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
-		htmlPane.displayPage(book.getCoverPage());
+		public void initNavigation(Navigator navigator) {
+			navigator.addNavigationEventListener(this);
+		}
+		
+		
+		@Override
+		public void navigationPerformed(NavigationEvent navigationEvent) {
+			if (navigationEvent.getCurrentResource() == null) {
+				return;
+			}
+			titleField.setText(navigationEvent.getCurrentResource().getTitle());
+		}
+	}	
+	
+	
+	private void gotoBook(Book book) {
+		this.browserHistory = new NavigationHistory(navigator);
+		mainWindow.setTitle(book.getTitle());
+		navigator.gotoBook(book, this);
+		
+		this.navigationBar.initNavigation(navigator);
 	}
 
 	private static String getText(String text) {
@@ -194,7 +218,7 @@ public class Viewer {
 				}
 				try {
 					Book book = (new EpubReader(epubCleaner)).readEpub(new FileInputStream(selectedFile));
-					init(book);
+					gotoBook(book);
 				} catch (Exception e1) {
 					log.error(e1.getMessage(), e1);
 				}
@@ -207,7 +231,7 @@ public class Viewer {
 		reloadMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				init(navigator.getBook());
+				gotoBook(navigator.getBook());
 			}
 		});
 		fileMenu.add(reloadMenuItem);

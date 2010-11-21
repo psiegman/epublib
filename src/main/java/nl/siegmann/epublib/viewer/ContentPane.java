@@ -19,11 +19,13 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.util.ResourceUtil;
 
@@ -52,19 +54,23 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.navigator = navigator;
-		this.editorPane = createJEditorPane(this);
-		this.scrollPane = new JScrollPane(editorPane);
-		add(scrollPane);
-		initImageLoader();
-		navigator.addNavigationEventListener(this);
-		displayPage(navigator.getCurrentResource());
+		initBook(navigator.getBook());
 	}
 
 	private static JEditorPane createJEditorPane(final ContentPane contentPane) {
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setBackground(Color.white);
 		editorPane.setEditable(false);
-		editorPane.setContentType("text/html");
+		HTMLEditorKit htmlKit = new HTMLEditorKit();
+//		StyleSheet myStyleSheet = new StyleSheet();
+//		String normalTextStyle = "font-size: 12px, font-family: georgia";
+//	    myStyleSheet.addRule("body {" + normalTextStyle + "}");
+//	    myStyleSheet.addRule("p {" + normalTextStyle + "}");
+//	    myStyleSheet.addRule("div {" + normalTextStyle + "}");
+//	    htmlKit.setStyleSheet(myStyleSheet);
+	    editorPane.setEditorKit(htmlKit);
+
+//		editorPane.setContentType("text/html");
 		editorPane.addHyperlinkListener(contentPane);
 		editorPane.addKeyListener(new KeyListener() {
 			
@@ -102,6 +108,10 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 			imageLoaderCache.setContextResource(resource);
 			String pageContent = IOUtils.toString(reader);
 			pageContent = stripHtml(pageContent);
+//			Document doc = editorPane.getEditorKit().createDefaultDocument();
+//			editorPane.setDocument(doc);
+//			editorPane.setText(pageContent);
+
 			editorPane.setText(pageContent);
 			editorPane.setCaretPosition(0);
 		} catch (Exception e) {
@@ -199,8 +209,15 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		return result.toString();
 	}
 
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		displayPage(book.getCoverPage());
+	}
+	
 	public void navigationPerformed(NavigationEvent navigationEvent) {
-		if (navigationEvent.isSpinePosChanged()) {
+		if (navigationEvent.isResourceChanged()) {
 			displayPage(navigationEvent.getSectionWalker().getCurrentResource());
 		}
 	}
@@ -216,9 +233,19 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		if (cache == null) {
 			cache = new Hashtable();
 		}
-		ImageLoaderCache result = new ImageLoaderCache(navigator.getBook(), cache);
+		ImageLoaderCache result = new ImageLoaderCache(navigator, cache);
 		document.getDocumentProperties().put("imageCache", result);
 		this.imageLoaderCache = result;
+	}
+
+	public void initNavigation(Navigator navigator) {
+		this.navigator = navigator;
+		this.editorPane = createJEditorPane(this);
+		this.scrollPane = new JScrollPane(editorPane);
+		add(scrollPane);
+		initImageLoader();
+		navigator.addNavigationEventListener(this);
+		displayPage(navigator.getCurrentResource());
 	}
 
 }

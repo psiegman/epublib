@@ -21,28 +21,48 @@ public class Navigator {
 	private Book book;
 	private int currentSpinePos;
 	private Resource currentResource;
+	private int currentPagePos;
+	private String currentFragmentId;
 	
 	private Collection<NavigationEventListener> eventListeners = new ArrayList<NavigationEventListener>();
 	
+	public Navigator() {
+		this(null);
+	}
 	public Navigator(Book book) {
 		this.book = book;
 		this.currentSpinePos = 0;
-		this.currentResource = book.getCoverPage();
+		if (book != null) {
+			this.currentResource = book.getCoverPage();
+		}
+		this.currentPagePos = 0;
 	}
+	
+//	public void handleEventListeners(int oldPosition, Resource oldResource, Object source) {
+//		handleEventListeners(currentPagePos, oldPosition, oldResource, book, source);
+//	}
 
-	public void handleEventListeners(int oldPosition, Resource oldResource, Object source) {
-		if (eventListeners == null || eventListeners.isEmpty()) {
-			return;
-		}
-		if (oldPosition == currentSpinePos) {
-			return;
-		}
-		NavigationEvent navigationEvent = new NavigationEvent(source, oldPosition, oldResource, this);
+//	public void handleEventListeners(int oldPagePos, int oldSpinePos, Resource oldResource, Book oldBook, Object source) {
+//		System.out.println("title:" + (getCurrentResource() == null ? "<null>" : getCurrentResource().getTitle()));
+//		if (eventListeners == null || eventListeners.isEmpty()) {
+//			return;
+//		}
+//		if ((oldPagePos == currentPagePos)
+//				&& (oldSpinePos == currentSpinePos)
+//				&& (oldResource == currentResource)
+//				&& (oldBook == book)) {
+//			return;
+//		}
+//		NavigationEvent navigationEvent = new NavigationEvent(source, oldBook, oldSpinePos, oldResource, this);
+//		handleEventListeners(navigationEvent); 
+//	}
+	
+	private void handleEventListeners(NavigationEvent navigationEvent) {
 		for (NavigationEventListener navigationEventListener: eventListeners) {
 			navigationEventListener.navigationPerformed(navigationEvent);
 		}
 	}
-
+	
 	public boolean addNavigationEventListener(NavigationEventListener navigationEventListener) {
 		return this.eventListeners.add(navigationEventListener);
 	}
@@ -90,17 +110,15 @@ public class Navigator {
 		if (resource == null) {
 			return -1;
 		}
-		Resource oldResource = currentResource;
+		NavigationEvent navigationEvent = new NavigationEvent(source, this);
 		this.currentResource = resource;
-
-		int oldIndex = currentSpinePos;
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
-		
-		handleEventListeners(oldIndex, oldResource, source);
+		this.currentPagePos = 0;
+		this.currentFragmentId = null;
+		handleEventListeners(navigationEvent);
 		
 		return currentSpinePos;
 	}
-	
 	
 	public int gotoResourceId(String resourceId, Object source) {
 		return gotoSection(book.getSpine().findFirstResourceById(resourceId), source);
@@ -122,11 +140,10 @@ public class Navigator {
 		if (newSpinePos < 0 || newSpinePos >= book.getSpine().size()) {
 			return currentSpinePos;
 		}
-		int oldIndex = currentSpinePos;
-		Resource oldResource = currentResource;
+		NavigationEvent navigationEvent = new NavigationEvent(source, this);
 		currentSpinePos = newSpinePos;
 		currentResource = book.getSpine().getResource(currentSpinePos);
-		handleEventListeners(oldIndex, oldResource, source);
+		handleEventListeners(navigationEvent);
 		return currentSpinePos;
 	}
 
@@ -134,6 +151,17 @@ public class Navigator {
 		return gotoSection(book.getSpine().size() - 1, source);
 	}
 	
+	public void gotoBook(Book book, Object source) {
+		NavigationEvent navigationEvent = new NavigationEvent(source, this);
+		this.book = book;
+		this.currentFragmentId = null;
+		this.currentPagePos = 0;
+		currentResource = null;
+		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
+		handleEventListeners(navigationEvent);
+	}
+	
+
 	/**
 	 * The current position within the spine.
 	 * 
@@ -174,5 +202,13 @@ public class Navigator {
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
 		this.currentResource = currentResource;
 		return currentSpinePos;
+	}
+	
+	public String getCurrentFragmentId() {
+		return currentFragmentId;
+	}
+	
+	public int getCurrentPagePos() {
+		return currentPagePos;
 	}
 }

@@ -8,12 +8,16 @@ import java.util.Enumeration;
 
 import javax.imageio.ImageIO;
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
+import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is installed as the JEditorPane's image cache.
@@ -24,7 +28,7 @@ import org.slf4j.Logger;import org.slf4j.LoggerFactory;
  * @author paul
  *
  */
-class ImageLoaderCache extends Dictionary {
+class ImageLoaderCache extends Dictionary implements NavigationEventListener {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";
 
@@ -35,11 +39,19 @@ class ImageLoaderCache extends Dictionary {
 	private String currentFolder = "";
 	private Resource contextResource;
 	
-	public ImageLoaderCache(Book book, Dictionary dictionary) {
-		this.book = book;
+	public ImageLoaderCache(Navigator navigator, Dictionary dictionary) {
 		this.dictionary = dictionary;
+		navigator.addNavigationEventListener(this);
+		initBook(navigator.getBook());
 	}
 	
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		this.book = book;
+	}
+
 	public void setContextResource(Resource resource) {
 		if (resource == null) {
 			return;
@@ -53,6 +65,9 @@ class ImageLoaderCache extends Dictionary {
 	}
 
 	public Object get(Object key) {
+		if (book == null) {
+			return null;
+		}
 		Image result = (Image) dictionary.get(key);
 		if (result != null) {
 			return result;
@@ -116,5 +131,11 @@ class ImageLoaderCache extends Dictionary {
 	public void setCurrentFolder(String currentFolder) {
 		this.currentFolder = currentFolder;
 	}
-	
+
+	@Override
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (navigationEvent.isBookChanged()) {
+			initBook(navigationEvent.getCurrentBook());
+		}
+	}
 }
