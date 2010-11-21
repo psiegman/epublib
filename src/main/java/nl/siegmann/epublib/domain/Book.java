@@ -152,6 +152,9 @@ public class Book {
 	}
 
 	public void setCoverImage(Resource coverImage) {
+		if (coverImage == null) {
+			return;
+		}
 		if (! resources.containsByHref(coverImage.getHref())) {
 			resources.add(coverImage);
 		}
