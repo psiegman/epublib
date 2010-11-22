@@ -3,6 +3,8 @@ package nl.siegmann.epublib.browsersupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.siegmann.epublib.domain.Book;
+
 
 
 /**
@@ -42,6 +44,7 @@ public class NavigationHistory implements NavigationEventListener {
 	public NavigationHistory(Navigator navigator) {
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
+		initBook(navigator.getBook());
 	}
 	
 	public int getCurrentPos() {
@@ -53,12 +56,16 @@ public class NavigationHistory implements NavigationEventListener {
 		return currentSize;
 	}
 	
-	public void init(Navigator navigator) {
-		this.navigator = navigator;
+	public void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
 		locations = new ArrayList<Location>();
-		currentPos = 0;
-		currentSize = 1;
-		locations.add(new Location(navigator.getCurrentResource().getHref()));
+		currentPos = -1;
+		currentSize = 0;
+		if (navigator.getCurrentResource() != null) {
+			addLocation(navigator.getCurrentResource().getHref());
+		}
 	}
 	
 	/**
