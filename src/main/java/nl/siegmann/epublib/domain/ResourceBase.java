@@ -40,10 +40,9 @@ public abstract class ResourceBase implements Resource {
 	}
 
 	public String getTitle() {
-		if (title != null) {
-			return title;
+		if (title == null) {
+			this.title = ResourceUtil.getTitle(this);
 		}
-		this.title = ResourceUtil.getTitle(this);
 		return title;
 	}
 	
