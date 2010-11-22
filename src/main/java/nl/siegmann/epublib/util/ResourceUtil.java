@@ -56,7 +56,8 @@ public class ResourceUtil {
 		if (resource == null) {
 			return "";
 		}
-		Pattern h_tag = Pattern.compile("h\\d", Pattern.CASE_INSENSITIVE);
+		Pattern h_tag = Pattern.compile("^h\\d\\s*", Pattern.CASE_INSENSITIVE);
+		String title = null;
 		try {
 			Reader content = getReader(resource);
 			Scanner scanner = new Scanner(content);
@@ -66,17 +67,17 @@ public class ResourceUtil {
 				int closePos = text.indexOf('>');
 				String tag = text.substring(0, closePos);
 				if (tag.equalsIgnoreCase("title")
-					|| h_tag.matcher(tag).matches()) {
+					|| h_tag.matcher(tag).find()) {
 
-					String title = text.substring(closePos + 1).trim();
+					title = text.substring(closePos + 1).trim();
 					title = StringEscapeUtils.unescapeHtml(title);
-					return title;
+					break;
 				}
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
-		return null;
+		return title;
 	}
 	
 	
