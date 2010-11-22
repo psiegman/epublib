@@ -3,7 +3,6 @@ package nl.siegmann.epublib.viewer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Event;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -21,14 +19,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import nl.siegmann.epublib.browsersupport.NavigationEvent;
-import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
@@ -51,7 +45,7 @@ public class Viewer {
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private Navigator navigator = new Navigator();
-	private NavigationHistory browserHistory;
+	NavigationHistory browserHistory;
 	private EpubCleaner epubCleaner = new EpubCleaner();
 	private NavigationBar navigationBar;
 	
@@ -106,73 +100,16 @@ public class Viewer {
 		mainSplitPane.setDividerLocation(200);
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 
-		this.navigationBar = new NavigationBar(this);
-		mainPanel.add(navigationBar, BorderLayout.NORTH);
+		mainPanel.add(new NavigationBar(navigator), BorderLayout.NORTH);
 		result.add(mainPanel);
 		result.pack();
 		result.setVisible(true);
 		return result;	}
 	
 	
-	private class NavigationBar extends JToolBar implements NavigationEventListener {
-		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1166410773448311544L;
-		private JTextField titleField;
-		
-		public NavigationBar(final Viewer viewer) {
-			Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
-			JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
-	//		previousButton.setFont(historyButtonFont);
-	//		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
-				
-			previousButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					viewer.browserHistory.move(-1);
-				}
-			});
-			
-			add(previousButton);
-			
-			JButton nextButton = ViewerUtil.createButton("1rightarrow", "\u21E8");
-			nextButton.setFont(historyButtonFont);
-			nextButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					viewer.browserHistory.move(1);
-				}
-			});
-			add(nextButton);
-			titleField = new JTextField();
-			add(titleField);
-		}
-
-		public void initNavigation(Navigator navigator) {
-			navigator.addNavigationEventListener(this);
-		}
-		
-		
-		@Override
-		public void navigationPerformed(NavigationEvent navigationEvent) {
-			if (navigationEvent.getCurrentResource() == null) {
-				return;
-			}
-			titleField.setText(navigationEvent.getCurrentResource().getTitle());
-		}
-	}	
-	
-	
 	private void gotoBook(Book book) {
-		this.browserHistory = new NavigationHistory(navigator);
 		mainWindow.setTitle(book.getTitle());
 		navigator.gotoBook(book, this);
-		
-		this.navigationBar.initNavigation(navigator);
 	}
 
 	private static String getText(String text) {
