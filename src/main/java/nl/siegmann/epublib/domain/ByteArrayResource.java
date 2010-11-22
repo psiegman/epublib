@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import nl.siegmann.epublib.Constants;
+
 /**
  * A resource that stores it's data as a byte[]
  * 
@@ -26,9 +28,13 @@ public class ByteArrayResource extends ResourceBase {
 	
 	
 	public ByteArrayResource(String id, byte[] data, String href, MediaType mediaType) {
-		this(id, data, href, mediaType, null);
+		this(id, data, href, mediaType, Constants.ENCODING);
 	}
-
+	
+	public ByteArrayResource(byte[] data, MediaType mediaType, Charset inputEncoding) {
+		this(null, data, null, mediaType, inputEncoding);
+	}
+	
 	public ByteArrayResource(String id, byte[] data, String href, MediaType mediaType, Charset inputEncoding) {
 		super(id, href, mediaType, inputEncoding);
 		this.data = data;
