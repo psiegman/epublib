@@ -12,7 +12,6 @@ import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
-import nl.siegmann.epublib.domain.Book;
 
 /**
  * A toolbar that contains the history back and forward buttons and the page title.
@@ -28,11 +27,17 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 	private static final long serialVersionUID = 1166410773448311544L;
 	private JTextField titleField;
 	private final NavigationHistory navigationHistory;
-	private Navigator navigator;
 	
 	public NavigationBar(Navigator navigator) {
 		this.navigationHistory = new NavigationHistory(navigator);
 		navigator.addNavigationEventListener(this);
+		addHistoryButtons();
+		
+		titleField = new JTextField();
+		add(titleField);
+	}
+
+	private void addHistoryButtons() {
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
 		JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
 //		previousButton.setFont(historyButtonFont);
@@ -58,8 +63,6 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			}
 		});
 		add(nextButton);
-		titleField = new JTextField();
-		add(titleField);
 	}
 
 	@Override
