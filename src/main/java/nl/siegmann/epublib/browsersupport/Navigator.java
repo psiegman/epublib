@@ -1,7 +1,7 @@
 package nl.siegmann.epublib.browsersupport;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -24,7 +24,7 @@ public class Navigator {
 	private int currentPagePos;
 	private String currentFragmentId;
 	
-	private Collection<NavigationEventListener> eventListeners = new ArrayList<NavigationEventListener>();
+	private List<NavigationEventListener> eventListeners = new ArrayList<NavigationEventListener>();
 	
 	public Navigator() {
 		this(null);
@@ -38,27 +38,9 @@ public class Navigator {
 		this.currentPagePos = 0;
 	}
 	
-//	public void handleEventListeners(int oldPosition, Resource oldResource, Object source) {
-//		handleEventListeners(currentPagePos, oldPosition, oldResource, book, source);
-//	}
-
-//	public void handleEventListeners(int oldPagePos, int oldSpinePos, Resource oldResource, Book oldBook, Object source) {
-//		System.out.println("title:" + (getCurrentResource() == null ? "<null>" : getCurrentResource().getTitle()));
-//		if (eventListeners == null || eventListeners.isEmpty()) {
-//			return;
-//		}
-//		if ((oldPagePos == currentPagePos)
-//				&& (oldSpinePos == currentSpinePos)
-//				&& (oldResource == currentResource)
-//				&& (oldBook == book)) {
-//			return;
-//		}
-//		NavigationEvent navigationEvent = new NavigationEvent(source, oldBook, oldSpinePos, oldResource, this);
-//		handleEventListeners(navigationEvent); 
-//	}
-	
 	private void handleEventListeners(NavigationEvent navigationEvent) {
-		for (NavigationEventListener navigationEventListener: eventListeners) {
+		for (int i = 0; i < eventListeners.size(); i++) {
+			NavigationEventListener navigationEventListener = eventListeners.get(i);
 			navigationEventListener.navigationPerformed(navigationEvent);
 		}
 	}
