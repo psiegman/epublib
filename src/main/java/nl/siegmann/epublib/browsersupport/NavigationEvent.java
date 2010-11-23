@@ -96,7 +96,7 @@ public class NavigationEvent extends EventObject {
 		if (oldBook == null) {
 			return true;
 		}
-		return oldBook == navigator.getBook();
+		return oldBook != navigator.getBook();
 	}
 	
 	public boolean isSpinePosChanged() {
