@@ -1,8 +1,17 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.Charset;
+
+import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.service.MediatypeService;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.gdata.util.io.base.UnicodeReader;
 
 /**
  * Represents a resource that is part of the epub.
@@ -11,11 +20,62 @@ import java.nio.charset.Charset;
  * @author paul
  *
  */
-public interface Resource {
+public class Resource {
 	
-	String getTitle();
+	private String id;
+	private String title;
+	private String href;
+	private MediaType mediaType;
+	private Charset inputEncoding = Constants.ENCODING;
+	private byte[] data;
 	
-	void setId(String id);
+	public Resource(String href) {
+		this(null, new byte[0], href, MediatypeService.determineMediaType(href));
+	}
+		
+	public Resource(byte[] data, MediaType mediaType) {
+		this(null, data, null, mediaType);
+	}
+	
+	public Resource(byte[] data, String href) {
+		this(null, data, href, MediatypeService.determineMediaType(href), Constants.ENCODING);
+	}
+	
+	public Resource(InputStream in, String href) throws IOException {
+		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href));
+	}
+	
+	public Resource(String id, byte[] data, String href, MediaType mediaType) {
+		this(id, data, href, mediaType, Constants.ENCODING);
+	}
+	
+	public Resource(String id, byte[] data, String href, MediaType mediaType, Charset inputEncoding) {
+		this.id = id;
+		this.href = href;
+		this.mediaType = mediaType;
+		this.inputEncoding = inputEncoding;
+		this.data = data;
+	}
+	
+	public InputStream getInputStream() throws IOException {
+		return new ByteArrayInputStream(data);
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	/**
 	 * The resources Id.
@@ -23,7 +83,9 @@ public interface Resource {
 	 * Must be both unique within all the resources of this book and a valid identifier.
 	 * @return
 	 */
-	String getId();
+	public String getId() {
+		return id;
+	}
 
 	/**
 	 * The location of the resource within the contents folder of the epub file.
@@ -34,9 +96,13 @@ public interface Resource {
 	 * 
 	 * @return
 	 */
-	String getHref();
+	public String getHref() {
+		return href;
+	}
 
-	void setHref(String href);
+	public void setHref(String href) {
+		this.href = href;
+	}
 
 	/**
 	 * The encoding of the resource.
@@ -44,24 +110,41 @@ public interface Resource {
 	 * 
 	 * @return
 	 */
-	Charset getInputEncoding();
+	public Charset getInputEncoding() {
+		return inputEncoding;
+	}
 	
-	void setInputEncoding(Charset encoding);
+	public void setInputEncoding(Charset encoding) {
+		this.inputEncoding = encoding;
+	}
+	
+	/**
+	 * Gets the contents of the Resource as Reader.
+	 * 
+	 * Does all sorts of smart things (courtesy of commons io XmlStreamReader) to handle encodings, byte order markers, etc.
+	 * 
+	 * @see http://commons.apache.org/io/api-release/org/apache/commons/io/input/XmlStreamReader.html
+	 * 
+	 * @param resource
+	 * @return
+	 * @throws IOException
+	 */
+	public Reader getReader() throws IOException {
+		return new UnicodeReader(new ByteArrayInputStream(data), inputEncoding.name());
+	}
+	
 	
 	/**
 	 * This resource's mediaType.
 	 * 
 	 * @return
 	 */
-	MediaType getMediaType();
+	public MediaType getMediaType() {
+		return mediaType;
+	}
 	
-	void setMediaType(MediaType mediaType);
-	
-	/**
-	 * The contents of this resource.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	InputStream getInputStream() throws IOException;
+	public void setMediaType(MediaType mediaType) {
+		this.mediaType = mediaType;
+	}
+
 }

@@ -2,7 +2,6 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,6 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubProcessor;
-import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpublibXmlSerializer;
@@ -62,8 +60,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 		if (inputEncoding == null) {
 			inputEncoding = Constants.ENCODING;
 		}
-		Reader reader = ResourceUtil.getReader(resource);
-		TagNode node = htmlCleaner.clean(reader);
+		TagNode node = htmlCleaner.clean(resource.getReader());
 		node.removeAttribute("xmlns:xml");
 		setCharsetMeta(node, outputEncoding);
 		if (isAddXmlNamespace()) {

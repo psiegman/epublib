@@ -13,8 +13,8 @@ import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.htmlcleaner.CleanerProperties;
@@ -141,7 +141,7 @@ public class HHCParser {
 		if(! StringUtils.isBlank(name)) {
 			Resource resource = resources.getByHref(href);
 			if (resource == null) {
-				resource = new SectionResource(null, name, href);
+				resource = ResourceUtil.createResource(name, href);
 				resources.add(resource);
 			}
 			result = new TOCReference(name, resource);

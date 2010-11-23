@@ -11,7 +11,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
@@ -68,7 +67,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 					coverImage.setHref(getCoverImageHref(coverImage, book));
 				}
 				String coverPageHtml = createCoverpageHtml(CollectionUtil.first(metadata.getTitles()), coverImage.getHref());
-				coverPage = new ByteArrayResource(null, coverPageHtml.getBytes(), getCoverPageHref(book), MediatypeService.XHTML);
+				coverPage = new Resource(null, coverPageHtml.getBytes(), getCoverPageHref(book), MediatypeService.XHTML);
 				fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
 			}
 		} else { // coverPage != null

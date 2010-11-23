@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.ZipEntryResource;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
@@ -117,7 +116,7 @@ public class EpubReader extends EpubProcessor {
 			if(zipEntry.isDirectory()) {
 				continue;
 			}
-			Resource resource = new ZipEntryResource(zipEntry, in);
+			Resource resource = ResourceUtil.createResource(zipEntry, in);
 			if(resource.getMediaType() == MediatypeService.XHTML
 					&& resource.getInputEncoding() == null) {
 				resource.setInputEncoding(defaultHtmlEncoding);

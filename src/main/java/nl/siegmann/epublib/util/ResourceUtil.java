@@ -5,10 +5,13 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -20,8 +23,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.google.gdata.util.io.base.UnicodeReader;
-
 /**
  * Various resource utility methods
  * @author paul
@@ -31,6 +32,22 @@ public class ResourceUtil {
 	
 	private static Logger log = LoggerFactory.getLogger(ResourceUtil.class);
 	
+	/**
+	 * Creates a resource with as contents a html page with the given title.
+	 * 
+	 * @param title
+	 * @param href
+	 * @return
+	 */
+	public static Resource createResource(String title, String href) {
+		String content = "<html><head><title>" + title + "</title></head><body><h1>" + title + "</h1></body></html>";
+		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.ENCODING);
+	}
+
+	public static Resource createResource(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
+		return new Resource(zipInputStream, zipEntry.getName());
+
+	}
 	public static String getTitle(Resource resource) {
 		if (resource == null) {
 			return "";
@@ -59,7 +76,7 @@ public class ResourceUtil {
 		Pattern h_tag = Pattern.compile("^h\\d\\s*", Pattern.CASE_INSENSITIVE);
 		String title = null;
 		try {
-			Reader content = getReader(resource);
+			Reader content = resource.getReader();
 			Scanner scanner = new Scanner(content);
 			scanner.useDelimiter("<");
 			while(scanner.hasNext()) {
@@ -81,35 +98,15 @@ public class ResourceUtil {
 	}
 	
 	
-	/**
-	 * Gets the contents of the Resource as Reader.
-	 * 
-	 * Does all sorts of smart things (courtesy of commons io XmlStreamReader) to handle encodings, byte order markers, etc.
-	 * 
-	 * @see http://commons.apache.org/io/api-release/org/apache/commons/io/input/XmlStreamReader.html
-	 * 
-	 * @param resource
-	 * @return
-	 * @throws IOException
-	 */
-	public static Reader getReader(Resource resource) throws IOException  {
-		if (resource == null) {
-			log.error("null resource passed to getReader");
-			return null;
-		}
-//		XmlStreamReader xmlStreamReader = new XmlStreamReader(resource.getInputStream(), false, resource.getInputEncoding().name());
-//		System.out.println("file contents:");
-//		IOUtils.copy(xmlStreamReader, System.out);
-//		xmlStreamReader = new XmlStreamReader(resource.getInputStream(), true, resource.getInputEncoding().name());
-//		return xmlStreamReader;
-		return new UnicodeReader(resource.getInputStream(), resource.getInputEncoding().name());
-	}
 	
 	/**
 	 * Gets the contents of the Resource as an InputSource
 	 */
 	public static InputSource getInputSource(Resource resource) throws IOException {
-		Reader reader = getReader(resource);
+		if (resource == null) {
+			return null;
+		}
+		Reader reader = resource.getReader();
 		if (reader == null) {
 			return null;
 		}

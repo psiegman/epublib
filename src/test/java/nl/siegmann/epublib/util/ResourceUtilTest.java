@@ -2,7 +2,7 @@ package nl.siegmann.epublib.util;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.StringResource;
+import nl.siegmann.epublib.service.MediatypeService;
 
 public class ResourceUtilTest extends TestCase {
 
@@ -16,7 +16,7 @@ public class ResourceUtilTest extends TestCase {
 				"<html><body><XH1 class=\"main\">wrong title</Xh1><h2>test title 6</h2></body></html>", "test title 6",
 		};
 		for (int i = 0; i < testData.length; i+= 2) {
-			Resource resource = new StringResource(testData[i]);
+			Resource resource = new Resource(testData[i].getBytes(), MediatypeService.XHTML);
 			String actualTitle = ResourceUtil.findTitleFromXhtml(resource);
 			assertEquals(testData[i + 1], actualTitle);
 		}

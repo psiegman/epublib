@@ -7,12 +7,11 @@ import junit.framework.TestCase;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.PlaceholderResource;
 import nl.siegmann.epublib.domain.Resource;
 
 public class NavigationHistoryTest extends TestCase {
 
-	private static final Resource mockResource = new PlaceholderResource("mockResource");
+	private static final Resource mockResource = new Resource("mockResource.html");
 	
 	private static class MockBook extends Book {
 		public Resource getCoverPage() {
@@ -74,9 +73,7 @@ public class NavigationHistoryTest extends TestCase {
 		public void setCurrentSpinePos(int currentIndex) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public Book getBook() {
-			throw new UnsupportedOperationException("Method not supported in mock implementation");
-		}
+		
 		public int setCurrentResource(Resource currentResource) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}

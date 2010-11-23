@@ -12,7 +12,7 @@ import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
-import nl.siegmann.epublib.domain.InputStreamResource;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubCleaner;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
@@ -78,7 +78,7 @@ public class Fileset2Epub {
 		
 		if(StringUtils.isNotBlank(coverImage)) {
 //			book.getResourceByHref(book.getCoverImage());
-			book.getMetadata().setCoverImage(new InputStreamResource(VFSUtil.resolveInputStream(coverImage), coverImage));
+			book.getMetadata().setCoverImage(new Resource(VFSUtil.resolveInputStream(coverImage), coverImage));
 			epubCleaner.getBookProcessingPipeline().add(new CoverpageBookProcessor());
 		}
 		
