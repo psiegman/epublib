@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Various resource utility methods
+ * 
  * @author paul
  *
  */
@@ -44,6 +45,14 @@ public class ResourceUtil {
 		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.ENCODING);
 	}
 
+	/**
+	 * Creates a resource out of the given zipEntry and zipInputStream.
+	 * 
+	 * @param zipEntry
+	 * @param zipInputStream
+	 * @return
+	 * @throws IOException
+	 */
 	public static Resource createResource(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
 		return new Resource(zipInputStream, zipEntry.getName());
 
@@ -100,7 +109,8 @@ public class ResourceUtil {
 	
 	
 	/**
-	 * Gets the contents of the Resource as an InputSource
+	 * Gets the contents of the Resource as an InputSource in a null-safe manner.
+	 * 
 	 */
 	public static InputSource getInputSource(Resource resource) throws IOException {
 		if (resource == null) {
@@ -115,6 +125,9 @@ public class ResourceUtil {
 	}
 	
 	
+	/**
+	 * Reads parses the xml therein and returns the result as a Document
+	 */
 	public static Document getAsDocument(Resource resource, EpubProcessor epubProcessor) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
 		return getAsDocument(resource, epubProcessor.createDocumentBuilder());
 	}
@@ -122,6 +135,7 @@ public class ResourceUtil {
 	
 	/**
 	 * Reads the given resources inputstream, parses the xml therein and returns the result as a Document
+	 * 
 	 * @param resource
 	 * @param documentBuilderFactory
 	 * @return
