@@ -8,12 +8,7 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 
 public class BrowseBar extends JPanel {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5745389338067538254L;
-	
-	private ButtonBar buttonBar;
 	
 	public BrowseBar(Navigator navigator, ContentPane chapterPane) {
 		super(new BorderLayout());
