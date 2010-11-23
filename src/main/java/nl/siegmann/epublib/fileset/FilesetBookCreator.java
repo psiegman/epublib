@@ -10,16 +10,16 @@ import java.util.Comparator;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
-import nl.siegmann.epublib.domain.SectionResource;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.ResourceUtil;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.VFS;
@@ -97,9 +97,10 @@ public class FilesetBookCreator {
 		List<TOCReference> childTOCReferences = new ArrayList<TOCReference>();
 		processDirectory(rootDir, file, childTOCReferences, resources, inputEncoding);
 		if(! childTOCReferences.isEmpty()) {
-			SectionResource sectionResource = new SectionResource(null, file.getName().getBaseName(), calculateHref(rootDir,file));
+			String sectionName = file.getName().getBaseName();
+			Resource sectionResource = ResourceUtil.createResource(sectionName, calculateHref(rootDir,file));
 			resources.add(sectionResource);
-			TOCReference section = new TOCReference(sectionResource.getSectionName(), sectionResource);
+			TOCReference section = new TOCReference(sectionName, sectionResource);
 			section.setChildren(childTOCReferences);
 			sections.add(section);
 		}
@@ -111,7 +112,7 @@ public class FilesetBookCreator {
 			return null;
 		}
 		String href = calculateHref(rootDir, file);
-		Resource result = new FileObjectResource(null, file, href, mediaType);
+		Resource result = new Resource(null, IOUtils.toByteArray(file.getContent().getInputStream()), href, mediaType);
 		result.setInputEncoding(inputEncoding);
 		return result;
 	}

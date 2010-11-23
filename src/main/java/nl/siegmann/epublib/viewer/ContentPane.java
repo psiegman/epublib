@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,7 +26,6 @@ import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -104,9 +102,8 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		currentResource = resource;
 		try {
 			log.debug("Reading resource " + resource.getHref());
-			Reader reader = ResourceUtil.getReader(resource);
 			imageLoaderCache.setContextResource(resource);
-			String pageContent = IOUtils.toString(reader);
+			String pageContent = IOUtils.toString(resource.getReader());
 			pageContent = stripHtml(pageContent);
 //			Document doc = editorPane.getEditorKit().createDefaultDocument();
 //			editorPane.setDocument(doc);

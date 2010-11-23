@@ -24,18 +24,17 @@ import javax.xml.xpath.XPathExpressionException;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.ByteArrayResource;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
-import nl.siegmann.epublib.util.StringUtil;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -195,7 +194,7 @@ public class NCXDocument {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		XMLStreamWriter out = epubWriter.createXMLStreamWriter(data);
 		write(out, book);
-		Resource resource = new ByteArrayResource(NCX_ITEM_ID, data.toByteArray(), DEFAULT_NCX_HREF, MediatypeService.NCX);
+		Resource resource = new Resource(NCX_ITEM_ID, data.toByteArray(), DEFAULT_NCX_HREF, MediatypeService.NCX);
 		return resource;
 	}
 	

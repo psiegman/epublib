@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.InputStreamResource;
+import nl.siegmann.epublib.domain.Resource;
 
 public class EpubReaderTest extends TestCase {
 	
@@ -13,7 +13,7 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			(new EpubWriter()).write(book, out);
@@ -32,8 +32,8 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new InputStreamResource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
-			book.addSection("Introduction", new InputStreamResource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
+			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.addSection("Introduction", new Resource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.generateSpineFromTableOfContents();
 			
 			ByteArrayOutputStream out = new ByteArrayOutputStream();

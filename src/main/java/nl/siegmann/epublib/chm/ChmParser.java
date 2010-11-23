@@ -9,13 +9,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.FileObjectResource;
 import nl.siegmann.epublib.domain.MediaType;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
@@ -116,7 +117,7 @@ public class ChmParser {
 				continue;
 			}
 			String href = file.getName().toString().substring(rootDir.getName().toString().length() + 1);
-			FileObjectResource fileResource = new FileObjectResource(null, file, href, mediaType);
+			Resource fileResource = new Resource(null, IOUtils.toByteArray(file.getContent().getInputStream()), href, mediaType);
 			if(mediaType == MediatypeService.XHTML) {
 				fileResource.setInputEncoding(defaultEncoding);
 			}
