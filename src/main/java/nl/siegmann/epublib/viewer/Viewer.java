@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -23,6 +24,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
@@ -40,14 +42,12 @@ public class Viewer {
 	
 	static final Logger log = LoggerFactory.getLogger(Viewer.class);
 	private final JFrame mainWindow;
-	private TableOfContentsPane tableOfContents;
 	private BrowseBar browseBar;
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private Navigator navigator = new Navigator();
 	NavigationHistory browserHistory;
-	private EpubCleaner epubCleaner = new EpubCleaner();
-	private NavigationBar navigationBar;
+	private EpubCleaner epubCleaner = new EpubCleaner(Collections.<BookProcessor>emptyList());
 	
 	public Viewer(InputStream bookStream) {
 		mainWindow = createMainWindow();
@@ -83,7 +83,6 @@ public class Viewer {
 		rightSplitPane.setOneTouchExpandable(true);
 		rightSplitPane.setDividerLocation(600);
 		ContentPane htmlPane = new ContentPane(navigator);
-		htmlPane.initNavigation(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
 		this.browseBar = new BrowseBar(navigator, htmlPane);
