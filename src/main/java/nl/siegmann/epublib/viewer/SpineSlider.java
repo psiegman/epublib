@@ -9,6 +9,7 @@ import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 
+// package
 class SpineSlider extends JSlider implements NavigationEventListener {
 
 		/**
