@@ -9,6 +9,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+/**
+ * Utility methods for working with the DOM.
+ * 
+ * @author paul
+ *
+ */
 // package
 class DOMUtil {
 
@@ -29,7 +35,14 @@ class DOMUtil {
 		return result;
 	}
 	
-	
+	/**
+	 * Gets all descendant elements of the given parentElement with the given namespace and tagname and returns their text child as a list of String.
+	 * 
+	 * @param parentElement
+	 * @param namespace
+	 * @param tagname
+	 * @return
+	 */
 	public static List<String> getElementsTextChild(Element parentElement, String namespace, String tagname) {
 		NodeList elements = parentElement.getElementsByTagNameNS(namespace, tagname);
 		List<String> result = new ArrayList<String>(elements.getLength());
