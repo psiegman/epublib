@@ -5,18 +5,26 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -48,14 +56,19 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
+	private Map<String, Document> documentCache = new HashMap<String, Document>();
 	
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
+		this.scrollPane = (JScrollPane) add(new JScrollPane());
 		this.navigator = navigator;
+		navigator.addNavigationEventListener(this);
+		this.editorPane = createJEditorPane();
+		scrollPane.getViewport().add(editorPane);
 		initBook(navigator.getBook());
 	}
 
-	private static JEditorPane createJEditorPane(final ContentPane contentPane) {
+	private JEditorPane createJEditorPane() {
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setBackground(Color.white);
 		editorPane.setEditable(false);
@@ -69,14 +82,14 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 	    editorPane.setEditorKit(htmlKit);
 
 //		editorPane.setContentType("text/html");
-		editorPane.addHyperlinkListener(contentPane);
+		editorPane.addHyperlinkListener(this);
 		editorPane.addKeyListener(new KeyListener() {
 			
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				// TODO Auto-generated method stub
 				if (keyEvent.getKeyChar() == ' ') {
-					contentPane.gotoNextPage();
+					ContentPane.this.gotoNextPage();
 				}
 			}
 			
@@ -102,14 +115,15 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		currentResource = resource;
 		try {
 			log.debug("Reading resource " + resource.getHref());
-			imageLoaderCache.setContextResource(resource);
-			String pageContent = IOUtils.toString(resource.getReader());
-			pageContent = stripHtml(pageContent);
-//			Document doc = editorPane.getEditorKit().createDefaultDocument();
-//			editorPane.setDocument(doc);
+//			String pageContent = IOUtils.toString(resource.getReader());
+//			pageContent = stripHtml(pageContent);
+//			HTMLDocument doc = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
+//			initImageLoader(doc);
+			Document doc = getDocument(resource);
+			editorPane.setDocument(doc);
 //			editorPane.setText(pageContent);
 
-			editorPane.setText(pageContent);
+//			editorPane.setText(pageContent);
 			editorPane.setCaretPosition(0);
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
@@ -210,7 +224,27 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		if (book == null) {
 			return;
 		}
+		documentCache.clear();
 		displayPage(book.getCoverPage());
+	}
+	
+	private Document getDocument(Resource resource) throws IOException, BadLocationException {
+		HTMLDocument document = (HTMLDocument) documentCache.get(StringUtils.substringBefore(resource.getHref(), "#"));
+		if (document != null) {
+			return document;
+		}
+		String pageContent = IOUtils.toString(resource.getReader());
+		pageContent = stripHtml(pageContent);
+		document = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
+	    document.remove(0, document.getLength());
+	    Reader r = new StringReader(pageContent);
+	    EditorKit kit = editorPane.getEditorKit();
+        kit.read(r, document, 0);
+		initImageLoader(document);
+//		editorPane.setDocument(doc);
+//		editorPane.setText(pageContent);
+		documentCache.put(StringUtils.substringBefore(resource.getHref(), "#"), document);
+		return document;
 	}
 	
 	public void navigationPerformed(NavigationEvent navigationEvent) {
@@ -219,8 +253,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		}
 	}
 
-	private void initImageLoader() {
-		HTMLDocument document = (HTMLDocument) editorPane.getDocument();
+	private void initImageLoader(HTMLDocument document) {
 		try {
 			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
 		} catch (MalformedURLException e) {
@@ -230,19 +263,12 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		if (cache == null) {
 			cache = new Hashtable();
 		}
-		ImageLoaderCache result = new ImageLoaderCache(navigator, cache);
-		document.getDocumentProperties().put("imageCache", result);
-		this.imageLoaderCache = result;
+		if (imageLoaderCache == null) {
+			imageLoaderCache = new ImageLoaderCache(navigator, cache);
+		}
+		imageLoaderCache.setContextResource(navigator.getCurrentResource());
+		document.getDocumentProperties().put("imageCache", imageLoaderCache);
 	}
 
-	public void initNavigation(Navigator navigator) {
-		this.navigator = navigator;
-		this.editorPane = createJEditorPane(this);
-		this.scrollPane = new JScrollPane(editorPane);
-		add(scrollPane);
-		initImageLoader();
-		navigator.addNavigationEventListener(this);
-		displayPage(navigator.getCurrentResource());
-	}
 
 }
