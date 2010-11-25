@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -12,10 +14,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +36,17 @@ import org.xml.sax.SAXException;
 public class ResourceUtil {
 	
 	private static Logger log = LoggerFactory.getLogger(ResourceUtil.class);
+	
+	public static Resource createResource(File file) throws IOException {
+		if (file == null) {
+			return null;
+		}
+		MediaType mediaType = MediatypeService.determineMediaType(file.getName());
+		byte[] data = IOUtils.toByteArray(new FileInputStream(file));
+		Resource result = new Resource(data, mediaType);
+		return result;
+	}
+	
 	
 	/**
 	 * Creates a resource with as contents a html page with the given title.
@@ -82,6 +97,9 @@ public class ResourceUtil {
 		if (resource == null) {
 			return "";
 		}
+		if (resource.getTitle() != null) {
+			return resource.getTitle();
+		}
 		Pattern h_tag = Pattern.compile("^h\\d\\s*", Pattern.CASE_INSENSITIVE);
 		String title = null;
 		try {
@@ -103,6 +121,7 @@ public class ResourceUtil {
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
+		resource.setTitle(title);
 		return title;
 	}
 	

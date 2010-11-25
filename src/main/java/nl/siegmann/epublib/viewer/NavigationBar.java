@@ -12,6 +12,7 @@ import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 /**
  * A toolbar that contains the history back and forward buttons and the page title.
@@ -67,11 +68,9 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 
 	@Override
 	public void navigationPerformed(NavigationEvent navigationEvent) {
-		if (navigationEvent.getCurrentResource() == null) {
-			return;
-		}
 		if (navigationEvent.getCurrentResource() != null) {
-			titleField.setText(navigationEvent.getCurrentResource().getTitle());
+			String title = ResourceUtil.getTitle(navigationEvent.getCurrentResource());
+			titleField.setText(title);
 		}
 	}
 }

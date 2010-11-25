@@ -147,4 +147,8 @@ public class Resource {
 		this.mediaType = mediaType;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 }
