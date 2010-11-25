@@ -10,6 +10,7 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.gdata.util.io.base.UnicodeReader;
 
@@ -151,4 +152,14 @@ public class Resource {
 		this.title = title;
 	}
 
+	public String toString() {
+		return new ToStringBuilder(this).
+			append("id", id).
+			append("title", title).
+			append("encoding", inputEncoding).
+			append("mediaType", mediaType).
+			append("href", href).
+			append("size", data == null ? 0 : data.length).
+		toString();
+	}
 }
