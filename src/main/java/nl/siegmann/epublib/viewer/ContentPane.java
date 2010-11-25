@@ -56,7 +56,7 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
-	private Map<String, Document> documentCache = new HashMap<String, Document>();
+	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
 	
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
@@ -228,8 +228,8 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		displayPage(book.getCoverPage());
 	}
 	
-	private Document getDocument(Resource resource) throws IOException, BadLocationException {
-		HTMLDocument document = (HTMLDocument) documentCache.get(StringUtils.substringBefore(resource.getHref(), "#"));
+	private HTMLDocument getDocument(Resource resource) throws IOException, BadLocationException {
+		HTMLDocument document = documentCache.get(resource.getHref());
 		if (document != null) {
 			return document;
 		}
@@ -237,13 +237,11 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		pageContent = stripHtml(pageContent);
 		document = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
 	    document.remove(0, document.getLength());
-	    Reader r = new StringReader(pageContent);
+	    Reader contentReader = new StringReader(pageContent);
 	    EditorKit kit = editorPane.getEditorKit();
-        kit.read(r, document, 0);
+        kit.read(contentReader, document, 0);
 		initImageLoader(document);
-//		editorPane.setDocument(doc);
-//		editorPane.setText(pageContent);
-		documentCache.put(StringUtils.substringBefore(resource.getHref(), "#"), document);
+		documentCache.put(resource.getHref(), document);
 		return document;
 	}
 	
