@@ -46,6 +46,10 @@ public class Resource {
 		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href));
 	}
 	
+	public Resource(Reader in, String href) throws IOException {
+		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href), Constants.ENCODING);
+	}
+	
 	public Resource(String id, byte[] data, String href, MediaType mediaType) {
 		this(id, data, href, mediaType, Constants.ENCODING);
 	}
@@ -134,6 +138,16 @@ public class Resource {
 		return new UnicodeReader(new ByteArrayInputStream(data), inputEncoding.name());
 	}
 	
+	public int hashCode() {
+		return href.hashCode();
+	}
+	
+	public boolean equals(Object resourceObject) {
+		if (! (resourceObject instanceof Resource)) {
+			return false;
+		}
+		return href.equals(((Resource) resourceObject).getHref());
+	}
 	
 	/**
 	 * This resource's mediaType.
