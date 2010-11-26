@@ -1,6 +1,8 @@
 package nl.siegmann.epublib.viewer;
 
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +34,7 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class TableOfContentsPane extends JPanel implements NavigationEventListener, TreeSelectionListener {
+public class TableOfContentsPane extends JPanel implements NavigationEventListener {
 
 	private static final long serialVersionUID = 2277717264176049700L;
 	
@@ -96,17 +98,6 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 		return top;
 	}
 	
-	public void valueChanged(TreeSelectionEvent e) {
-		JTree tree = (JTree) e.getSource();
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-		
-		if (node == null) {
-			return;
-		}
-		TOCItem tocItem = (TOCItem) node.getUserObject();
-		navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
-	}
-
 	private void createNodes(DefaultMutableTreeNode top, Book book) {
 		addNodesToParent(top, book.getTableOfContents().getTocReferences());
 	}
@@ -161,10 +152,18 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 			return;
 		}
 		this.tree = new JTree(createTree(book));
+		tree.addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent me) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				TOCItem tocItem = (TOCItem) node.getUserObject();
+				navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
+			}
+		});
+
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 //		tree.setRootVisible(false);
 		tree.setSelectionRow(0);
-		tree.addTreeSelectionListener(this);
 		this.scrollPane.getViewport().removeAll();
 		this.scrollPane.getViewport().add(tree);
 	}
