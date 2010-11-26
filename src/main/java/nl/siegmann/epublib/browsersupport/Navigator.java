@@ -38,7 +38,7 @@ public class Navigator {
 		this.currentPagePos = 0;
 	}
 	
-	private void handleEventListeners(NavigationEvent navigationEvent) {
+	private synchronized void handleEventListeners(NavigationEvent navigationEvent) {
 		for (int i = 0; i < eventListeners.size(); i++) {
 			NavigationEventListener navigationEventListener = eventListeners.get(i);
 			navigationEventListener.navigationPerformed(navigationEvent);
@@ -89,13 +89,17 @@ public class Navigator {
 	
 	
 	public int gotoResource(Resource resource, Object source) {
+		return gotoResource(resource, 0, source);
+	}
+	
+	public int gotoResource(Resource resource, int pagePos, Object source) {
 		if (resource == null) {
 			return -1;
 		}
 		NavigationEvent navigationEvent = new NavigationEvent(source, this);
 		this.currentResource = resource;
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
-		this.currentPagePos = 0;
+		this.currentPagePos = pagePos;
 		this.currentFragmentId = null;
 		handleEventListeners(navigationEvent);
 		
