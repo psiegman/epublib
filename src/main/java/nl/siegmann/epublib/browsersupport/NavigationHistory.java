@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Resource;
 
 
 
@@ -16,6 +17,7 @@ import nl.siegmann.epublib.domain.Book;
 public class NavigationHistory implements NavigationEventListener {
 
 	public static final int DEFAULT_MAX_HISTORY_SIZE = 1000;
+	private static final long DEFAULT_HISTORY_WAIT_TIME = 1000;
 	
 	private static class Location {
 		private String href;
@@ -35,12 +37,14 @@ public class NavigationHistory implements NavigationEventListener {
 		}
 	}
 	
+	private long lastUpdateTime = 0;
 	private List<Location> locations = new ArrayList<Location>();
 	private Navigator navigator;
 	private int currentPos = -1;
 	private int currentSize = 0;
 	private int maxHistorySize = DEFAULT_MAX_HISTORY_SIZE;
-	
+	private long historyWaitTime = DEFAULT_HISTORY_WAIT_TIME;
+
 	public NavigationHistory(Navigator navigator) {
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
@@ -66,6 +70,27 @@ public class NavigationHistory implements NavigationEventListener {
 		if (navigator.getCurrentResource() != null) {
 			addLocation(navigator.getCurrentResource().getHref());
 		}
+	}
+	
+	/**
+	 * If the time between a navigation event is less than the historyWaitTime then the new location is not added to the history. 
+	 * When a user is rapidly viewing many pages using the slider we do not want all of them to be added to the history.
+	 * 
+	 * @return
+	 */
+	public long getHistoryWaitTime() {
+		return historyWaitTime;
+	}
+
+	public void setHistoryWaitTime(long historyWaitTime) {
+		this.historyWaitTime = historyWaitTime;
+	}
+
+	public void addLocation(Resource resource) {
+		if (resource == null) {
+			return;
+		}
+		addLocation(resource.getHref());
 	}
 	
 	/**
@@ -149,7 +174,14 @@ public class NavigationHistory implements NavigationEventListener {
 		if (navigationEvent.getCurrentResource() == null) {
 			return;
 		}
-		addLocation(navigationEvent.getCurrentResource().getHref());
+		
+		if ((System.currentTimeMillis() - this.lastUpdateTime) > historyWaitTime) {
+			// if the user scrolled rapidly through the pages then the last page will not be added to the history. We fix that here:
+			addLocation(navigationEvent.getOldResource());
+
+			addLocation(navigationEvent.getCurrentResource().getHref());
+		}
+		lastUpdateTime = System.currentTimeMillis();
 	}
 
 	public String getCurrentHref() {
