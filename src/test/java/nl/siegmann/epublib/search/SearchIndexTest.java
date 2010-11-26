@@ -37,7 +37,7 @@ public class SearchIndexTest extends TestCase {
 				"a", "a", new Integer[] {0},
 				"a", "aa", new Integer[] {0,1},
 				"a", "a   \n\t\t\ta", new Integer[] {0,2},
-				"a", "ä", new Integer[] {0},
+				"a", "Ã¤", new Integer[] {0},
 				"a", "A", new Integer[] {0},
 				"u", "&uuml;", new Integer[] {0},
 				"a", "b", new Integer[] {},
@@ -69,7 +69,7 @@ public class SearchIndexTest extends TestCase {
 				"a\tb", "a b",
 				"a\nb", "a b",
 				"a\n\t\r  \n\tb", "a b",
-				"ä", "a",
+				"Ã¤", "a",
 				"", ""
 		};
 		for (int i = 0; i < testData.length; i+= 2) {
