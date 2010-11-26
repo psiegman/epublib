@@ -84,6 +84,25 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		add(nextButton);
 	}
 
+	private void doSearch(int move) {
+		String searchTerm = searchField.getText();
+		if (searchTerm.equals(previousSearchTerm)) {
+			searchResultIndex += move;
+		} else {
+			searchResults = searchIndex.doSearch(searchTerm);
+			previousSearchTerm = searchTerm;
+			searchResultIndex = 0;
+		}
+		if (searchResultIndex < 0 || searchResultIndex >= searchResults.size()) {
+			searchResultIndex = 0;
+		}
+		if (! searchResults.isEmpty()) {
+			SearchResult searchResult = searchResults.getHits().get(searchResultIndex);
+			navigator.gotoResource(searchResult.getResource(), searchResult.getPagePos(), NavigationBar.this);
+		}
+		
+	}
+	
 	private void addSearchButtons() {
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
 		JButton previousButton = ViewerUtil.createButton("", "\u21E6");
@@ -94,10 +113,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SearchResults searchResults = searchIndex.doSearch(searchField.getText());
-				for(SearchResult searchResult: searchResults.getHits()) {
-					System.out.println(this.getClass().getName() + " " + searchResult.getPagePos() + " at resource " + searchResult.getResource());
-				}
+				doSearch(-1);
 			}
 		});
 		
@@ -111,21 +127,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String searchTerm = searchField.getText();
-				if (searchTerm.equals(previousSearchTerm)) {
-					searchResultIndex++;
-				} else {
-					searchResults = searchIndex.doSearch(searchTerm);
-					previousSearchTerm = searchTerm;
-					searchResultIndex = 0;
-				}
-				if (searchResultIndex < 0 || searchResultIndex >= searchResults.size()) {
-					searchResultIndex = 0;
-				}
-				if (! searchResults.isEmpty()) {
-					SearchResult searchResult = searchResults.getHits().get(searchResultIndex);
-					navigator.gotoResource(searchResult.getResource(), searchResult.getPagePos(), NavigationBar.this);
-				}
+				doSearch(1);
 			}
 		});
 		add(nextButton);
