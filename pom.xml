@@ -122,7 +122,7 @@
                     	<id>epublib commandline</id>
                         <configuration>
 							<mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
-							<filename>epublib-commandline-${version}.jar</filename>
+							<filename>${name}-commandline-${version}.jar</filename>
                         </configuration>
                         <goals>
                             <goal>one-jar</goal>
@@ -132,7 +132,7 @@
                     	<id>epublib viewer</id>
                         <configuration>
                             <mainClass>nl.siegmann.epublib.viewer.Viewer</mainClass>
-							<filename>epublib-viewer-${version}.jar</filename>
+							<filename>${name}-viewer-${version}.jar</filename>
                         </configuration>
                         <goals>
                             <goal>one-jar</goal>
