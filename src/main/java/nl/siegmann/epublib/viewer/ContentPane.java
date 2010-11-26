@@ -40,24 +40,25 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Displays a page
  * 
  * @return
  */
-public class ContentPane extends JPanel implements NavigationEventListener, HyperlinkListener {
+public class ContentPane extends JPanel implements NavigationEventListener,
+		HyperlinkListener {
 
 	private static final long serialVersionUID = -5322988066178102320L;
 
-	private static final Logger log = LoggerFactory.getLogger(ContentPane.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(ContentPane.class);
 	private ImageLoaderCache imageLoaderCache;
 	private Navigator navigator;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
 	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
-	
+
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());
@@ -73,18 +74,18 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		editorPane.setBackground(Color.white);
 		editorPane.setEditable(false);
 		HTMLEditorKit htmlKit = new HTMLEditorKit();
-//		StyleSheet myStyleSheet = new StyleSheet();
-//		String normalTextStyle = "font-size: 12px, font-family: georgia";
-//	    myStyleSheet.addRule("body {" + normalTextStyle + "}");
-//	    myStyleSheet.addRule("p {" + normalTextStyle + "}");
-//	    myStyleSheet.addRule("div {" + normalTextStyle + "}");
-//	    htmlKit.setStyleSheet(myStyleSheet);
-	    editorPane.setEditorKit(htmlKit);
+		// StyleSheet myStyleSheet = new StyleSheet();
+		// String normalTextStyle = "font-size: 12px, font-family: georgia";
+		// myStyleSheet.addRule("body {" + normalTextStyle + "}");
+		// myStyleSheet.addRule("p {" + normalTextStyle + "}");
+		// myStyleSheet.addRule("div {" + normalTextStyle + "}");
+		// htmlKit.setStyleSheet(myStyleSheet);
+		editorPane.setEditorKit(htmlKit);
 
-//		editorPane.setContentType("text/html");
+		// editorPane.setContentType("text/html");
 		editorPane.addHyperlinkListener(this);
 		editorPane.addKeyListener(new KeyListener() {
-			
+
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
 				// TODO Auto-generated method stub
@@ -92,49 +93,55 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 					ContentPane.this.gotoNextPage();
 				}
 			}
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 		return editorPane;
 	}
-	
+
 	public void displayPage(Resource resource) {
+		displayPage(resource, 0);
+	}
+
+	public void displayPage(Resource resource, int pagePos) {
 		if (resource == null) {
 			return;
 		}
 		currentResource = resource;
 		try {
 			log.debug("Reading resource " + resource.getHref());
-//			String pageContent = IOUtils.toString(resource.getReader());
-//			pageContent = stripHtml(pageContent);
-//			HTMLDocument doc = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
-//			initImageLoader(doc);
+			// String pageContent = IOUtils.toString(resource.getReader());
+			// pageContent = stripHtml(pageContent);
+			// HTMLDocument doc = (HTMLDocument)
+			// editorPane.getEditorKit().createDefaultDocument();
+			// initImageLoader(doc);
 			Document doc = getDocument(resource);
 			editorPane.setDocument(doc);
-//			editorPane.setText(pageContent);
+			// editorPane.setText(pageContent);
 
-//			editorPane.setText(pageContent);
-			editorPane.setCaretPosition(0);
+			// editorPane.setText(pageContent);
+			editorPane.setCaretPosition(pagePos);
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
 					+ resource.getHref() + ") :" + e.getMessage(), e);
 		}
 	}
-	
+
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String resourceHref = calculateTargetHref(event.getURL());
-			Resource resource = navigator.getBook().getResources().getByHref(resourceHref);
+			Resource resource = navigator.getBook().getResources()
+					.getByHref(resourceHref);
 			if (resource == null) {
 				log.error("Resource with url " + resourceHref + " not found");
 			} else {
@@ -153,9 +160,10 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		int newY = (int) viewPosition.getY();
 		newY -= viewportHeight;
 		newY = Math.max(0, newY - viewportHeight);
-		scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+		scrollPane.getViewport().setViewPosition(
+				new Point((int) viewPosition.getX(), newY));
 	}
-	
+
 	public void gotoNextPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		int viewportHeight = scrollPane.getViewport().getHeight();
@@ -165,27 +173,33 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 			return;
 		}
 		int newY = ((int) viewPosition.getY()) + viewportHeight;
-		scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+		scrollPane.getViewport().setViewPosition(
+				new Point((int) viewPosition.getX(), newY));
 	}
-	
+
 	private String calculateTargetHref(URL clickUrl) {
 		String resourceHref = clickUrl.toString();
 		try {
-			resourceHref = URLDecoder.decode(resourceHref, Constants.ENCODING.name());
+			resourceHref = URLDecoder.decode(resourceHref,
+					Constants.ENCODING.name());
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
-		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX.length());
+		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX
+				.length());
 
-		if (currentResource != null && StringUtils.isNotBlank(currentResource.getHref())) {
+		if (currentResource != null
+				&& StringUtils.isNotBlank(currentResource.getHref())) {
 			int lastSlashPos = currentResource.getHref().lastIndexOf('/');
 			if (lastSlashPos >= 0) {
-				resourceHref = currentResource.getHref().substring(0, lastSlashPos + 1) + resourceHref;
+				resourceHref = currentResource.getHref().substring(0,
+						lastSlashPos + 1)
+						+ resourceHref;
 			}
 		}
 		return resourceHref;
 	}
-	
+
 	private String stripHtml(String input) {
 		String result = removeControlTags(input);
 		result = result.replaceAll(
@@ -227,27 +241,32 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		documentCache.clear();
 		displayPage(book.getCoverPage());
 	}
-	
-	private HTMLDocument getDocument(Resource resource) throws IOException, BadLocationException {
+
+	private HTMLDocument getDocument(Resource resource) throws IOException,
+			BadLocationException {
 		HTMLDocument document = documentCache.get(resource.getHref());
 		if (document != null) {
 			return document;
 		}
 		String pageContent = IOUtils.toString(resource.getReader());
 		pageContent = stripHtml(pageContent);
-		document = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
-	    document.remove(0, document.getLength());
-	    Reader contentReader = new StringReader(pageContent);
-	    EditorKit kit = editorPane.getEditorKit();
-        kit.read(contentReader, document, 0);
+		document = (HTMLDocument) editorPane.getEditorKit()
+				.createDefaultDocument();
+		document.remove(0, document.getLength());
+		Reader contentReader = new StringReader(pageContent);
+		EditorKit kit = editorPane.getEditorKit();
+		kit.read(contentReader, document, 0);
 		initImageLoader(document);
 		documentCache.put(resource.getHref(), document);
 		return document;
 	}
-	
+
 	public void navigationPerformed(NavigationEvent navigationEvent) {
 		if (navigationEvent.isResourceChanged()) {
-			displayPage(navigationEvent.getSectionWalker().getCurrentResource());
+			displayPage(navigationEvent.getCurrentResource(),
+					navigationEvent.getCurrentPagePos());
+		} else if (navigationEvent.isPagePosChanged()) {
+			editorPane.setCaretPosition(navigationEvent.getCurrentPagePos());
 		}
 	}
 
@@ -267,6 +286,5 @@ public class ContentPane extends JPanel implements NavigationEventListener, Hype
 		imageLoaderCache.setContextResource(navigator.getCurrentResource());
 		document.getDocumentProperties().put("imageCache", imageLoaderCache);
 	}
-
 
 }
