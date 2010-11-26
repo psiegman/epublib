@@ -6,6 +6,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Used to tell NavigationEventListener just what kind of navigation action the user just did.
@@ -72,10 +73,6 @@ public class NavigationEvent extends EventObject {
 		this.oldPagePos = oldPagePos;
 	}
 
-	public Navigator getSectionWalker() {
-		return navigator;
-	}
-	
 	public int getCurrentPagePos() {
 		return navigator.getCurrentPagePos();
 	}
@@ -139,5 +136,24 @@ public class NavigationEvent extends EventObject {
 
 	public boolean isResourceChanged() {
 		return oldResource != getCurrentResource();
+	}
+	
+	public String toString() {
+		return new ToStringBuilder(this).
+			append("oldPagePos", oldPagePos).
+			append("oldResource", oldResource).
+			append("oldBook", oldBook).
+			append("oldFragmentId", oldFragmentId).
+			append("oldSpinePos", oldSpinePos).
+			append("currentPagePos", getCurrentPagePos()).
+			append("currentResource", getCurrentResource()).
+			append("currentBook", getCurrentBook()).
+			append("currentFragmentId", getCurrentFragmentId()).
+			append("currentSpinePos", getCurrentSpinePos()).
+		toString();
+	}
+
+	public boolean isPagePosChanged() {
+		return oldPagePos != getCurrentPagePos();
 	}
 }

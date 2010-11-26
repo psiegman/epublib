@@ -85,6 +85,9 @@ public class ResourceUtil {
 		}
 		return title;
 	}
+
+	
+
 	
 	/**
 	 * Retrieves whatever it finds between <title>...</title> or <h1-7>...</h1-7>.
