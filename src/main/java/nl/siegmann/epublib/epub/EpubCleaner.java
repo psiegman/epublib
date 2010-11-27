@@ -28,7 +28,7 @@ public class EpubCleaner extends EpubProcessor {
 	private Logger log = LoggerFactory.getLogger(EpubCleaner.class);
 	private List<BookProcessor> bookProcessingPipeline;
 
-	public EpubCleaner(){
+	public EpubCleaner() {
 		this(createDefaultBookProcessingPipeline());
 	}
 	
