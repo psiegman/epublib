@@ -119,18 +119,12 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		}
 		currentResource = resource;
 		try {
-			log.debug("Reading resource " + resource.getHref());
-			// String pageContent = IOUtils.toString(resource.getReader());
-			// pageContent = stripHtml(pageContent);
-			// HTMLDocument doc = (HTMLDocument)
-			// editorPane.getEditorKit().createDefaultDocument();
-			// initImageLoader(doc);
 			Document doc = getDocument(resource);
 			editorPane.setDocument(doc);
-			// editorPane.setText(pageContent);
-
-			// editorPane.setText(pageContent);
 			editorPane.setCaretPosition(pagePos);
+			if (pagePos == 0) {
+				scrollPane.getViewport().setViewPosition(new Point(0, 0));
+			}
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
 					+ resource.getHref() + ") :" + e.getMessage(), e);
@@ -240,6 +234,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		}
 		documentCache.clear();
 		displayPage(book.getCoverPage());
+		fillDocumentCache(book);
 	}
 
 	private HTMLDocument getDocument(Resource resource) throws IOException,
@@ -248,19 +243,42 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		if (document != null) {
 			return document;
 		}
-		String pageContent = IOUtils.toString(resource.getReader());
-		pageContent = stripHtml(pageContent);
-		document = (HTMLDocument) editorPane.getEditorKit()
-				.createDefaultDocument();
-		document.remove(0, document.getLength());
-		Reader contentReader = new StringReader(pageContent);
-		EditorKit kit = editorPane.getEditorKit();
-		kit.read(contentReader, document, 0);
+		
+		document = createDocument(resource);
 		initImageLoader(document);
 		documentCache.put(resource.getHref(), document);
 		return document;
 	}
 
+
+	private HTMLDocument createDocument(Resource resource) throws IOException, BadLocationException {
+		HTMLDocument document = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
+		String pageContent = IOUtils.toString(resource.getReader());
+		pageContent = stripHtml(pageContent);
+		document.remove(0, document.getLength());
+		Reader contentReader = new StringReader(pageContent);
+		EditorKit kit = editorPane.getEditorKit();
+		kit.read(contentReader, document, 0);
+		return document;
+	}
+	
+	
+	private void fillDocumentCache(Book book) {
+		if (book == null) {
+			return;
+		}
+		for (Resource resource: book.getResources().getAll()) {
+			HTMLDocument document;
+			try {
+				document = createDocument(resource);
+				documentCache.put(resource.getHref(), document);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+		}
+	}
+
+	
 	public void navigationPerformed(NavigationEvent navigationEvent) {
 		if (navigationEvent.isResourceChanged()) {
 			displayPage(navigationEvent.getCurrentResource(),
