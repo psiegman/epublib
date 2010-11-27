@@ -1,10 +1,13 @@
 package nl.siegmann.epublib.viewer;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
@@ -13,9 +16,9 @@ import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.search.SearchIndex;
 import nl.siegmann.epublib.search.SearchResult;
 import nl.siegmann.epublib.search.SearchResults;
-import nl.siegmann.epublib.search.SearchIndex;
 import nl.siegmann.epublib.util.ResourceUtil;
 
 /**
@@ -58,8 +61,8 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 
 	private void addHistoryButtons() {
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
-		JButton previousButton = ViewerUtil.createButton("1leftarrow", "\u21E6");
-//		previousButton.setFont(historyButtonFont);
+		JButton previousButton = ViewerUtil.createButton("X1leftarrow", "\u21E6");
+		previousButton.setFont(historyButtonFont);
 //		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 			
 		previousButton.addActionListener(new ActionListener() {
@@ -72,7 +75,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		
 		add(previousButton);
 		
-		JButton nextButton = ViewerUtil.createButton("1rightarrow", "\u21E8");
+		JButton nextButton = ViewerUtil.createButton("X1rightarrow", "\u21E8");
 		nextButton.setFont(historyButtonFont);
 		nextButton.addActionListener(new ActionListener() {
 			
@@ -93,7 +96,9 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			previousSearchTerm = searchTerm;
 			searchResultIndex = 0;
 		}
-		if (searchResultIndex < 0 || searchResultIndex >= searchResults.size()) {
+		if (searchResultIndex < 0) {
+			searchResultIndex = searchResults.size() - 1;
+		} else if (searchResultIndex >= searchResults.size()) {
 			searchResultIndex = 0;
 		}
 		if (! searchResults.isEmpty()) {
@@ -104,9 +109,11 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 	}
 	
 	private void addSearchButtons() {
-		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
-		JButton previousButton = ViewerUtil.createButton("", "\u21E6");
-//		previousButton.setFont(historyButtonFont);
+		JPanel searchForm = new JPanel(new BorderLayout());
+		searchForm.setPreferredSize(new Dimension(200, 28));
+		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 20);
+		JButton previousButton = ViewerUtil.createButton("", "\u25C1");
+		previousButton.setFont(historyButtonFont);
 //		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 			
 		previousButton.addActionListener(new ActionListener() {
@@ -117,11 +124,12 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			}
 		});
 		
-		add(previousButton);
+		searchForm.add(previousButton, BorderLayout.WEST);
+
 		searchField = new JTextField();
-		add(searchField);
-		
-		JButton nextButton = ViewerUtil.createButton("", "\u21E8");
+		searchForm.add(searchField, BorderLayout.CENTER);
+		searchField.setMinimumSize(new Dimension(100, 20));
+		JButton nextButton = ViewerUtil.createButton("", "\u25B7");
 		nextButton.setFont(historyButtonFont);
 		nextButton.addActionListener(new ActionListener() {
 			
@@ -130,7 +138,8 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 				doSearch(1);
 			}
 		});
-		add(nextButton);
+		searchForm.add(nextButton, BorderLayout.EAST);
+		add(searchForm);
 	}
 
 	@Override
