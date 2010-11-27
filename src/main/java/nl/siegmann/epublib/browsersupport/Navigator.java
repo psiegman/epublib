@@ -110,6 +110,9 @@ public class Navigator {
 		return gotoSection(book.getSpine().findFirstResourceById(resourceId), source);
 	}
 	
+	public int gotoSection(int newSpinePos, Object source) {
+		return gotoSection(newSpinePos, 0, source);
+	}
 	
 	/**
 	 * Go to a specific section.
@@ -119,7 +122,7 @@ public class Navigator {
 	 * @param source
 	 * @return
 	 */
-	public int gotoSection(int newSpinePos, Object source) {
+	public int gotoSection(int newSpinePos, int newPagePos, Object source) {
 		if (newSpinePos == currentSpinePos) {
 			return currentSpinePos;
 		}
@@ -128,6 +131,7 @@ public class Navigator {
 		}
 		NavigationEvent navigationEvent = new NavigationEvent(source, this);
 		currentSpinePos = newSpinePos;
+		currentPagePos = newPagePos;
 		currentResource = book.getSpine().getResource(currentSpinePos);
 		handleEventListeners(navigationEvent);
 		return currentSpinePos;

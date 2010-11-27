@@ -19,15 +19,15 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 		private final Navigator navigator;
 
 		public SpineSlider(Navigator navigator) {
+			super(JSlider.HORIZONTAL);
 			this.navigator = navigator;
 			navigator.addNavigationEventListener(this);
+			setPaintLabels(false);
 			addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent evt) {
 					JSlider slider = (JSlider) evt.getSource();
-//			        if (!slider.getValueIsAdjusting()) {
 					int value = slider.getValue();
 					SpineSlider.this.navigator.gotoSection(value, SpineSlider.this);
-//			        }
 				}
 			});
 			initBook(navigator.getBook());
@@ -41,11 +41,20 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 			super.setMaximum(book.getSpine().size() - 1);
 			super.setValue(0);
 //			setPaintTicks(true);
-			
+			updateToolTip();
+		}
+
+		private void updateToolTip() {
+			String tooltip = "";
+			if (navigator.getCurrentSpinePos() >= 0 && navigator.getBook() != null) {
+				tooltip = String.valueOf(navigator.getCurrentSpinePos() + 1) + " / " + navigator.getBook().getSpine().size();
+			}
+			setToolTipText(tooltip);
 		}
 
 		@Override
 		public void navigationPerformed(NavigationEvent navigationEvent) {
+			updateToolTip();
 			if (this == navigationEvent.getSource()) {
 				return;
 			}
