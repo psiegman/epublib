@@ -140,18 +140,6 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 	}
 
 	/**
-	 * Writes the cover resource items.
-	 * 
-	 * @param book
-	 * @param writer
-	 * @throws XMLStreamException
-	 */
-	private static void writeCoverResources(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writeItem(book, book.getCoverImage(), writer);
-		writeItem(book, book.getCoverPage(), writer);
-	}
-
-	/**
 	 * List all spine references
 	 */
 	private static void writeSpineItems(Spine spine, XMLStreamWriter writer) throws XMLStreamException {
