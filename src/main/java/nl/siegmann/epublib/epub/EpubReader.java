@@ -44,12 +44,21 @@ public class EpubReader extends EpubProcessor {
 	}
 	
 	public Book readEpub(InputStream in) throws IOException {
-		return readEpub(new ZipInputStream(in));
+		return readEpub(in, Constants.ENCODING.name());
 	}
 	
 	public Book readEpub(ZipInputStream in) throws IOException {
+		return readEpub(in, Constants.ENCODING.name());
+	}
+	
+	
+	public Book readEpub(InputStream in, String encoding) throws IOException {
+		return readEpub(new ZipInputStream(in), encoding);
+	}
+	
+	public Book readEpub(ZipInputStream in, String encoding) throws IOException {
 		Book result = new Book();
-		Map<String, Resource> resources = readResources(in, Constants.ENCODING);
+		Map<String, Resource> resources = readResources(in, Charset.forName(encoding));
 		handleMimeType(result, resources);
 		String packageResourceHref = getPackageResourceHref(result, resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
@@ -117,8 +126,7 @@ public class EpubReader extends EpubProcessor {
 				continue;
 			}
 			Resource resource = ResourceUtil.createResource(zipEntry, in);
-			if(resource.getMediaType() == MediatypeService.XHTML
-					&& resource.getInputEncoding() == null) {
+			if(resource.getMediaType() == MediatypeService.XHTML) {
 				resource.setInputEncoding(defaultHtmlEncoding);
 			}
 			result.put(resource.getHref(), resource);
