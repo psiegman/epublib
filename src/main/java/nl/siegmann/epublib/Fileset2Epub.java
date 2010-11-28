@@ -35,15 +35,15 @@ public class Fileset2Epub {
 		List<String> authorNames = new ArrayList<String>();
 		String type = "";
 		String isbn = "";
-		String encoding = Constants.ENCODING.name();
+		String inputEncoding = Constants.ENCODING.name();
 
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
 				inputLocation = args[++i];
 			} else if(args[i].equalsIgnoreCase("--out")) {
 				outLocation = args[++i];
-			} else if(args[i].equalsIgnoreCase("--encoding")) {
-				encoding = args[++i];
+			} else if(args[i].equalsIgnoreCase("--input-encoding")) {
+				inputEncoding = args[++i];
 			} else if(args[i].equalsIgnoreCase("--xsl")) {
 				xslFile = args[++i];
 			} else if(args[i].equalsIgnoreCase("--cover-image")) {
@@ -67,13 +67,17 @@ public class Fileset2Epub {
 			epubCleaner.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
 		}
 		
+		if (StringUtils.isBlank(inputEncoding)) {
+			inputEncoding = Constants.ENCODING.name();
+		}
+		
 		Book book;
 		if("chm".equals(type)) {
-			book = ChmParser.parseChm(VFSUtil.resolveFileObject(inputLocation), Charset.forName(encoding));
+			book = ChmParser.parseChm(VFSUtil.resolveFileObject(inputLocation), Charset.forName(inputEncoding));
 		} else if ("epub".equals(type)) {
-			book = new EpubReader().readEpub(VFSUtil.resolveInputStream(inputLocation));
+			book = new EpubReader().readEpub(VFSUtil.resolveInputStream(inputLocation), inputEncoding);
 		} else {
-			book = FilesetBookCreator.createBookFromDirectory(VFSUtil.resolveFileObject(inputLocation), Charset.forName(encoding));
+			book = FilesetBookCreator.createBookFromDirectory(VFSUtil.resolveFileObject(inputLocation), Charset.forName(inputEncoding));
 		}
 		
 		if(StringUtils.isNotBlank(coverImage)) {
@@ -126,7 +130,7 @@ public class Fileset2Epub {
 		System.out.println("usage: " + Fileset2Epub.class.getName() 
 				+ "\n  --author [lastname,firstname]"
 				+ "\n  --cover-image [image to use as cover]"
-				+ "\n  --ecoding [text encoding]  # The encoding of the input html files. If funny characters show"
+				+ "\n  --input-ecoding [text encoding]  # The encoding of the input html files. If funny characters show"
 				+ "\n                             # up in the result try 'iso-8859-1', 'windows-1252' or 'utf-8'"
 				+ "\n                             # If that doesn't work try to find an appropriate one from"
 				+ "\n                             # this list: http://en.wikipedia.org/wiki/Character_encoding"

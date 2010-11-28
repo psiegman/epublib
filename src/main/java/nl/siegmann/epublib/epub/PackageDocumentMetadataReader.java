@@ -141,6 +141,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 			Element identifierElement = (Element) identifierElements.item(i);
 			String schemeName = identifierElement.getAttributeNS(NAMESPACE_OPF, DCAttributes.scheme);
 			String identifierValue = DOMUtil.getTextChild(identifierElement);
+			if (StringUtils.isBlank(identifierValue)) {
+				continue;
+			}
 			Identifier identifier = new Identifier(schemeName, identifierValue);
 			if(identifierElement.getAttribute("id").equals(bookIdId) ) {
 				identifier.setBookId(true);
