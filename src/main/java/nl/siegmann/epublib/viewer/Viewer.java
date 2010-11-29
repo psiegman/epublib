@@ -45,6 +45,7 @@ public class Viewer {
 	static final Logger log = LoggerFactory.getLogger(Viewer.class);
 	private final JFrame mainWindow;
 	private BrowseBar browseBar;
+	private JSplitPane mainSplitPane; 
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private Navigator navigator = new Navigator();
@@ -79,11 +80,14 @@ public class Viewer {
 		leftSplitPane.setTopComponent(new TableOfContentsPane(navigator));
 		leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		leftSplitPane.setOneTouchExpandable(true);
-		leftSplitPane.setDividerLocation(600);
-
+		leftSplitPane.setResizeWeight(0.75);
+		leftSplitPane.setContinuousLayout(true);
+		
 		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
-		rightSplitPane.setDividerLocation(600);
+//		rightSplitPane.setDividerLocation(600);
+		rightSplitPane.setContinuousLayout(true);
+		rightSplitPane.setResizeWeight(0.25);
 		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
@@ -92,14 +96,16 @@ public class Viewer {
 		rightSplitPane.setTopComponent(contentPanel);
 		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
 		
-		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		mainSplitPane.setTopComponent(leftSplitPane);
 		mainSplitPane.setBottomComponent(rightSplitPane);
 		mainSplitPane.setOneTouchExpandable(true);
-//		toc_html_splitPane.setDividerLocation(100);
-		mainSplitPane.setPreferredSize(new Dimension(1000, 750));
-		mainSplitPane.setDividerLocation(200);
+//		mainSplitPane.setDividerLocation(200);
+		mainSplitPane.setResizeWeight(0.75);
+		mainSplitPane.setContinuousLayout(true);
+
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
+		mainPanel.setPreferredSize(new Dimension(1000, 750));
 
 		mainPanel.add(new NavigationBar(navigator), BorderLayout.NORTH);
 		result.add(mainPanel);
@@ -165,7 +171,7 @@ public class Viewer {
 		fileMenu.add(openFileMenuItem);
 
 		JMenuItem saveFileMenuItem = new JMenuItem(getText("Save as ..."));
-		saveFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+		saveFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK | Event.SHIFT_MASK));
 		saveFileMenuItem.addActionListener(new ActionListener() {
 
 			private File previousDir;
@@ -215,6 +221,36 @@ public class Viewer {
 		});
 		fileMenu.add(exitMenuItem);
 		
+		JMenu viewMenu = new JMenu(getText("View"));
+		menuBar.add(viewMenu);
+		
+		JMenuItem viewTocContentMenuItem = new JMenuItem(getText("TOCContent"), ViewerUtil.createImageIcon("layout-toc-content"));
+		viewTocContentMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				setLayout(Layout.TocContent);
+			}
+		});
+		viewMenu.add(viewTocContentMenuItem);
+
+		JMenuItem viewContentMenuItem = new JMenuItem(getText("Content"), ViewerUtil.createImageIcon("layout-content"));
+		viewContentMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				setLayout(Layout.Content);
+			}
+		});
+		viewMenu.add(viewContentMenuItem);
+
+		JMenuItem viewTocContentMetaMenuItem = new JMenuItem(getText("TocContentMeta"), ViewerUtil.createImageIcon("layout-toc-content-meta"));
+		viewTocContentMetaMenuItem.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				setLayout(Layout.TocContentMeta);
+			}
+		});
+		viewMenu.add(viewTocContentMetaMenuItem);
+		
 		JMenu helpMenu = new JMenu(getText("Help"));
 		menuBar.add(helpMenu);
 		JMenuItem aboutMenuItem = new JMenuItem(getText("About"));
@@ -228,7 +264,37 @@ public class Viewer {
 
 		return menuBar;
 	}
+
+	private enum Layout {
+		TocContentMeta,
+		TocContent,
+		Content
+	}
 	
+	private void setLayout(Layout layout) {
+		switch (layout) {
+			case Content:
+				mainSplitPane.setDividerLocation(0);
+				mainSplitPane.getBottomComponent().setVisible(true);
+				mainSplitPane.getTopComponent().setVisible(false);
+				rightSplitPane.getBottomComponent().setVisible(false);
+				rightSplitPane.setDividerLocation(1.0d);
+				break;
+			case TocContent:
+				mainSplitPane.getTopComponent().setVisible(true);
+				mainSplitPane.getBottomComponent().setVisible(true);
+				mainSplitPane.setDividerLocation(200);
+				rightSplitPane.getBottomComponent().setVisible(false);
+				break;
+			case TocContentMeta:
+				mainSplitPane.getTopComponent().setVisible(true);
+				mainSplitPane.getBottomComponent().setVisible(true);
+				mainSplitPane.setDividerLocation(200);
+				rightSplitPane.getTopComponent().setVisible(true);
+				rightSplitPane.getBottomComponent().setVisible(true);
+				rightSplitPane.setDividerLocation(600);
+		}
+	}
 
 	private static InputStream getBookInputStream(String[] args) {
 		// jquery-fundamentals-book.epub

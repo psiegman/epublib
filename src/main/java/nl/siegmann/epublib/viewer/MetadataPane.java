@@ -35,9 +35,8 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 	private JScrollPane scrollPane; 
 
 	public MetadataPane(Navigator navigator) {
-		super(new GridLayout(0, 1));
-		scrollPane = new JScrollPane();
-		this.add(scrollPane);
+		super(new GridLayout(1, 0));
+		this.scrollPane = (JScrollPane) add(new JScrollPane());
 		navigator.addNavigationEventListener(this);
 		initBook(navigator.getBook());
 	}
@@ -53,8 +52,9 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 		JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
 		contentPanel.add(table, BorderLayout.CENTER);
 		setCoverImage(contentPanel, book);
+		
 		scrollPane.getViewport().removeAll();
-		this.scrollPane.getViewport().add(contentPanel);
+		scrollPane.getViewport().add(contentPanel);
 	}
 
 	private void setCoverImage(JPanel contentPanel, Book book) {
@@ -73,7 +73,7 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 			}
 			image = image.getScaledInstance(200, -1, Image.SCALE_SMOOTH);
 			JLabel label = new JLabel(new ImageIcon(image));
-			label.setSize(100, 100);
+//			label.setSize(100, 100);
 			contentPanel.add(label, BorderLayout.NORTH);
 		} catch (IOException e) {
 			log.error("Unable to load cover image from book", e.getMessage());
