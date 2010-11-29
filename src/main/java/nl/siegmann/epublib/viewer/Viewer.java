@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.epub.EpubCleaner;
 import nl.siegmann.epublib.epub.EpubReader;
+import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -161,6 +163,37 @@ public class Viewer {
 			}
 		});
 		fileMenu.add(openFileMenuItem);
+
+		JMenuItem saveFileMenuItem = new JMenuItem(getText("Save as ..."));
+		saveFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+		saveFileMenuItem.addActionListener(new ActionListener() {
+
+			private File previousDir;
+			
+			public void actionPerformed(ActionEvent e) {
+				if (navigator.getBook() == null) {
+					return;
+				}
+				JFileChooser fileChooser = createFileChooser(previousDir);
+				int returnVal = fileChooser.showOpenDialog(mainWindow);
+				if(returnVal != JFileChooser.APPROVE_OPTION) {
+					return;
+				}
+				File selectedFile = fileChooser.getSelectedFile();
+				if (selectedFile == null) {
+					return;
+				}
+				if (! selectedFile.isDirectory()) {
+					previousDir = selectedFile.getParentFile();
+				}
+				try {
+					(new EpubWriter()).write(navigator.getBook(), new FileOutputStream(selectedFile));
+				} catch (Exception e1) {
+					log.error(e1.getMessage(), e1);
+				}
+			}
+		});
+		fileMenu.add(saveFileMenuItem);
 		
 		JMenuItem reloadMenuItem = new JMenuItem(getText("Reload"));
 		reloadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
