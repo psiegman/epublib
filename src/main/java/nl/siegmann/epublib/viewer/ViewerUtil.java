@@ -19,14 +19,23 @@ public class ViewerUtil {
 	// package
 	static JButton createButton(String iconName, String backupLabel) {
 		JButton result = null;
-		try {
-			Image image = ImageIO.read(ViewerUtil.class.getResourceAsStream("/viewer/icons/" + iconName + ".png"));
-			ImageIcon icon = new ImageIcon(image);
-			result = new JButton(icon);
-		} catch(Exception e) {
+		ImageIcon icon = createImageIcon(iconName);
+		if (icon == null) {
 			result = new JButton(backupLabel);
+		} else {
+			result = new JButton(icon);
 		}
 		return result;
 	}
 
+	
+	static ImageIcon createImageIcon(String iconName) {
+		ImageIcon result = null;
+		try {
+			Image image = ImageIO.read(ViewerUtil.class.getResourceAsStream("/viewer/icons/" + iconName + ".png"));
+			result = new ImageIcon(image);
+		} catch(Exception e) {
+		}
+		return result;
+	}
 }
