@@ -57,12 +57,16 @@ public class Navigator {
 	public int gotoFirst(Object source) {
 		return gotoSection(0, source);
 	}
-
+	
 	public int gotoPrevious(Object source) {
+		return gotoPrevious(0, source);
+	}
+	
+	public int gotoPrevious(int pagePos, Object source) {
 		if (currentSpinePos < 0) {
-			return gotoSection(0, source);
+			return gotoSection(0, pagePos, source);
 		} else {
-			return gotoSection(currentSpinePos - 1, source);
+			return gotoSection(currentSpinePos - 1, pagePos, source);
 		}
 	}
 

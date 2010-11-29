@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -62,6 +64,54 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());
+		this.scrollPane.addMouseWheelListener(new MouseWheelListener() {
+			
+			private boolean gotoNextPage = false;
+			private boolean gotoPreviousPage = false;
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+			    int notches = e.getWheelRotation();
+//			    if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+//			    	System.out.println(this.getClass().getName() + "    Scroll type: WHEEL_UNIT_SCROLL");
+//			    	System.out.println(this.getClass().getName() + "    Scroll amount: " + e.getScrollAmount() + " unit increments per notch");
+//			    	System.out.println(this.getClass().getName() + "    Units to scroll: " + e.getUnitsToScroll() + " unit increments");
+//			    	System.out.println(this.getClass().getName() + "    Vertical unit increment: " + scrollPane.getVerticalScrollBar().getUnitIncrement(1) + " pixels");
+//			    } else { //scroll type == MouseWheelEvent.WHEEL_BLOCK_SCROLL
+//			    	System.out.println(this.getClass().getName() + "    Scroll type: WHEEL_BLOCK_SCROLL");
+//			    	System.out.println(this.getClass().getName() + "    Vertical block increment: " + scrollPane.getVerticalScrollBar().getBlockIncrement(1) + " pixels");
+//			    }
+			    int increment = scrollPane.getVerticalScrollBar().getUnitIncrement(1);
+			    if (notches < 0) {
+					Point viewPosition = scrollPane.getViewport().getViewPosition();
+					if (viewPosition.getY() - increment < 0) {
+						if (gotoPreviousPage) {
+							gotoPreviousPage = false;
+							ContentPane.this.navigator.gotoPrevious(-1, ContentPane.this);
+						} else {
+							gotoPreviousPage = true;
+							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), 0));
+						}
+					}
+			    } else {
+			    	// only move to the next page if we are exactly at the bottom of the current page
+			    	Point viewPosition = scrollPane.getViewport().getViewPosition();
+					int viewportHeight = scrollPane.getViewport().getHeight();
+					int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
+					if (viewPosition.getY() + viewportHeight + increment > scrollMax) {
+//						System.out.println(this.getClass() + ": viewY" + viewPosition.getY() + ", viewheight:" + viewportHeight + ", increment:" + increment + ", scrollmax:" + scrollMax + ", gotonext:" + gotoNextPage);
+						if (gotoNextPage) {
+							gotoNextPage = false;
+							ContentPane.this.navigator.gotoNext(ContentPane.this);
+						} else {
+							gotoNextPage = true;
+							int newY = scrollMax - viewportHeight;
+							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+						}
+					}
+			    }
+			  }
+		});
 		this.navigator = navigator;
 		navigator.addNavigationEventListener(this);
 		this.editorPane = createJEditorPane();
@@ -121,9 +171,17 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		try {
 			Document doc = getDocument(resource);
 			editorPane.setDocument(doc);
-			editorPane.setCaretPosition(pagePos);
+			if (pagePos < 0) {
+				editorPane.setCaretPosition(editorPane.getDocument().getLength());
+			} else {
+				editorPane.setCaretPosition(pagePos);
+			}
 			if (pagePos == 0) {
 				scrollPane.getViewport().setViewPosition(new Point(0, 0));
+			} else if (pagePos < 0) {
+				int viewportHeight = scrollPane.getViewport().getHeight();
+				int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
+				scrollPane.getViewport().setViewPosition(new Point(0, scrollMax - viewportHeight));
 			}
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
