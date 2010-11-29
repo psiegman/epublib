@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -61,7 +63,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 
 	private void addHistoryButtons() {
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 24);
-		JButton previousButton = ViewerUtil.createButton("X1leftarrow", "\u21E6");
+		JButton previousButton = ViewerUtil.createButton("history-previous", "<=");
 		previousButton.setFont(historyButtonFont);
 //		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 			
@@ -75,7 +77,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		
 		add(previousButton);
 		
-		JButton nextButton = ViewerUtil.createButton("X1rightarrow", "\u21E8");
+		JButton nextButton = ViewerUtil.createButton("history-next", "=>");
 		nextButton.setFont(historyButtonFont);
 		nextButton.addActionListener(new ActionListener() {
 			
@@ -112,7 +114,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		JPanel searchForm = new JPanel(new BorderLayout());
 		searchForm.setPreferredSize(new Dimension(200, 28));
 		Font historyButtonFont = new Font("SansSerif", Font.BOLD, 20);
-		JButton previousButton = ViewerUtil.createButton("", "\u25C1");
+		JButton previousButton = ViewerUtil.createButton("search-previous", "<");
 		previousButton.setFont(historyButtonFont);
 //		previousButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 			
@@ -127,9 +129,30 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 		searchForm.add(previousButton, BorderLayout.WEST);
 
 		searchField = new JTextField();
-		searchForm.add(searchField, BorderLayout.CENTER);
+//		JPanel searchInput = new JPanel();
+//		searchInput.add(new JLabel(ViewerUtil.createImageIcon("search-icon")));
+//		searchInput.add(searchField);
 		searchField.setMinimumSize(new Dimension(100, 20));
-		JButton nextButton = ViewerUtil.createButton("", "\u25B7");
+		searchField.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent keyEvent) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent keyEvent) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+					doSearch(1);
+				}
+			}
+		});
+//		searchInput.setMinimumSize(new Dimension(140, 20));
+		searchForm.add(searchField, BorderLayout.CENTER);
+		JButton nextButton = ViewerUtil.createButton("search-next", ">");
 		nextButton.setFont(historyButtonFont);
 		nextButton.addActionListener(new ActionListener() {
 			
