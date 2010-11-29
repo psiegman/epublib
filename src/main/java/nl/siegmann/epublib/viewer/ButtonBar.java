@@ -17,12 +17,12 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 class ButtonBar extends JPanel {
 	private static final long serialVersionUID = 6431437924245035812L;
 
-	private JButton startButton = ViewerUtil.createButton("Xstart", "\u007c\u25c0");
-	private JButton previousChapterButton = ViewerUtil.createButton("Xprevious_chapter", "\u25c0\u25c0");
-	private JButton previousPageButton = ViewerUtil.createButton("Xprevious_page", "\u25c0");
-	private JButton nextPageButton = ViewerUtil.createButton("Xnext_page", "\u25B6");
-	private JButton nextChapterButton = ViewerUtil.createButton("Xnext_chapter", "\u25B6\u25B6");
-	private JButton endButton = ViewerUtil.createButton("Xend", "\u25B6\u007C");
+	private JButton startButton = ViewerUtil.createButton("chapter-first", "|<");
+	private JButton previousChapterButton = ViewerUtil.createButton("chapter-previous", "<<");
+	private JButton previousPageButton = ViewerUtil.createButton("page-previous", "<");
+	private JButton nextPageButton = ViewerUtil.createButton("page-next", ">");
+	private JButton nextChapterButton = ViewerUtil.createButton("chapter-next", ">>");
+	private JButton endButton = ViewerUtil.createButton("chapter-last", ">|");
 	private ContentPane chapterPane;
 	private final ValueHolder<Navigator> navigatorHolder = new ValueHolder<Navigator>();
 	
