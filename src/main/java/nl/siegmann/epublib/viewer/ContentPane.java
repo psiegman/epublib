@@ -8,17 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -28,7 +20,6 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -40,7 +31,6 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,13 +47,12 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 
 	private static final Logger log = LoggerFactory
 			.getLogger(ContentPane.class);
-	private ImageLoaderCache imageLoaderCache;
 	private Navigator navigator;
 	private Resource currentResource;
 	private JEditorPane editorPane;
 	private JScrollPane scrollPane;
-	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
-
+	private HTMLDocumentFactory htmlDocumentFactory;
+	
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());
@@ -98,22 +87,13 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 			    int notches = e.getWheelRotation();
-//			    if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-//			    	System.out.println(this.getClass().getName() + "    Scroll type: WHEEL_UNIT_SCROLL");
-//			    	System.out.println(this.getClass().getName() + "    Scroll amount: " + e.getScrollAmount() + " unit increments per notch");
-//			    	System.out.println(this.getClass().getName() + "    Units to scroll: " + e.getUnitsToScroll() + " unit increments");
-//			    	System.out.println(this.getClass().getName() + "    Vertical unit increment: " + scrollPane.getVerticalScrollBar().getUnitIncrement(1) + " pixels");
-//			    } else { //scroll type == MouseWheelEvent.WHEEL_BLOCK_SCROLL
-//			    	System.out.println(this.getClass().getName() + "    Scroll type: WHEEL_BLOCK_SCROLL");
-//			    	System.out.println(this.getClass().getName() + "    Vertical block increment: " + scrollPane.getVerticalScrollBar().getBlockIncrement(1) + " pixels");
-//			    }
 			    int increment = scrollPane.getVerticalScrollBar().getUnitIncrement(1);
 			    if (notches < 0) {
 					Point viewPosition = scrollPane.getViewport().getViewPosition();
 					if (viewPosition.getY() - increment < 0) {
 						if (gotoPreviousPage) {
 							gotoPreviousPage = false;
-							ContentPane.this.navigator.gotoPrevious(-1, ContentPane.this);
+							ContentPane.this.navigator.gotoPreviousSpineSection(-1, ContentPane.this);
 						} else {
 							gotoPreviousPage = true;
 							scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), 0));
@@ -125,10 +105,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 					int viewportHeight = scrollPane.getViewport().getHeight();
 					int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
 					if (viewPosition.getY() + viewportHeight + increment > scrollMax) {
-//						System.out.println(this.getClass() + ": viewY" + viewPosition.getY() + ", viewheight:" + viewportHeight + ", increment:" + increment + ", scrollmax:" + scrollMax + ", gotonext:" + gotoNextPage);
 						if (gotoNextPage) {
 							gotoNextPage = false;
-							ContentPane.this.navigator.gotoNext(ContentPane.this);
+							ContentPane.this.navigator.gotoNextSpineSection(ContentPane.this);
 						} else {
 							gotoNextPage = true;
 							int newY = scrollMax - viewportHeight;
@@ -142,8 +121,18 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		navigator.addNavigationEventListener(this);
 		this.editorPane = createJEditorPane();
 		scrollPane.getViewport().add(editorPane);
+		this.htmlDocumentFactory = new HTMLDocumentFactory(navigator, editorPane.getEditorKit());
 		initBook(navigator.getBook());
 	}
+
+	private void initBook(Book book) {
+		if (book == null) {
+			return;
+		}
+		htmlDocumentFactory.init(book);
+		displayPage(book.getCoverPage());
+	}
+	
 	
 	
 	/**
@@ -237,9 +226,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			@Override
 			public void keyPressed(KeyEvent keyEvent) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
-					navigator.gotoNext(ContentPane.this);
+					navigator.gotoNextSpineSection(ContentPane.this);
 				} else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
-					navigator.gotoPrevious(ContentPane.this);
+					navigator.gotoPreviousSpineSection(ContentPane.this);
 //				} else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
 //					ContentPane.this.gotoPreviousPage();
 				} else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -255,22 +244,22 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		displayPage(resource, 0);
 	}
 
-	public void displayPage(Resource resource, int pagePos) {
+	public void displayPage(Resource resource, int sectionPos) {
 		if (resource == null) {
 			return;
 		}
 		currentResource = resource;
 		try {
-			Document doc = getDocument(resource);
+			Document doc = htmlDocumentFactory.getDocument(resource);
 			editorPane.setDocument(doc);
-			if (pagePos < 0) {
+			if (sectionPos < 0) {
 				editorPane.setCaretPosition(editorPane.getDocument().getLength());
 			} else {
-				editorPane.setCaretPosition(pagePos);
+				editorPane.setCaretPosition(sectionPos);
 			}
-			if (pagePos == 0) {
+			if (sectionPos == 0) {
 				scrollPane.getViewport().setViewPosition(new Point(0, 0));
-			} else if (pagePos < 0) {
+			} else if (sectionPos < 0) {
 				int viewportHeight = scrollPane.getViewport().getHeight();
 				int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
 				scrollPane.getViewport().setViewPosition(new Point(0, scrollMax - viewportHeight));
@@ -297,7 +286,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	public void gotoPreviousPage() {
 		Point viewPosition = scrollPane.getViewport().getViewPosition();
 		if (viewPosition.getY() <= 0) {
-			navigator.gotoPrevious(this);
+			navigator.gotoPreviousSpineSection(this);
 			return;
 		}
 		int viewportHeight = scrollPane.getViewport().getHeight();
@@ -313,7 +302,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		int viewportHeight = scrollPane.getViewport().getHeight();
 		int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
 		if (viewPosition.getY() + viewportHeight >= scrollMax) {
-			navigator.gotoNext(this);
+			navigator.gotoNextSpineSection(this);
 			return;
 		}
 		int newY = ((int) viewPosition.getY()) + viewportHeight;
@@ -321,6 +310,14 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 				new Point((int) viewPosition.getX(), newY));
 	}
 
+	
+	/**
+	 * Transforms a link generated by a click on a link in a document to a resource href.
+	 * Property handles http encoded spaces and such.
+	 * 
+	 * @param clickUrl
+	 * @return
+	 */
 	private String calculateTargetHref(URL clickUrl) {
 		String resourceHref = clickUrl.toString();
 		try {
@@ -344,118 +341,16 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		return resourceHref;
 	}
 
-	private String stripHtml(String input) {
-		String result = removeControlTags(input);
-		result = result.replaceAll(
-				"<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>", "");
-		return result;
-	}
-
-	/**
-	 * Quick and dirty stripper of all &lt;?...&gt; and &lt;!...&gt; tags as
-	 * these confuse the html viewer.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	private static String removeControlTags(String input) {
-		StringBuilder result = new StringBuilder();
-		boolean inControlTag = false;
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-			if (inControlTag) {
-				if (c == '>') {
-					inControlTag = false;
-				}
-			} else if (c == '<' // look for &lt;! or &lt;?
-					&& i < input.length() - 1
-					&& (input.charAt(i + 1) == '!' || input.charAt(i + 1) == '?')) {
-				inControlTag = true;
-			} else {
-				result.append(c);
-			}
-		}
-		return result.toString();
-	}
-
-	private void initBook(Book book) {
-		if (book == null) {
-			return;
-		}
-		documentCache.clear();
-		displayPage(book.getCoverPage());
-		fillDocumentCache(book);
-	}
-
-	private HTMLDocument getDocument(Resource resource) throws IOException,
-			BadLocationException {
-		HTMLDocument document = documentCache.get(resource.getHref());
-		if (document != null) {
-			return document;
-		}
-		
-		document = createDocument(resource);
-		initImageLoader(document);
-		documentCache.put(resource.getHref(), document);
-		return document;
-	}
-
-
-	private HTMLDocument createDocument(Resource resource) throws IOException, BadLocationException {
-		HTMLDocument document = (HTMLDocument) editorPane.getEditorKit().createDefaultDocument();
-		String pageContent = IOUtils.toString(resource.getReader());
-		pageContent = stripHtml(pageContent);
-		document.remove(0, document.getLength());
-		Reader contentReader = new StringReader(pageContent);
-		EditorKit kit = editorPane.getEditorKit();
-		kit.read(contentReader, document, 0);
-		return document;
-	}
-	
-	
-	private void fillDocumentCache(Book book) {
-		if (book == null) {
-			return;
-		}
-		for (Resource resource: book.getResources().getAll()) {
-			HTMLDocument document;
-			try {
-				document = createDocument(resource);
-				documentCache.put(resource.getHref(), document);
-			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-		}
-	}
-
 	
 	public void navigationPerformed(NavigationEvent navigationEvent) {
 		if (navigationEvent.isResourceChanged()) {
 			displayPage(navigationEvent.getCurrentResource(),
-					navigationEvent.getCurrentPagePos());
-		} else if (navigationEvent.isPagePosChanged()) {
-			editorPane.setCaretPosition(navigationEvent.getCurrentPagePos());
+					navigationEvent.getCurrentSectionPos());
+		} else if (navigationEvent.isSectionPosChanged()) {
+			editorPane.setCaretPosition(navigationEvent.getCurrentSectionPos());
 		}
 		if (StringUtils.isNotBlank(navigationEvent.getCurrentFragmentId())) {
 			scrollToNamedAnchor(navigationEvent.getCurrentFragmentId());
 		}
 	}
-
-	private void initImageLoader(HTMLDocument document) {
-		try {
-			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
-		} catch (MalformedURLException e) {
-			log.error(e.getMessage());
-		}
-		Dictionary cache = (Dictionary) document.getProperty("imageCache");
-		if (cache == null) {
-			cache = new Hashtable();
-		}
-		if (imageLoaderCache == null) {
-			imageLoaderCache = new ImageLoaderCache(navigator, cache);
-		}
-		imageLoaderCache.setContextResource(navigator.getCurrentResource());
-		document.getDocumentProperties().put("imageCache", imageLoaderCache);
-	}
-
 }

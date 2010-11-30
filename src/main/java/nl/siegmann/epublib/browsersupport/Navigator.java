@@ -54,35 +54,35 @@ public class Navigator {
 		return this.eventListeners.remove(navigationEventListener);
 	}
 	
-	public int gotoFirst(Object source) {
-		return gotoSection(0, source);
+	public int gotoFirstSpineSection(Object source) {
+		return gotoSpineSection(0, source);
 	}
 	
-	public int gotoPrevious(Object source) {
-		return gotoPrevious(0, source);
+	public int gotoPreviousSpineSection(Object source) {
+		return gotoPreviousSpineSection(0, source);
 	}
 	
-	public int gotoPrevious(int pagePos, Object source) {
+	public int gotoPreviousSpineSection(int pagePos, Object source) {
 		if (currentSpinePos < 0) {
-			return gotoSection(0, pagePos, source);
+			return gotoSpineSection(0, pagePos, source);
 		} else {
-			return gotoSection(currentSpinePos - 1, pagePos, source);
+			return gotoSpineSection(currentSpinePos - 1, pagePos, source);
 		}
 	}
 
-	public boolean hasNext() {
+	public boolean hasNextSpineSection() {
 		return (currentSpinePos < (book.getSpine().size() - 1));
 	}
 	
-	public boolean hasPrevious() {
+	public boolean hasPreviousSpineSection() {
 		return (currentSpinePos > 0);
 	}
 	
-	public int gotoNext(Object source) {
+	public int gotoNextSpineSection(Object source) {
 		if (currentSpinePos < 0) {
-			return gotoSection(0, source);
+			return gotoSpineSection(0, source);
 		} else {
-			return gotoSection(currentSpinePos + 1, source);
+			return gotoSpineSection(currentSpinePos + 1, source);
 		}
 	}
 
@@ -119,11 +119,11 @@ public class Navigator {
 	}
 	
 	public int gotoResourceId(String resourceId, Object source) {
-		return gotoSection(book.getSpine().findFirstResourceById(resourceId), source);
+		return gotoSpineSection(book.getSpine().findFirstResourceById(resourceId), source);
 	}
 	
-	public int gotoSection(int newSpinePos, Object source) {
-		return gotoSection(newSpinePos, 0, source);
+	public int gotoSpineSection(int newSpinePos, Object source) {
+		return gotoSpineSection(newSpinePos, 0, source);
 	}
 	
 	/**
@@ -134,7 +134,7 @@ public class Navigator {
 	 * @param source
 	 * @return
 	 */
-	public int gotoSection(int newSpinePos, int newPagePos, Object source) {
+	public int gotoSpineSection(int newSpinePos, int newPagePos, Object source) {
 		if (newSpinePos == currentSpinePos) {
 			return currentSpinePos;
 		}
@@ -149,8 +149,8 @@ public class Navigator {
 		return currentSpinePos;
 	}
 
-	public int gotoLast(Object source) {
-		return gotoSection(book.getSpine().size() - 1, source);
+	public int gotoLastSpineSection(Object source) {
+		return gotoSpineSection(book.getSpine().size() - 1, source);
 	}
 	
 	public void gotoBook(Book book, Object source) {
@@ -210,7 +210,7 @@ public class Navigator {
 		return currentFragmentId;
 	}
 	
-	public int getCurrentPagePos() {
+	public int getCurrentSectionPos() {
 		return currentPagePos;
 	}
 }

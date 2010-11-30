@@ -29,19 +29,19 @@ public class NavigationHistoryTest extends TestCase {
 			resourcesByHref.put(mockResource.getHref(), mockResource);
 		}
 		
-		public int gotoFirst(Object source) {
+		public int gotoFirstSpineSection(Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public int gotoPrevious(Object source) {
+		public int gotoPreviousSpineSection(Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public boolean hasNext() {
+		public boolean hasNextSpineSection() {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public boolean hasPrevious() {
+		public boolean hasPreviousSpineSection() {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public int gotoNext(Object source) {
+		public int gotoNextSpineSection(Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
 		public int gotoResource(String resourceHref, Object source) {
@@ -58,10 +58,10 @@ public class NavigationHistoryTest extends TestCase {
 		public int gotoResourceId(String resourceId, Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public int gotoSection(int newIndex, Object source) {
+		public int gotoSpineSection(int newIndex, Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
-		public int gotoLast(Object source) {
+		public int gotoLastSpineSection(Object source) {
 			throw new UnsupportedOperationException("Method not supported in mock implementation");
 		}
 		public int getCurrentSpinePos() {
