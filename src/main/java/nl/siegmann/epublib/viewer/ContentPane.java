@@ -343,14 +343,18 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 
 	
 	public void navigationPerformed(NavigationEvent navigationEvent) {
-		if (navigationEvent.isResourceChanged()) {
+		if (navigationEvent.isBookChanged()) {
+			initBook(navigationEvent.getCurrentBook());
+		} else {
+			if (navigationEvent.isResourceChanged()) {
 			displayPage(navigationEvent.getCurrentResource(),
 					navigationEvent.getCurrentSectionPos());
-		} else if (navigationEvent.isSectionPosChanged()) {
-			editorPane.setCaretPosition(navigationEvent.getCurrentSectionPos());
-		}
-		if (StringUtils.isNotBlank(navigationEvent.getCurrentFragmentId())) {
-			scrollToNamedAnchor(navigationEvent.getCurrentFragmentId());
+			} else if (navigationEvent.isSectionPosChanged()) {
+				editorPane.setCaretPosition(navigationEvent.getCurrentSectionPos());
+			}
+			if (StringUtils.isNotBlank(navigationEvent.getCurrentFragmentId())) {
+				scrollToNamedAnchor(navigationEvent.getCurrentFragmentId());
+			}
 		}
 	}
 }

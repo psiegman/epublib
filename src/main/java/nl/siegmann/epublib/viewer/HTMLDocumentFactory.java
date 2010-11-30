@@ -3,11 +3,7 @@ package nl.siegmann.epublib.viewer;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.text.BadLocationException;
@@ -17,6 +13,7 @@ import javax.swing.text.html.HTMLDocument;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -36,12 +33,11 @@ public class HTMLDocumentFactory {
 	
 	private ImageLoaderCache imageLoaderCache;
 	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
-	private Navigator navigator;
 	private EditorKit editorKit;
 
 	public HTMLDocumentFactory(Navigator navigator, EditorKit editorKit) {
-		this.navigator = navigator;
 		this.editorKit = editorKit;
+		this.imageLoaderCache = new ImageLoaderCache(navigator);
 		init(navigator.getBook());
 	}
 
@@ -49,21 +45,18 @@ public class HTMLDocumentFactory {
 		if (book == null) {
 			return;
 		}
-		imageLoaderCache = null;
-		documentCache.clear();
+		imageLoaderCache.initBook(book);
 		fillDocumentCache(book);
 	}
 
 	public HTMLDocument getDocument(Resource resource) throws IOException,
 		BadLocationException {
 		HTMLDocument document = documentCache.get(resource.getHref());
-		if (document != null) {
-			return document;
+		if (document == null) {
+			document = createDocument(resource);
+			documentCache.put(resource.getHref(), document);
 		}
-		
-		document = createDocument(resource);
-		initImageLoader(document);
-		documentCache.put(resource.getHref(), document);
+		imageLoaderCache.initImageLoader(document);
 		return document;
 	}
 
@@ -102,6 +95,9 @@ public class HTMLDocumentFactory {
 	}
 
 	private HTMLDocument createDocument(Resource resource) throws IOException, BadLocationException {
+		if (resource.getMediaType() != MediatypeService.XHTML) {
+			return null;
+		}
 		HTMLDocument document = (HTMLDocument) editorKit.createDefaultDocument();
 		String pageContent = IOUtils.toString(resource.getReader());
 		pageContent = stripHtml(pageContent);
@@ -116,34 +112,20 @@ public class HTMLDocumentFactory {
 		if (book == null) {
 			return;
 		}
+		documentCache.clear();
 		for (Resource resource: book.getResources().getAll()) {
 			HTMLDocument document;
 			try {
 				document = createDocument(resource);
-				documentCache.put(resource.getHref(), document);
+				if (document != null) {
+					documentCache.put(resource.getHref(), document);
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
 		}
 	}
 
-
-	private void initImageLoader(HTMLDocument document) {
-		try {
-			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
-		} catch (MalformedURLException e) {
-			log.error(e.getMessage());
-		}
-		Dictionary cache = (Dictionary) document.getProperty("imageCache");
-		if (cache == null) {
-			cache = new Hashtable();
-		}
-		if (imageLoaderCache == null) {
-			imageLoaderCache = new ImageLoaderCache(navigator, cache);
-		}
-		imageLoaderCache.setContextResource(navigator.getCurrentResource());
-		document.getDocumentProperties().put("imageCache", imageLoaderCache);
-	}
 
 
 }

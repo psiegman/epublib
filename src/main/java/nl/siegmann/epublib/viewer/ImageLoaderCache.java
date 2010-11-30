@@ -2,14 +2,15 @@ package nl.siegmann.epublib.viewer;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
+import javax.swing.text.html.HTMLDocument;
 
-import nl.siegmann.epublib.browsersupport.NavigationEvent;
-import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -28,28 +29,28 @@ import org.slf4j.LoggerFactory;
  * @author paul
  *
  */
-class ImageLoaderCache extends Dictionary implements NavigationEventListener {
+class ImageLoaderCache extends Dictionary {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";
 
 	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
 	
-	private Dictionary dictionary;
+	private Hashtable cache = new Hashtable();
 	private Book book;
 	private String currentFolder = "";
-	private Resource contextResource;
+	private Navigator navigator;
 	
-	public ImageLoaderCache(Navigator navigator, Dictionary dictionary) {
-		this.dictionary = dictionary;
-		navigator.addNavigationEventListener(this);
+	public ImageLoaderCache(Navigator navigator) {
+		this.navigator = navigator;
 		initBook(navigator.getBook());
 	}
 	
-	private void initBook(Book book) {
+	public void initBook(Book book) {
 		if (book == null) {
 			return;
 		}
 		this.book = book;
+		cache.clear();
 	}
 
 	public void setContextResource(Resource resource) {
@@ -59,16 +60,27 @@ class ImageLoaderCache extends Dictionary implements NavigationEventListener {
 		if (StringUtils.isNotBlank(resource.getHref())) {
 			int lastSlashPos = resource.getHref().lastIndexOf('/');
 			if (lastSlashPos >= 0) {
-				setCurrentFolder(resource.getHref().substring(0, lastSlashPos + 1));
+				this.currentFolder = resource.getHref().substring(0, lastSlashPos + 1);
 			}
 		}
 	}
+
+	public void initImageLoader(HTMLDocument document) {
+		try {
+			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
+		} catch (MalformedURLException e) {
+			log.error(e.getMessage());
+		}
+		setContextResource(navigator.getCurrentResource());
+		document.getDocumentProperties().put("imageCache", this);
+	}
+
 
 	public Object get(Object key) {
 		if (book == null) {
 			return null;
 		}
-		Image result = (Image) dictionary.get(key);
+		Image result = (Image) cache.get(key);
 		if (result != null) {
 			return result;
 		}
@@ -81,7 +93,7 @@ class ImageLoaderCache extends Dictionary implements NavigationEventListener {
 		}
 		try {
 			result = ImageIO.read(imageResource.getInputStream());
-			dictionary.put(key, result);
+			cache.put(key, result);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -89,53 +101,38 @@ class ImageLoaderCache extends Dictionary implements NavigationEventListener {
 	}
 
 	public int size() {
-		return dictionary.size();
+		return cache.size();
 	}
 
 	public boolean isEmpty() {
-		return dictionary.isEmpty();
+		return cache.isEmpty();
 	}
 
 	public int hashCode() {
-		return dictionary.hashCode();
+		return cache.hashCode();
 	}
 
 	public Enumeration keys() {
-		return dictionary.keys();
+		return cache.keys();
 	}
 
 	public Enumeration elements() {
-		return dictionary.elements();
+		return cache.elements();
 	}
 
 	public boolean equals(Object obj) {
-		return dictionary.equals(obj);
+		return cache.equals(obj);
 	}
 
 	public Object put(Object key, Object value) {
-		return dictionary.put(key, value);
+		return cache.put(key, value);
 	}
 
 	public Object remove(Object key) {
-		return dictionary.remove(key);
+		return cache.remove(key);
 	}
 
 	public String toString() {
-		return dictionary.toString();
-	}
-
-	public String getCurrentFolder() {
-		return currentFolder;
-	}
-
-	public void setCurrentFolder(String currentFolder) {
-		this.currentFolder = currentFolder;
-	}
-
-	@Override
-	public void navigationPerformed(NavigationEvent navigationEvent) {
-		if (navigationEvent.isBookChanged()) {
-			initBook(navigationEvent.getCurrentBook());
-		}
+		return cache.toString();
 	}
 }
