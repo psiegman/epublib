@@ -38,6 +38,7 @@ public class GuidePane extends JScrollPane implements NavigationEventListener {
 		JTable table = new JTable(
 				createTableData(navigator.getBook().getGuide()),
 				new String[] {"", ""});
+		table.setEnabled(false);
 		table.setFillsViewportHeight(true);
 		getViewport().add(table);
 	}

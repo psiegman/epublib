@@ -48,6 +48,7 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 		JTable table = new JTable(
 				createTableData(book.getMetadata()),
 				new String[] {"", ""});
+		table.setEnabled(false);
 		table.setFillsViewportHeight(true);
 		JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
 		contentPanel.add(table, BorderLayout.CENTER);
