@@ -93,10 +93,18 @@ public class Navigator {
 	
 	
 	public int gotoResource(Resource resource, Object source) {
-		return gotoResource(resource, 0, source);
+		return gotoResource(resource, 0, null, source);
+	}
+
+	public int gotoResource(Resource resource, String fragmentId, Object source) {
+		return gotoResource(resource, 0, fragmentId, source);
 	}
 	
 	public int gotoResource(Resource resource, int pagePos, Object source) {
+		return gotoResource(resource, pagePos, null, source);
+	}
+
+	public int gotoResource(Resource resource, int pagePos, String fragmentId, Object source) {
 		if (resource == null) {
 			return -1;
 		}
@@ -104,7 +112,7 @@ public class Navigator {
 		this.currentResource = resource;
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
 		this.currentPagePos = pagePos;
-		this.currentFragmentId = null;
+		this.currentFragmentId = fragmentId;
 		handleEventListeners(navigationEvent);
 		
 		return currentSpinePos;

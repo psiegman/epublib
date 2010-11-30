@@ -10,8 +10,6 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -74,7 +72,7 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 			this.tocReference = tocReference;
 		}
 		
-		public TOCReference getTOReference() {
+		public TOCReference getTOCReference() {
 			return tocReference;
 		}
 
@@ -157,7 +155,7 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 			public void mouseClicked(MouseEvent me) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				TOCItem tocItem = (TOCItem) node.getUserObject();
-				navigator.gotoResource(tocItem.getTOReference().getResource(), TableOfContentsPane.this);
+				navigator.gotoResource(tocItem.getTOCReference().getResource(), tocItem.getTOCReference().getFragmentId(), TableOfContentsPane.this);
 			}
 		});
 
