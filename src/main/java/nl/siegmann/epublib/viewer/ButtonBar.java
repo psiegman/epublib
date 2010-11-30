@@ -54,14 +54,14 @@ class ButtonBar extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				navigatorHolder.getValue().gotoFirst(ButtonBar.this);
+				navigatorHolder.getValue().gotoFirstSpineSection(ButtonBar.this);
 			}
 		});
 		previousChapterButton.addActionListener(new ActionListener() {
 						
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				navigatorHolder.getValue().gotoPrevious(ButtonBar.this);
+				navigatorHolder.getValue().gotoPreviousSpineSection(ButtonBar.this);
 			}
 		});
 		previousPageButton.addActionListener(new ActionListener() {
@@ -83,7 +83,7 @@ class ButtonBar extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				navigatorHolder.getValue().gotoNext(ButtonBar.this);
+				navigatorHolder.getValue().gotoNextSpineSection(ButtonBar.this);
 			}
 		});
 
@@ -91,7 +91,7 @@ class ButtonBar extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				navigatorHolder.getValue().gotoLast(ButtonBar.this);
+				navigatorHolder.getValue().gotoLastSpineSection(ButtonBar.this);
 			}
 		});
 	}

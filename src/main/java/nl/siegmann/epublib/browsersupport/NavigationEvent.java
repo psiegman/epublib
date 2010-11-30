@@ -22,7 +22,7 @@ public class NavigationEvent extends EventObject {
 	private int oldSpinePos;
 	private Navigator navigator;
 	private Book oldBook;
-	private int oldPagePos;
+	private int oldSectionPos;
 	private String oldFragmentId;
 	
 	public NavigationEvent(Object source) {
@@ -34,21 +34,18 @@ public class NavigationEvent extends EventObject {
 		this.navigator = navigator;
 		this.oldBook = navigator.getBook();
 		this.oldFragmentId = navigator.getCurrentFragmentId();
-		this.oldPagePos = navigator.getCurrentPagePos();
+		this.oldSectionPos = navigator.getCurrentSectionPos();
 		this.oldResource = navigator.getCurrentResource();
 		this.oldSpinePos = navigator.getCurrentSpinePos();
 	}
 
-	public NavigationEvent(Object source, Book oldBook, int oldPagePos, int oldPosition, Resource oldResource, Navigator navigator) {
-		super(source);
-		this.oldBook = oldBook;
-		this.oldSpinePos = oldPosition;
-		this.oldResource = oldResource;
-		this.navigator = navigator;
-	}
-
-	public int getOldPagePos() {
-		return oldPagePos;
+	/**
+	 * The previous position within the section.
+	 * 
+	 * @return
+	 */
+	public int getOldSectionPos() {
+		return oldSectionPos;
 	}
 	
 	public Navigator getNavigator() {
@@ -70,11 +67,11 @@ public class NavigationEvent extends EventObject {
 
 	// package
 	void setOldPagePos(int oldPagePos) {
-		this.oldPagePos = oldPagePos;
+		this.oldSectionPos = oldPagePos;
 	}
 
-	public int getCurrentPagePos() {
-		return navigator.getCurrentPagePos();
+	public int getCurrentSectionPos() {
+		return navigator.getCurrentSectionPos();
 	}
 	
 	public int getOldSpinePos() {
@@ -140,12 +137,12 @@ public class NavigationEvent extends EventObject {
 	
 	public String toString() {
 		return new ToStringBuilder(this).
-			append("oldPagePos", oldPagePos).
+			append("oldSectionPos", oldSectionPos).
 			append("oldResource", oldResource).
 			append("oldBook", oldBook).
 			append("oldFragmentId", oldFragmentId).
 			append("oldSpinePos", oldSpinePos).
-			append("currentPagePos", getCurrentPagePos()).
+			append("currentPagePos", getCurrentSectionPos()).
 			append("currentResource", getCurrentResource()).
 			append("currentBook", getCurrentBook()).
 			append("currentFragmentId", getCurrentFragmentId()).
@@ -153,7 +150,7 @@ public class NavigationEvent extends EventObject {
 		toString();
 	}
 
-	public boolean isPagePosChanged() {
-		return oldPagePos != getCurrentPagePos();
+	public boolean isSectionPosChanged() {
+		return oldSectionPos != getCurrentSectionPos();
 	}
 }

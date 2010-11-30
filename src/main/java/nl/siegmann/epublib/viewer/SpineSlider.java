@@ -27,7 +27,7 @@ class SpineSlider extends JSlider implements NavigationEventListener {
 				public void stateChanged(ChangeEvent evt) {
 					JSlider slider = (JSlider) evt.getSource();
 					int value = slider.getValue();
-					SpineSlider.this.navigator.gotoSection(value, SpineSlider.this);
+					SpineSlider.this.navigator.gotoSpineSection(value, SpineSlider.this);
 				}
 			});
 			initBook(navigator.getBook());
