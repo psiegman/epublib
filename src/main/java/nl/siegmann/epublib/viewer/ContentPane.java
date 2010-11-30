@@ -3,6 +3,7 @@ package nl.siegmann.epublib.viewer;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
@@ -24,9 +25,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -64,6 +67,29 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	public ContentPane(Navigator navigator) {
 		super(new GridLayout(1, 0));
 		this.scrollPane = (JScrollPane) add(new JScrollPane());
+		this.scrollPane.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					Point viewPosition = scrollPane.getViewport().getViewPosition();
+					int newY = (int) (viewPosition.getY() + 10);
+					scrollPane.getViewport().setViewPosition(new Point((int) viewPosition.getX(), newY));
+				}
+			}
+		});
 		this.scrollPane.addMouseWheelListener(new MouseWheelListener() {
 			
 			private boolean gotoNextPage = false;
@@ -118,6 +144,70 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		scrollPane.getViewport().add(editorPane);
 		initBook(navigator.getBook());
 	}
+	
+	
+	/**
+	 * Whether the given searchString matches any of the possibleValues.
+	 * 
+	 * @param searchString
+	 * @param possibleValues
+	 * @return
+	 */
+	private static boolean matchesAny(String searchString, String... possibleValues) {
+		for (int i = 0; i < possibleValues.length; i++) {
+			String attributeValue = possibleValues[i];
+			if (StringUtils.isNotBlank(attributeValue) && (attributeValue.equals(searchString))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Scrolls the editorPane to the startOffset of the current element in the elementIterator
+	 * 
+	 * @param requestFragmentId
+	 * @param attributeValue
+	 * @param editorPane
+	 * @param elementIterator
+	 * 
+	 * @return whether it was a match and we jumped there.
+	 */
+	private static void scrollToElement(JEditorPane editorPane, HTMLDocument.Iterator elementIterator) {
+		try {
+			Rectangle rectangle = editorPane.modelToView(elementIterator.getStartOffset());
+			if (rectangle == null) {
+				return;
+			}
+			// the view is visible, scroll it to the
+			// center of the current visible area.
+			Rectangle visibleRectangle = editorPane.getVisibleRect();
+			// r.y -= (vis.height / 2);
+			rectangle.height = visibleRectangle.height;
+			editorPane.scrollRectToVisible(rectangle);
+		} catch (BadLocationException e) {
+			log.error(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Scrolls the editorPane to the first anchor element whose id or name matches the given fragmentId.
+	 * 
+	 * @param fragmentId
+	 */
+	private void scrollToNamedAnchor(String fragmentId) {
+		HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
+		for (HTMLDocument.Iterator iter = doc.getIterator(HTML.Tag.A); iter.isValid(); iter.next()) {
+			AttributeSet attributes = iter.getAttributes();
+			if (matchesAny(fragmentId, (String) attributes.getAttribute(HTML.Attribute.NAME),
+					(String) attributes.getAttribute(HTML.Attribute.ID))) {
+				scrollToElement(editorPane, iter);
+				break;
+			}
+		}
+	}
 
 	private JEditorPane createJEditorPane() {
 		JEditorPane editorPane = new JEditorPane();
@@ -131,17 +221,11 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		// myStyleSheet.addRule("div {" + normalTextStyle + "}");
 		// htmlKit.setStyleSheet(myStyleSheet);
 		editorPane.setEditorKit(htmlKit);
-
-		// editorPane.setContentType("text/html");
 		editorPane.addHyperlinkListener(this);
 		editorPane.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent keyEvent) {
-				// TODO Auto-generated method stub
-				if (keyEvent.getKeyChar() == ' ') {
-					ContentPane.this.gotoNextPage();
-				}
 			}
 
 			@Override
@@ -151,9 +235,17 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			}
 
 			@Override
-			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
-
+			public void keyPressed(KeyEvent keyEvent) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
+					navigator.gotoNext(ContentPane.this);
+				} else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
+					navigator.gotoPrevious(ContentPane.this);
+//				} else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
+//					ContentPane.this.gotoPreviousPage();
+				} else if (keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+//					|| (keyEvent.getKeyCode() == KeyEvent.VK_DOWN)) {
+					ContentPane.this.gotoNextPage();
+				}
 			}
 		});
 		return editorPane;
@@ -343,6 +435,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 					navigationEvent.getCurrentPagePos());
 		} else if (navigationEvent.isPagePosChanged()) {
 			editorPane.setCaretPosition(navigationEvent.getCurrentPagePos());
+		}
+		if (StringUtils.isNotBlank(navigationEvent.getCurrentFragmentId())) {
+			scrollToNamedAnchor(navigationEvent.getCurrentFragmentId());
 		}
 	}
 
