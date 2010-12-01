@@ -158,7 +158,7 @@ public class Navigator {
 		this.book = book;
 		this.currentFragmentId = null;
 		this.currentPagePos = 0;
-		currentResource = null;
+		this.currentResource = null;
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);
 		handleEventListeners(navigationEvent);
 	}
