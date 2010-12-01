@@ -80,36 +80,35 @@ public class Viewer {
 		leftSplitPane.setTopComponent(new TableOfContentsPane(navigator));
 		leftSplitPane.setBottomComponent(new GuidePane(navigator));
 		leftSplitPane.setOneTouchExpandable(true);
-		leftSplitPane.setResizeWeight(0.75);
 		leftSplitPane.setContinuousLayout(true);
+		leftSplitPane.setResizeWeight(0.8);
 		
 		rightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		rightSplitPane.setOneTouchExpandable(true);
-//		rightSplitPane.setDividerLocation(600);
 		rightSplitPane.setContinuousLayout(true);
-		rightSplitPane.setResizeWeight(0.25);
+		rightSplitPane.setResizeWeight(1.0);
 		ContentPane htmlPane = new ContentPane(navigator);
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.add(htmlPane, BorderLayout.CENTER);
 		this.browseBar = new BrowseBar(navigator, htmlPane);
 		contentPanel.add(browseBar, BorderLayout.SOUTH);
-		rightSplitPane.setTopComponent(contentPanel);
-		rightSplitPane.setBottomComponent(new MetadataPane(navigator));
+		rightSplitPane.setLeftComponent(contentPanel);
+		rightSplitPane.setRightComponent(new MetadataPane(navigator));
 		
 		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		mainSplitPane.setTopComponent(leftSplitPane);
-		mainSplitPane.setBottomComponent(rightSplitPane);
+		mainSplitPane.setLeftComponent(leftSplitPane);
+		mainSplitPane.setRightComponent(rightSplitPane);
 		mainSplitPane.setOneTouchExpandable(true);
-//		mainSplitPane.setDividerLocation(200);
-		mainSplitPane.setResizeWeight(0.75);
 		mainSplitPane.setContinuousLayout(true);
-
+		mainSplitPane.setResizeWeight(0.0);
+		
 		mainPanel.add(mainSplitPane, BorderLayout.CENTER);
 		mainPanel.setPreferredSize(new Dimension(1000, 750));
-
 		mainPanel.add(new NavigationBar(navigator), BorderLayout.NORTH);
+
 		result.add(mainPanel);
 		result.pack();
+		setLayout(Layout.TocContentMeta);
 		result.setVisible(true);
 		return result;	}
 	
@@ -225,6 +224,7 @@ public class Viewer {
 		menuBar.add(viewMenu);
 		
 		JMenuItem viewTocContentMenuItem = new JMenuItem(getText("TOCContent"), ViewerUtil.createImageIcon("layout-toc-content"));
+		viewTocContentMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, Event.CTRL_MASK));
 		viewTocContentMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -234,6 +234,7 @@ public class Viewer {
 		viewMenu.add(viewTocContentMenuItem);
 
 		JMenuItem viewContentMenuItem = new JMenuItem(getText("Content"), ViewerUtil.createImageIcon("layout-content"));
+		viewContentMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, Event.CTRL_MASK));
 		viewContentMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -243,6 +244,7 @@ public class Viewer {
 		viewMenu.add(viewContentMenuItem);
 
 		JMenuItem viewTocContentMetaMenuItem = new JMenuItem(getText("TocContentMeta"), ViewerUtil.createImageIcon("layout-toc-content-meta"));
+		viewTocContentMetaMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, Event.CTRL_MASK));
 		viewTocContentMetaMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -270,29 +272,27 @@ public class Viewer {
 		TocContent,
 		Content
 	}
-	
+
+	private class LayoutX {
+		private boolean tocPaneVisible;
+		private boolean contentPaneVisible;
+		private boolean metaPaneVisible;
+		
+	}
 	private void setLayout(Layout layout) {
 		switch (layout) {
 			case Content:
-				mainSplitPane.setDividerLocation(0);
-				mainSplitPane.getBottomComponent().setVisible(true);
-				mainSplitPane.getTopComponent().setVisible(false);
-				rightSplitPane.getBottomComponent().setVisible(false);
+				mainSplitPane.setDividerLocation(0.0d);
 				rightSplitPane.setDividerLocation(1.0d);
 				break;
 			case TocContent:
-				mainSplitPane.getTopComponent().setVisible(true);
-				mainSplitPane.getBottomComponent().setVisible(true);
-				mainSplitPane.setDividerLocation(200);
-				rightSplitPane.getBottomComponent().setVisible(false);
+				mainSplitPane.setDividerLocation(0.2d);
+				rightSplitPane.setDividerLocation(1.0d);
 				break;
 			case TocContentMeta:
-				mainSplitPane.getTopComponent().setVisible(true);
-				mainSplitPane.getBottomComponent().setVisible(true);
-				mainSplitPane.setDividerLocation(200);
-				rightSplitPane.getTopComponent().setVisible(true);
-				rightSplitPane.getBottomComponent().setVisible(true);
-				rightSplitPane.setDividerLocation(600);
+				mainSplitPane.setDividerLocation(0.2d);
+				rightSplitPane.setDividerLocation(0.6d);
+				break;
 		}
 	}
 
