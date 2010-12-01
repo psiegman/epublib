@@ -17,9 +17,6 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
@@ -37,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -54,7 +52,6 @@ public class NCXDocument {
 	public static final String PREFIX_DTB = "dtb";
 	
 	private static final Logger log = LoggerFactory.getLogger(NCXDocument.class);
-	private static final String NAVMAP_SELECTION_XPATH = PREFIX_NCX + ":" + NCXTags.ncx + "/" + PREFIX_NCX + ":" + NCXTags.navMap + "/" + PREFIX_NCX + ":" + NCXTags.navPoint;
 
 	private interface NCXTags {
 		String ncx = "ncx";
@@ -131,48 +128,66 @@ public class NCXDocument {
 				return;
 			}
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader);
-			XPath xPath = epubReader.getXPathFactory().newXPath();
-			xPath.setNamespaceContext(NCX_DOC_NAMESPACE_CONTEXT);
-		    NodeList navmapNodes = (NodeList) xPath.evaluate(NAVMAP_SELECTION_XPATH, ncxDocument, XPathConstants.NODESET);
-			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navmapNodes, xPath, book));
+			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
+			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-
-	private static List<TOCReference> readTOCReferences(NodeList navpoints, XPath xPath, Book book) throws XPathExpressionException {
+	
+	private static List<TOCReference> readTOCReferences(NodeList navpoints, Book book) {
 		if(navpoints == null) {
 			return new ArrayList<TOCReference>();
 		}
 		List<TOCReference> result = new ArrayList<TOCReference>(navpoints.getLength());
 		for(int i = 0; i < navpoints.getLength(); i++) {
-			TOCReference tocReference = readTOCReference((Element) navpoints.item(i), xPath, book);
+			Node node = navpoints.item(i);
+			if (node.getNodeType() != Document.ELEMENT_NODE) {
+				continue;
+			}
+			if (! (node.getLocalName().equals(NCXTags.navPoint))) {
+				continue;
+			}
+			TOCReference tocReference = readTOCReference((Element) node, book);
 			result.add(tocReference);
 		}
 		return result;
 	}
 
-	private static TOCReference readTOCReference(Element navpointElement, XPath xPath, Book book) throws XPathExpressionException {
-		String name = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.navLabel + "/" + PREFIX_NCX + ":" + NCXTags.text, navpointElement);
-		String completeHref = xPath.evaluate(PREFIX_NCX + ":" + NCXTags.content + "/@" + NCXAttributes.src, navpointElement);
-		try {
-			completeHref = URLDecoder.decode(completeHref, Constants.ENCODING.name());
-		} catch (UnsupportedEncodingException e) {
-			log.error(e.getMessage());
-		}
-		String href = StringUtils.substringBefore(completeHref, Constants.FRAGMENT_SEPARATOR);
-		String fragmentId = StringUtils.substringAfter(completeHref, Constants.FRAGMENT_SEPARATOR);
+	private static TOCReference readTOCReference(Element navpointElement, Book book) {
+		String label = readNavLabel(navpointElement);
+		String reference = readNavReference(navpointElement);
+		String href = StringUtils.substringBefore(reference, Constants.FRAGMENT_SEPARATOR);
+		String fragmentId = StringUtils.substringAfter(reference, Constants.FRAGMENT_SEPARATOR);
 		Resource resource = book.getResources().getByHref(href);
 		if (resource == null) {
 			log.error("Resource with href " + href + " in NCX document not found");
 		}
-		TOCReference result = new TOCReference(name, resource, fragmentId);
-		NodeList childNavpoints = (NodeList) xPath.evaluate("" + PREFIX_NCX + ":" + NCXTags.navPoint, navpointElement, XPathConstants.NODESET);
-		result.setChildren(readTOCReferences(childNavpoints, xPath, book));
+		TOCReference result = new TOCReference(label, resource, fragmentId);
+		readTOCReferences(navpointElement.getChildNodes(), book);
+		result.setChildren(readTOCReferences(navpointElement.getChildNodes(), book));
 		return result;
 	}
 
+	
+	private static String readNavReference(Element navpointElement) {
+		Element contentElement = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.content);
+		String result = DOMUtil.getAttribute(contentElement, NAMESPACE_NCX, NCXAttributes.src);
+		try {
+			result = URLDecoder.decode(result, Constants.ENCODING.name());
+		} catch (UnsupportedEncodingException e) {
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+
+	private static String readNavLabel(Element navpointElement) {
+		Element navLabel = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.navLabel);
+		return DOMUtil.getTextChild(DOMUtil.getFirstElementByTagNameNS(navLabel, NAMESPACE_NCX, NCXTags.text));
+	}
+
+	
 	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
 		resultStream.putNextEntry(new ZipEntry(book.getSpine().getTocResource().getHref()));
 		XMLStreamWriter out = epubWriter.createXMLStreamWriter(resultStream);
