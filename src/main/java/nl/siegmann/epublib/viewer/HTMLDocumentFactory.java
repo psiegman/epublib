@@ -1,12 +1,10 @@
 package nl.siegmann.epublib.viewer;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.text.BadLocationException;
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
 
@@ -46,7 +44,7 @@ public class HTMLDocumentFactory {
 			return;
 		}
 		imageLoaderCache.initBook(book);
-		fillDocumentCache(book);
+		initDocumentCache(book);
 	}
 
 	public HTMLDocument getDocument(Resource resource) {
@@ -117,11 +115,15 @@ public class HTMLDocumentFactory {
 	}
 	
 	
-	private void fillDocumentCache(Book book) {
+	private void initDocumentCache(Book book) {
 		if (book == null) {
 			return;
 		}
 		documentCache.clear();
+//		addAllDocumentsToCache(book);
+	}
+
+	private void addAllDocumentsToCache(Book book) {
 		for (Resource resource: book.getResources().getAll()) {
 			HTMLDocument document;
 			document = createDocument(resource);
@@ -130,7 +132,4 @@ public class HTMLDocumentFactory {
 			}
 		}
 	}
-
-
-
 }
