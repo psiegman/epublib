@@ -49,14 +49,17 @@ public class HTMLDocumentFactory {
 		fillDocumentCache(book);
 	}
 
-	public HTMLDocument getDocument(Resource resource) throws IOException,
-		BadLocationException {
+	public HTMLDocument getDocument(Resource resource) {
 		HTMLDocument document = documentCache.get(resource.getHref());
 		if (document == null) {
 			document = createDocument(resource);
-			documentCache.put(resource.getHref(), document);
+			if (document != null) {
+				documentCache.put(resource.getHref(), document);
+			}
 		}
-		imageLoaderCache.initImageLoader(document);
+		if (document != null) {
+			imageLoaderCache.initImageLoader(document);
+		}
 		return document;
 	}
 
@@ -94,17 +97,23 @@ public class HTMLDocumentFactory {
 		return result.toString();
 	}
 
-	private HTMLDocument createDocument(Resource resource) throws IOException, BadLocationException {
+	private HTMLDocument createDocument(Resource resource) {
+		HTMLDocument result = null;
 		if (resource.getMediaType() != MediatypeService.XHTML) {
-			return null;
+			return result;
 		}
-		HTMLDocument document = (HTMLDocument) editorKit.createDefaultDocument();
-		String pageContent = IOUtils.toString(resource.getReader());
-		pageContent = stripHtml(pageContent);
-		document.remove(0, document.getLength());
-		Reader contentReader = new StringReader(pageContent);
-		editorKit.read(contentReader, document, 0);
-		return document;
+		try {
+			HTMLDocument document = (HTMLDocument) editorKit.createDefaultDocument();
+			String pageContent = IOUtils.toString(resource.getReader());
+			pageContent = stripHtml(pageContent);
+			document.remove(0, document.getLength());
+			Reader contentReader = new StringReader(pageContent);
+			editorKit.read(contentReader, document, 0);
+			result = document;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return result;
 	}
 	
 	
@@ -115,13 +124,9 @@ public class HTMLDocumentFactory {
 		documentCache.clear();
 		for (Resource resource: book.getResources().getAll()) {
 			HTMLDocument document;
-			try {
-				document = createDocument(resource);
-				if (document != null) {
-					documentCache.put(resource.getHref(), document);
-				}
-			} catch (Exception e) {
-				log.error(e.getMessage());
+			document = createDocument(resource);
+			if (document != null) {
+				documentCache.put(resource.getHref(), document);
 			}
 		}
 	}

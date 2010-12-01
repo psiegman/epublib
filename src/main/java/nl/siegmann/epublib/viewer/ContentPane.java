@@ -248,25 +248,32 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		if (resource == null) {
 			return;
 		}
-		currentResource = resource;
 		try {
-			Document doc = htmlDocumentFactory.getDocument(resource);
-			editorPane.setDocument(doc);
-			if (sectionPos < 0) {
-				editorPane.setCaretPosition(editorPane.getDocument().getLength());
-			} else {
-				editorPane.setCaretPosition(sectionPos);
+			HTMLDocument document = htmlDocumentFactory.getDocument(resource);
+			if (document == null) {
+				return;
 			}
-			if (sectionPos == 0) {
-				scrollPane.getViewport().setViewPosition(new Point(0, 0));
-			} else if (sectionPos < 0) {
-				int viewportHeight = scrollPane.getViewport().getHeight();
-				int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
-				scrollPane.getViewport().setViewPosition(new Point(0, scrollMax - viewportHeight));
-			}
+			currentResource = resource;
+			editorPane.setDocument(document);
+			scrollToCurrentPosition(sectionPos);
 		} catch (Exception e) {
 			log.error("When reading resource " + resource.getId() + "("
 					+ resource.getHref() + ") :" + e.getMessage(), e);
+		}
+	}
+
+	private void scrollToCurrentPosition(int sectionPos) {
+		if (sectionPos < 0) {
+			editorPane.setCaretPosition(editorPane.getDocument().getLength());
+		} else {
+			editorPane.setCaretPosition(sectionPos);
+		}
+		if (sectionPos == 0) {
+			scrollPane.getViewport().setViewPosition(new Point(0, 0));
+		} else if (sectionPos < 0) {
+			int viewportHeight = scrollPane.getViewport().getHeight();
+			int scrollMax = scrollPane.getVerticalScrollBar().getMaximum();
+			scrollPane.getViewport().setViewPosition(new Point(0, scrollMax - viewportHeight));
 		}
 	}
 
