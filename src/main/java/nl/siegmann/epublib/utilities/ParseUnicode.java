@@ -39,6 +39,7 @@ public class ParseUnicode {
 			}
 			processLine(line1, cd1, resultList);
 			processLine(line2, cd2, resultList);
+			line = reader.readLine();
 		}
 	}
 
