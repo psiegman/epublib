@@ -109,6 +109,16 @@ public class Spine implements Serializable {
 	}
 
 	/**
+	 * Adds the given resource to the spine references and returns it.
+	 * 
+	 * @param spineReference
+	 * @return
+	 */
+	public SpineReference addResource(Resource resource) {
+		return addSpineReference(new SpineReference(resource));
+	}
+
+	/**
 	 * The number of elements in the spine.
 	 * 
 	 * @return
