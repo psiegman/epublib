@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import nl.siegmann.epublib.browsersupport.NavigationEvent;
 import nl.siegmann.epublib.browsersupport.NavigationEventListener;
@@ -38,8 +40,20 @@ public class GuidePane extends JScrollPane implements NavigationEventListener {
 		JTable table = new JTable(
 				createTableData(navigator.getBook().getGuide()),
 				new String[] {"", ""});
-		table.setEnabled(false);
+//		table.setEnabled(false);
 		table.setFillsViewportHeight(true);
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (navigator.getBook() == null) {
+					return;
+				}
+				int guideIndex = e.getFirstIndex();
+				GuideReference guideReference = navigator.getBook().getGuide().getReferences().get(guideIndex);
+				navigator.gotoResource(guideReference.getResource(), GuidePane.this);
+			}
+		});
 		getViewport().add(table);
 	}
 
