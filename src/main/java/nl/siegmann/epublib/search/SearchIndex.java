@@ -159,6 +159,27 @@ public class SearchIndex {
 		return result.toString();
 	}
 	
+	public static String unicodeTrim(String text) {
+		int leadingWhitespaceCount = 0;
+		int trailingWhitespaceCount = 0;
+		for (int i = 0; i < text.length(); i++) {
+			if (! Character.isWhitespace(text.charAt(i))) {
+				leadingWhitespaceCount = i;
+				break;
+			}
+		}
+		for (int i = (text.length() - 1); i > leadingWhitespaceCount; i--) {
+			if (! Character.isWhitespace(text.charAt(i))) {
+				trailingWhitespaceCount = i;
+				break;
+			}
+		}
+		if (leadingWhitespaceCount > 0 || trailingWhitespaceCount < text.length()) {
+			text = text.substring((leadingWhitespaceCount - 1), (trailingWhitespaceCount + 1));
+		}
+		return text;
+	}
+
 	/**
 	 * Turns html encoded text into plain text.
 	 * 

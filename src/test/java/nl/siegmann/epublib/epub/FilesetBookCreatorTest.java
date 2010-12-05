@@ -1,8 +1,7 @@
 package nl.siegmann.epublib.epub;
 
-import java.nio.charset.Charset;
-
 import junit.framework.TestCase;
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
 
@@ -22,7 +21,7 @@ public class FilesetBookCreatorTest extends TestCase {
 			FileObject chapter1 = dir.resolveFile("chapter1.html", NameScope.CHILD);
 			chapter1.createFile();
 			IOUtils.copy(this.getClass().getResourceAsStream("/book1/chapter1.html"), chapter1.getContent().getOutputStream());
-			Book bookFromDirectory = FilesetBookCreator.createBookFromDirectory(dir, Charset.forName("UTF-8"));
+			Book bookFromDirectory = FilesetBookCreator.createBookFromDirectory(dir, Constants.ENCODING);
 			assertEquals(1, bookFromDirectory.getResources().size());
 			assertEquals(1, bookFromDirectory.getSpine().size());
 			assertEquals(1, bookFromDirectory.getTableOfContents().size());
