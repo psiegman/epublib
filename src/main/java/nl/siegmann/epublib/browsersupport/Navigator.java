@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.browsersupport;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,12 @@ import nl.siegmann.epublib.domain.Resource;
  * @author paul
  *
  */
-public class Navigator {
+public class Navigator implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1076126986424925474L;
 	private Book book;
 	private int currentSpinePos;
 	private Resource currentResource;
