@@ -3,6 +3,7 @@ package nl.siegmann.epublib.utilities;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.xml.stream.XMLEventWriter;
@@ -35,7 +36,7 @@ public class HtmlSplitterTest extends TestCase {
 				assertTrue(data.length > 0);
 				assertTrue(data.length <= maxSize);
 			}
-		} catch (XMLStreamException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
