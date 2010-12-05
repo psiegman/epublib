@@ -21,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This class is a trick to get the JEditorKit to load its images from the epub file instead of from the given url.
+ * 
  * This class is installed as the JEditorPane's image cache.
  * Whenever it is requested an image it will try to load that image from the epub.
  * 
- * It's a trick to get the JEditorKit to load its images from the epub file instead of from the given url.
+ * Can be shared by multiple documents but can only be <em>used</em> by one document at the time because of the currentFolder issue. 
  * 
  * @author paul
  *
@@ -35,7 +37,7 @@ class ImageLoaderCache extends Dictionary {
 
 	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
 	
-	private Hashtable cache = new Hashtable();
+	private Hashtable<String, Image> cache = new Hashtable<String, Image>();
 	private Book book;
 	private String currentFolder = "";
 	private Navigator navigator;
@@ -76,27 +78,51 @@ class ImageLoaderCache extends Dictionary {
 	}
 
 
+	private String getResourceHref(String requestUrl) {
+		String resourceHref = requestUrl.toString().substring(IMAGE_URL_PREFIX.length());
+		resourceHref = currentFolder + resourceHref;
+		resourceHref = StringUtil.collapsePathDots(resourceHref);
+		return resourceHref;
+	}
+	
+	private Image createImage(Resource imageResource) {
+		Image result = null;
+		try {
+			result = ImageIO.read(imageResource.getInputStream());
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+	
 	public Object get(Object key) {
 		if (book == null) {
 			return null;
 		}
-		Image result = (Image) cache.get(key);
+		
+		String imageURL = key.toString();
+		
+		// see if the image is already in the cache
+		Image result = (Image) cache.get(imageURL);
 		if (result != null) {
 			return result;
 		}
-		String resourceHref = ((URL) key).toString().substring(IMAGE_URL_PREFIX.length());
-		resourceHref = currentFolder + resourceHref;
-		resourceHref = StringUtil.collapsePathDots(resourceHref);
+		
+		// get the image resource href
+		String resourceHref = getResourceHref(imageURL);
+		
+		// find the image resource in the book resources
 		Resource imageResource = book.getResources().getByHref(resourceHref);
 		if (imageResource == null) {
-			return null;
+			return result;
 		}
-		try {
-			result = ImageIO.read(imageResource.getInputStream());
-			cache.put(key, result);
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
+		
+		// create an image from the resource and add it to the cache
+		result = createImage(imageResource);
+		if (result != null) {
+			cache.put(imageURL.toString(), result);
 		}
+		
 		return result;
 	}
 
@@ -108,10 +134,6 @@ class ImageLoaderCache extends Dictionary {
 		return cache.isEmpty();
 	}
 
-	public int hashCode() {
-		return cache.hashCode();
-	}
-
 	public Enumeration keys() {
 		return cache.keys();
 	}
@@ -120,12 +142,8 @@ class ImageLoaderCache extends Dictionary {
 		return cache.elements();
 	}
 
-	public boolean equals(Object obj) {
-		return cache.equals(obj);
-	}
-
 	public Object put(Object key, Object value) {
-		return cache.put(key, value);
+		return cache.put(key.toString(), (Image) value);
 	}
 
 	public Object remove(Object key) {
