@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
+
 
 
 
@@ -9,8 +11,10 @@ package nl.siegmann.epublib.domain;
  * @author paul
  *
  */
-public class Book {
+public class Book implements Serializable {
 	
+	private static final long serialVersionUID = 2068355170895770100L;
+
 	private Resources resources = new Resources();
 	private Metadata metadata = new Metadata();
 	private Spine spine = new Spine();

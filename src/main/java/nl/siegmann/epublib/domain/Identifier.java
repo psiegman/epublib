@@ -1,9 +1,11 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A Book's identifier.
@@ -13,8 +15,13 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class Identifier {
+public class Identifier implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 955949951416391810L;
+
 	public interface Scheme {
 		String UUID = "UUID";
 		String ISBN = "ISBN";
@@ -97,6 +104,13 @@ public class Identifier {
 		return bookId;
 	}
 
+	public int hashCode() {
+		return (new HashCodeBuilder(7, 23)).
+			append(scheme).
+			append(value).
+			hashCode();
+	}
+	
 	public boolean equals(Object otherIdentifier) {
 		if(! (otherIdentifier instanceof Identifier)) {
 			return false;

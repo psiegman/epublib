@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
+
 
 /**
  * A Section of a book.
@@ -8,8 +10,12 @@ package nl.siegmann.epublib.domain;
  * @author paul
  *
  */
-public class SpineReference extends ResourceReference {
+public class SpineReference extends ResourceReference implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7921609197351510248L;
 	private boolean linear = true;
 	
 	public SpineReference(Resource resource) {

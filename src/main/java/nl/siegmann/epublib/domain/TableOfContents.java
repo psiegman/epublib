@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,8 +20,12 @@ import java.util.Set;
  * @author paul
  *
  */
-public class TableOfContents {
+public class TableOfContents implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3147391239966275152L;
 	private List<TOCReference> tocReferences;
 
 	public TableOfContents() {

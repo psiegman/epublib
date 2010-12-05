@@ -1,11 +1,17 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
+
 import nl.siegmann.epublib.Constants;
 
 import org.apache.commons.lang.StringUtils;
 
-public class TitledResourceReference extends ResourceReference {
+public class TitledResourceReference extends ResourceReference implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3918155020095190080L;
 	private String fragmentId;
 	private String title;
 

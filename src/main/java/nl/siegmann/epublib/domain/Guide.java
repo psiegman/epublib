@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,12 @@ import java.util.List;
  * @author paul
  *
  */
-public class Guide {
+public class Guide implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6256645339915751189L;
 
 	public static final String DEFAULT_COVER_TITLE = GuideReference.COVER;
 	

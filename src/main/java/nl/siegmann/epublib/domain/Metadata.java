@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,9 +8,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.StringUtils;
-
 import nl.siegmann.epublib.service.MediatypeService;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A Book's collection of Metadata.
@@ -18,7 +19,12 @@ import nl.siegmann.epublib.service.MediatypeService;
  * @author paul
  *
  */
-public class Metadata {
+public class Metadata implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2437262888962149444L;
 
 	public static final String DEFAULT_LANGUAGE = "en";
 	
