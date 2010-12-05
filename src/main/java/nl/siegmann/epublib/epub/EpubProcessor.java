@@ -64,7 +64,7 @@ public class EpubProcessor {
 	}
 	
 	XMLStreamWriter createXMLStreamWriter(OutputStream out) throws XMLStreamException {
-		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING.name());
+		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING);
 	}
 
 	public DocumentBuilderFactory getDocumentBuilderFactory() {

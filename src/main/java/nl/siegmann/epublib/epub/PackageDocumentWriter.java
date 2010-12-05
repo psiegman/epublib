@@ -18,7 +18,8 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -32,7 +33,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	public static void write(EpubWriter epubWriter, XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);
-		writer.writeStartDocument(Constants.ENCODING.name(), "1.0");
+		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_OPF);
 		writer.writeCharacters("\n");
 		writer.writeStartElement(NAMESPACE_OPF, OPFTags.packageTag);

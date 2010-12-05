@@ -3,6 +3,8 @@ package nl.siegmann.epublib.bookprocessor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Spine;
@@ -27,12 +29,13 @@ public class SectionHrefSanityCheckBookProcessor implements BookProcessor {
 		List<SpineReference> result = new ArrayList<SpineReference>(spine.size());
 		Resource previousResource = null;
 		for(SpineReference spineReference: spine.getSpineReferences()) {
-			if(spineReference.getResource() == null) {
+			if(spineReference.getResource() == null
+					|| StringUtils.isBlank(spineReference.getResource().getHref())) {
 				continue;
 			}
 			if(previousResource == null
 					|| spineReference.getResource() == null
-					|| previousResource.getHref() != spineReference.getResource().getHref()) {
+					|| ( ! (spineReference.getResource().getHref().equals(previousResource.getHref())))) {
 				result.add(spineReference);
 			}
 			previousResource = spineReference.getResource();
