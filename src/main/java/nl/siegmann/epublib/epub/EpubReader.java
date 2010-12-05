@@ -44,11 +44,11 @@ public class EpubReader extends EpubProcessor {
 	}
 	
 	public Book readEpub(InputStream in) throws IOException {
-		return readEpub(in, Constants.ENCODING.name());
+		return readEpub(in, Constants.ENCODING);
 	}
 	
 	public Book readEpub(ZipInputStream in) throws IOException {
-		return readEpub(in, Constants.ENCODING.name());
+		return readEpub(in, Constants.ENCODING);
 	}
 	
 	
@@ -58,7 +58,7 @@ public class EpubReader extends EpubProcessor {
 	
 	public Book readEpub(ZipInputStream in, String encoding) throws IOException {
 		Book result = new Book();
-		Map<String, Resource> resources = readResources(in, Charset.forName(encoding));
+		Map<String, Resource> resources = readResources(in, encoding);
 		handleMimeType(result, resources);
 		String packageResourceHref = getPackageResourceHref(result, resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
@@ -118,7 +118,7 @@ public class EpubReader extends EpubProcessor {
 		resources.remove("mimetype");
 	}
 
-	private Map<String, Resource> readResources(ZipInputStream in, Charset defaultHtmlEncoding) throws IOException {
+	private Map<String, Resource> readResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
 //			System.out.println(zipEntry.getName());

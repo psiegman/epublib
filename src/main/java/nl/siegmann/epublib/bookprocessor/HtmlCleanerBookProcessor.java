@@ -2,7 +2,6 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,11 +54,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 
 	@SuppressWarnings("unchecked")
 	public byte[] processHtml(Resource resource, Book book,
-			EpubProcessor epubProcessor, Charset outputEncoding) throws IOException {
-		Charset inputEncoding = resource.getInputEncoding();
-		if (inputEncoding == null) {
-			inputEncoding = Constants.ENCODING;
-		}
+			EpubProcessor epubProcessor, String outputEncoding) throws IOException {
 		TagNode node = htmlCleaner.clean(resource.getReader());
 		node.removeAttribute("xmlns:xml");
 		setCharsetMeta(node, outputEncoding);
@@ -67,12 +62,12 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 			node.getAttributes().put("xmlns", Constants.NAMESPACE_XHTML);
 		}
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		newXmlSerializer.writeXmlToStream(node, out, outputEncoding.name());
+		newXmlSerializer.writeXmlToStream(node, out, outputEncoding);
 		return out.toByteArray();
 	}
 
 	// <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-	private void setCharsetMeta(TagNode rootNode, Charset charset) {
+	private void setCharsetMeta(TagNode rootNode, String charset) {
 		List<TagNode> metaContentTypeTags = getElementList(rootNode,
 			new TagNode.ITagNodeCondition() {
 				@Override
@@ -84,7 +79,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 			true
 		);
 		for(TagNode metaTag: metaContentTypeTags) {
-			metaTag.addAttribute("content", "text/html; charset=" + charset.name());
+			metaTag.addAttribute("content", "text/html; charset=" + charset);
 		}
 	}
 	

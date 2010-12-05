@@ -2,11 +2,9 @@ package nl.siegmann.epublib.bookprocessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import nl.siegmann.epublib.Constants;
@@ -33,14 +31,8 @@ public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookP
 	public TextReplaceBookProcessor() {
 	}
 
-	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, Charset outputEncoding) throws IOException {
-		Reader reader;
-		Charset inputEncoding = resource.getInputEncoding();
-		if(inputEncoding == null) {
-			inputEncoding = Charset.defaultCharset();
-		}
-		reader = new InputStreamReader(resource.getInputStream(), inputEncoding);
+	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, String outputEncoding) throws IOException {
+		Reader reader = resource.getReader();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out, Constants.ENCODING);
 		for(String line: (List<String>) IOUtils.readLines(reader)) {

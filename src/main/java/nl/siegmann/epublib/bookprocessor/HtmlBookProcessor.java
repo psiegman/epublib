@@ -2,7 +2,6 @@ package nl.siegmann.epublib.bookprocessor;
 
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
@@ -47,5 +46,5 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 		}
 	}
 
-	protected abstract byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, Charset encoding) throws IOException;
+	protected abstract byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, String encoding) throws IOException;
 }

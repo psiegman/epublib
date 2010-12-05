@@ -3,14 +3,13 @@ package nl.siegmann.epublib.fileset;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.Spine;
@@ -19,7 +18,6 @@ import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.VFS;
@@ -41,11 +39,11 @@ public class FilesetBookCreator {
 	
 	
 	public static Book createBookFromDirectory(File rootDirectory) throws IOException {
-		return createBookFromDirectory(rootDirectory, Charset.defaultCharset());	
+		return createBookFromDirectory(rootDirectory, Constants.ENCODING);	
 	}
 	
 	
-	public static Book createBookFromDirectory(File rootDirectory, Charset encoding) throws IOException {
+	public static Book createBookFromDirectory(File rootDirectory, String encoding) throws IOException {
 		FileObject rootFileObject = VFS.getManager().resolveFile("file:" + rootDirectory.getCanonicalPath());
 		return createBookFromDirectory(rootFileObject, encoding);
 	}
@@ -58,7 +56,7 @@ public class FilesetBookCreator {
 	 * @return
 	 * @throws IOException
 	 */
-	public static Book createBookFromDirectory(FileObject rootDirectory, Charset encoding) throws IOException {
+	public static Book createBookFromDirectory(FileObject rootDirectory, String encoding) throws IOException {
 		Book result = new Book();
 		List<TOCReference> sections = new ArrayList<TOCReference>();
 		Resources resources = new Resources();
@@ -70,7 +68,7 @@ public class FilesetBookCreator {
 		return result;
 	}
 
-	private static void processDirectory(FileObject rootDir, FileObject directory, List<TOCReference> sections, Resources resources, Charset inputEncoding) throws IOException {
+	private static void processDirectory(FileObject rootDir, FileObject directory, List<TOCReference> sections, Resources resources, String inputEncoding) throws IOException {
 		FileObject[] files = directory.getChildren();
 		Arrays.sort(files, fileComparator);
 		for(int i = 0; i < files.length; i++) {
@@ -78,7 +76,7 @@ public class FilesetBookCreator {
 			if(file.getType() == FileType.FOLDER) {
 				processSubdirectory(rootDir, file, sections, resources, inputEncoding);
 			} else {
-				Resource resource = createResource(rootDir, file, inputEncoding);
+				Resource resource = ResourceUtil.createResource(rootDir, file, inputEncoding);
 				if(resource == null) {
 					continue;
 				}
@@ -92,13 +90,13 @@ public class FilesetBookCreator {
 	}
 
 	private static void processSubdirectory(FileObject rootDir, FileObject file,
-			List<TOCReference> sections, Resources resources, Charset inputEncoding)
+			List<TOCReference> sections, Resources resources, String inputEncoding)
 			throws IOException {
 		List<TOCReference> childTOCReferences = new ArrayList<TOCReference>();
 		processDirectory(rootDir, file, childTOCReferences, resources, inputEncoding);
 		if(! childTOCReferences.isEmpty()) {
 			String sectionName = file.getName().getBaseName();
-			Resource sectionResource = ResourceUtil.createResource(sectionName, calculateHref(rootDir,file));
+			Resource sectionResource = ResourceUtil.createResource(sectionName, ResourceUtil.calculateHref(rootDir,file));
 			resources.add(sectionResource);
 			TOCReference section = new TOCReference(sectionName, sectionResource);
 			section.setChildren(childTOCReferences);
@@ -106,20 +104,4 @@ public class FilesetBookCreator {
 		}
 	}
 
-	private static Resource createResource(FileObject rootDir, FileObject file, Charset inputEncoding) throws IOException {
-		MediaType mediaType = MediatypeService.determineMediaType(file.getName().getBaseName());
-		if(mediaType == null) {
-			return null;
-		}
-		String href = calculateHref(rootDir, file);
-		Resource result = new Resource(null, IOUtils.toByteArray(file.getContent().getInputStream()), href, mediaType);
-		result.setInputEncoding(inputEncoding);
-		return result;
-	}
-	
-	private static String calculateHref(FileObject rootDir, FileObject currentFile) throws IOException {
-		String result = currentFile.getName().toString().substring(rootDir.getName().toString().length() + 1);
-		result += ".html";
-		return result;
-	}
 }

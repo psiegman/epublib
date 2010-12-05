@@ -5,15 +5,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -79,43 +74,6 @@ public class NCXDocument {
 		String chapter = "chapter";
 		
 	}
-	// package
-	@SuppressWarnings("serial")
-	static final NamespaceContext NCX_DOC_NAMESPACE_CONTEXT = new NamespaceContext() {
-
-		private final Map<String, List<String>> prefixes = new HashMap<String, List<String>>();
-		
-		{
-			prefixes.put(NAMESPACE_NCX, new ArrayList<String>() {{ add(PREFIX_NCX);}});
-		}
-		
-		@Override
-		public String getNamespaceURI(String prefix) {
-			if(PREFIX_NCX.equals(prefix)) {
-				return NAMESPACE_NCX;
-			}
-			return null;
-		}
-
-		@Override
-		public String getPrefix(String namespace) {
-			if(NAMESPACE_NCX.equals(namespace)) {
-				return PREFIX_NCX;
-			}
-			return null;
-		}
-
-		@Override
-		public Iterator<String> getPrefixes(String namespace) {
-			List<String> prefixList = prefixes.get(namespace);
-			if(prefixList == null) {
-				return Collections.<String>emptyList().iterator();
-			}
-			return prefixList.iterator();
-		}
-		
-	};
-	
 	
 	public static void read(Book book, EpubReader epubReader) {
 		if(book.getSpine().getTocResource() == null) {
@@ -175,7 +133,7 @@ public class NCXDocument {
 		Element contentElement = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.content);
 		String result = DOMUtil.getAttribute(contentElement, NAMESPACE_NCX, NCXAttributes.src);
 		try {
-			result = URLDecoder.decode(result, Constants.ENCODING.name());
+			result = URLDecoder.decode(result, Constants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
@@ -216,7 +174,7 @@ public class NCXDocument {
 	
 	public static void write(XMLStreamWriter writer, Book book) throws XMLStreamException {
 		writer = new IndentingXMLStreamWriter(writer);
-		writer.writeStartDocument(Constants.ENCODING.name(), "1.0");
+		writer.writeStartDocument(Constants.ENCODING, "1.0");
 		writer.setDefaultNamespace(NAMESPACE_NCX);
 		writer.writeStartElement(NAMESPACE_NCX, "ncx");
 //		writer.writeNamespace("ncx", NAMESPACE_NCX);

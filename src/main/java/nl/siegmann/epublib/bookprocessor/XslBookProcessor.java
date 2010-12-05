@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -44,7 +43,7 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 	}
 
 	@Override
-	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, Charset encoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, String encoding) throws IOException {
 		Source htmlSource = new StreamSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out,encoding);

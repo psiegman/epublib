@@ -19,7 +19,6 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -329,7 +328,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		String resourceHref = clickUrl.toString();
 		try {
 			resourceHref = URLDecoder.decode(resourceHref,
-					Constants.ENCODING.name());
+					Constants.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}

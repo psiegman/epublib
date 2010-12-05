@@ -2,7 +2,6 @@ package nl.siegmann.epublib.chm;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,14 +29,14 @@ import org.apache.commons.vfs.FileType;
  */
 public class ChmParser {
 
-	public static final Charset DEFAULT_CHM_HTML_INPUT_ENCODING = Charset.forName("windows-1252");
+	public static final String DEFAULT_CHM_HTML_INPUT_ENCODING = "windows-1252";
 	public static final int MINIMAL_SYSTEM_TITLE_LENGTH = 4;
 	
 	public static Book parseChm(FileObject chmRootDir) throws XPathExpressionException, IOException, ParserConfigurationException {
 		return parseChm(chmRootDir, DEFAULT_CHM_HTML_INPUT_ENCODING);
 	}
 
-	public static Book parseChm(FileObject chmRootDir, Charset htmlEncoding)
+	public static Book parseChm(FileObject chmRootDir, String htmlEncoding)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
@@ -104,7 +103,7 @@ public class ChmParser {
 	
 	
 	@SuppressWarnings("unchecked")
-	private static Resources findResources(FileObject rootDir, Charset defaultEncoding) throws IOException {
+	private static Resources findResources(FileObject rootDir, String defaultEncoding) throws IOException {
 		Resources result = new Resources();
 		FileObject[] allFiles = rootDir.findFiles(new AllFileSelector());
 		for(int i = 0; i < allFiles.length; i++) {
