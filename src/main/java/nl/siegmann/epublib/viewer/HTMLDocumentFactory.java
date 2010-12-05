@@ -4,6 +4,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
@@ -29,7 +31,15 @@ public class HTMLDocumentFactory {
 	
 	private static final Logger log = LoggerFactory.getLogger(HTMLDocumentFactory.class);
 	
+	// After opening the book we wait a while before we starting indexing the rest of the pages.
+	// This way the book opens, everything settles down, and while the user looks at the cover page
+	// the rest of the book is indexed.
+	public static final int DOCUMENT_CACHE_INDEXER_WAIT_TIME = 500;
+	
 	private ImageLoaderCache imageLoaderCache;
+	private ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+	private Lock cacheReadLock = cacheLock.readLock();
+	private Lock cacheWriteLock = cacheLock.writeLock();
 	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
 	private EditorKit editorKit;
 
@@ -47,17 +57,51 @@ public class HTMLDocumentFactory {
 		initDocumentCache(book);
 	}
 
+	private void putDocument(Resource resource, HTMLDocument document) {
+		if (document == null) {
+			return;
+		}
+		cacheWriteLock.lock();
+		try {
+			documentCache.put(resource.getHref(), document);
+		} finally {
+			cacheWriteLock.unlock();
+		}
+	}
+	
+	
+	/**
+	 * Get the HTMLDocument representation of the resource.
+	 * If the resource is not an XHTML resource then it returns null.
+	 * It first tries to get the document from the cache.
+	 * If the document is not in the cache it creates a document form
+	 * the resource and adds it to the cache.
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	public HTMLDocument getDocument(Resource resource) {
-		HTMLDocument document = documentCache.get(resource.getHref());
+		HTMLDocument document = null;
+		
+		// try to get the document from  the cache
+		cacheReadLock.lock();
+		try {
+			document = documentCache.get(resource.getHref());
+		} finally {
+			cacheReadLock.unlock();
+		}
+		
+		// document was not in the cache, try to create it and add it to the cache
 		if (document == null) {
 			document = createDocument(resource);
-			if (document != null) {
-				documentCache.put(resource.getHref(), document);
-			}
+			putDocument(resource, document);
 		}
+		
+		// initialize the imageLoader for the specific document
 		if (document != null) {
 			imageLoaderCache.initImageLoader(document);
 		}
+		
 		return document;
 	}
 
@@ -120,15 +164,33 @@ public class HTMLDocumentFactory {
 			return;
 		}
 		documentCache.clear();
+		Thread documentIndexerThread = new Thread(new DocumentIndexer(book));
+		documentIndexerThread.setPriority(Thread.MIN_PRIORITY);
+		documentIndexerThread.start();
+		
 //		addAllDocumentsToCache(book);
 	}
 
-	private void addAllDocumentsToCache(Book book) {
-		for (Resource resource: book.getResources().getAll()) {
-			HTMLDocument document;
-			document = createDocument(resource);
-			if (document != null) {
-				documentCache.put(resource.getHref(), document);
+	private class DocumentIndexer implements Runnable {
+		private Book book;
+		
+		public DocumentIndexer(Book book) {
+			this.book = book;
+		}
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(DOCUMENT_CACHE_INDEXER_WAIT_TIME);
+			} catch (InterruptedException e) {
+				log.error(e.getMessage());
+			}
+			addAllDocumentsToCache(book);
+		}
+		
+		
+		private void addAllDocumentsToCache(Book book) {
+			for (Resource resource: book.getResources().getAll()) {
+				getDocument(resource);
 			}
 		}
 	}
