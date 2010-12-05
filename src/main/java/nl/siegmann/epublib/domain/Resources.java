@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +17,12 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class Resources {
+public class Resources implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2450876953383871451L;
 	public static final String IMAGE_PREFIX = "image_";
 	public static final String ITEM_PREFIX = "item_";
 	

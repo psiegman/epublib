@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 import nl.siegmann.epublib.epub.PackageDocumentBase;
@@ -12,7 +13,12 @@ import nl.siegmann.epublib.epub.PackageDocumentBase;
  * @author paul
  *
  */
-public class Date {
+public class Date implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7533866830395120136L;
+
 	public enum Event {
 		PUBLICATION("publication"),
 		MODIFICATION("modification"),

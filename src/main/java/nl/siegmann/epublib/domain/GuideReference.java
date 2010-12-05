@@ -1,5 +1,7 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -11,8 +13,13 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class GuideReference extends TitledResourceReference {
+public class GuideReference extends TitledResourceReference implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -316179702440631834L;
+
 	/**
 	 * the book cover(s), jacket information, etc.
 	 */

@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -15,7 +16,11 @@ import java.util.Collection;
  * @author paul
  *
  */
-public class MediaType {
+public class MediaType implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7256091153727506788L;
 	private String name;
 	private String defaultExtension;
 	private Collection<String> extensions;
@@ -29,7 +34,12 @@ public class MediaType {
 		this(name, defaultExtension, Arrays.asList(extensions));
 	}
 	
-	
+	public int hashCode() {
+		if (name == null) {
+			return 0;
+		}
+		return name.hashCode();
+	}
 	public MediaType(String name, String defaultExtension,
 			Collection<String> extensions) {
 		super();

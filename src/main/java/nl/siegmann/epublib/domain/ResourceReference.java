@@ -1,7 +1,13 @@
 package nl.siegmann.epublib.domain;
 
-public class ResourceReference {
+import java.io.Serializable;
 
+public class ResourceReference implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2596967243557743048L;
 	protected Resource resource;
 
 	public ResourceReference(Resource resource) {

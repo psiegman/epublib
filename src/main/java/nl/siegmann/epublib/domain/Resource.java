@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.io.Serializable;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -21,13 +21,17 @@ import com.google.gdata.util.io.base.UnicodeReader;
  * @author paul
  *
  */
-public class Resource {
+public class Resource implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1043946707835004037L;
 	private String id;
 	private String title;
 	private String href;
 	private MediaType mediaType;
-	private Charset inputEncoding = Constants.ENCODING;
+	private String inputEncoding = Constants.ENCODING;
 	private byte[] data;
 	
 	public Resource(String href) {
@@ -54,7 +58,7 @@ public class Resource {
 		this(id, data, href, mediaType, Constants.ENCODING);
 	}
 	
-	public Resource(String id, byte[] data, String href, MediaType mediaType, Charset inputEncoding) {
+	public Resource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding) {
 		this.id = id;
 		this.href = href;
 		this.mediaType = mediaType;
@@ -115,11 +119,11 @@ public class Resource {
 	 * 
 	 * @return
 	 */
-	public Charset getInputEncoding() {
+	public String getInputEncoding() {
 		return inputEncoding;
 	}
 	
-	public void setInputEncoding(Charset encoding) {
+	public void setInputEncoding(String encoding) {
 		this.inputEncoding = encoding;
 	}
 	
@@ -135,7 +139,7 @@ public class Resource {
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
-		return new UnicodeReader(new ByteArrayInputStream(data), inputEncoding.name());
+		return new UnicodeReader(new ByteArrayInputStream(data), inputEncoding);
 	}
 	
 	public int hashCode() {

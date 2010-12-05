@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,12 @@ import java.util.List;
  * @author paul
  *
  */
-public class TOCReference extends TitledResourceReference {
+public class TOCReference extends TitledResourceReference implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5787958246077042456L;
 	private List<TOCReference> children;
 	
 	public TOCReference() {

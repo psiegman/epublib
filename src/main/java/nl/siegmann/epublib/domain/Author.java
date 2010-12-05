@@ -1,6 +1,9 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Represents one of the authors of the book
@@ -8,7 +11,9 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class Author {
+public class Author implements Serializable {
+	
+	private static final long serialVersionUID = 6663408501416574200L;
 	
 	private String firstname;
 	private String lastname;
@@ -40,6 +45,15 @@ public class Author {
 	public String toString() {
 		return lastname + ", " + firstname;
 	}
+	
+	public int hashCode() {
+		return (new HashCodeBuilder(17, 37)).
+			append(firstname).
+			append(lastname).
+		toHashCode();
+	}
+	
+	
 	public boolean equals(Object authorObject) {
 		if(! (authorObject instanceof Author)) {
 			return false;

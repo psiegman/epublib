@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,8 +17,12 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class Spine {
+public class Spine implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3878483958947357246L;
 	private Resource tocResource;
 	private List<SpineReference> spineReferences;
 
