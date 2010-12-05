@@ -43,7 +43,39 @@ public class TableOfContents implements Serializable {
 	public void setTocReferences(List<TOCReference> tocReferences) {
 		this.tocReferences = tocReferences;
 	}
-
+	
+	public TOCReference addResourceAtLocation(Resource resource, String path,  String pathSeparator) {
+		String[] pathElements = path.split(pathSeparator);
+		return addTOCReferenceAtLocation(resource, pathElements, 0, tocReferences);
+	}
+	
+	private static TOCReference findTocReferenceByTitle(String title, List<TOCReference> tocReferences) {
+		for (TOCReference tocReference: tocReferences) {
+			if (title.equals(tocReference.getTitle())) {
+				return tocReference;
+			}
+		}
+		return null;
+	}
+	
+	public static TOCReference addTOCReferenceAtLocation(Resource resource, String[] pathElements, int pathPos, List<TOCReference> tocReferences) {
+		String currentTitle = pathElements[pathPos];
+		TOCReference currentTocReference = findTocReferenceByTitle(currentTitle, tocReferences);
+		if (currentTocReference == null) {
+			currentTocReference = new TOCReference(currentTitle, null);
+			tocReferences.add(currentTocReference);
+		}
+		TOCReference result;
+		if (pathPos >= (pathElements.length - 1)) {
+			currentTocReference.setResource(resource);
+			result = currentTocReference;
+		} else {
+			result = addTOCReferenceAtLocation(resource, pathElements, pathPos + 1, currentTocReference.getChildren());
+		}
+		return result;
+	}
+	
+	
 	public TOCReference addTOCReference(TOCReference tocReference) {
 		if (tocReferences == null) {
 			tocReferences = new ArrayList<TOCReference>();
