@@ -1,13 +1,11 @@
 package nl.siegmann.epublib.hhc;
 
-import java.io.FileOutputStream;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
@@ -24,7 +22,7 @@ public class ChmParserTest extends TestCase {
 			FileObject dir = fsManager.resolveFile("ram://chm_test_dir");
 			dir.createFolder();
 			String chm1Dir = "/chm1";
-			Iterator<String> lineIter = IOUtils.lineIterator(ChmParserTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING.name());
+			Iterator<String> lineIter = IOUtils.lineIterator(ChmParserTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING);
 			while(lineIter.hasNext()) {
 				String line = lineIter.next();
 				FileObject file = dir.resolveFile(line, NameScope.DESCENDENT);
