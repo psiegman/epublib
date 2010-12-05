@@ -32,7 +32,7 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 	public void testMetaContentType() {
 		Book book = new Book();
 		String testInput = "<html><head><title>title</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/></head><body>Hello, world!</html>";
-		String expectedResult = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>title</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + Constants.ENCODING.name() + "\" /></head><body>Hello, world!</body></html>";
+		String expectedResult = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>title</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + Constants.ENCODING + "\" /></head><body>Hello, world!</body></html>";
 		try {
 			Resource resource = new Resource(testInput.getBytes(Constants.ENCODING), "test.html");
 			book.getResources().add(resource);
