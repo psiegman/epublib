@@ -53,6 +53,7 @@ class ImageLoaderCache extends Dictionary {
 		}
 		this.book = book;
 		cache.clear();
+		this.currentFolder = "";
 	}
 
 	public void setContextResource(Resource resource) {
@@ -101,7 +102,7 @@ class ImageLoaderCache extends Dictionary {
 		}
 		
 		String imageURL = key.toString();
-		
+
 		// see if the image is already in the cache
 		Image result = (Image) cache.get(imageURL);
 		if (result != null) {
