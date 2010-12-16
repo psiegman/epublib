@@ -277,15 +277,20 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 	}
 
 	public void hyperlinkUpdate(HyperlinkEvent event) {
-		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			String resourceHref = calculateTargetHref(event.getURL());
-			Resource resource = navigator.getBook().getResources()
-					.getByHref(resourceHref);
-			if (resource == null) {
-				log.error("Resource with url " + resourceHref + " not found");
-			} else {
-				navigator.gotoResource(resource, this);
-			}
+		if (event.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+			return;
+		}
+		String resourceHref = calculateTargetHref(event.getURL());
+		if (resourceHref.startsWith("#")) {
+			scrollToNamedAnchor(resourceHref.substring(1));
+			return;
+		}
+		Resource resource = navigator.getBook().getResources()
+				.getByHref(resourceHref);
+		if (resource == null) {
+			log.error("Resource with url " + resourceHref + " not found");
+		} else {
+			navigator.gotoResource(resource, this);
 		}
 	}
 
@@ -335,6 +340,9 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		resourceHref = resourceHref.substring(ImageLoaderCache.IMAGE_URL_PREFIX
 				.length());
 
+		if (resourceHref.startsWith("#")) {
+			return resourceHref;
+		}
 		if (currentResource != null
 				&& StringUtils.isNotBlank(currentResource.getHref())) {
 			int lastSlashPos = currentResource.getHref().lastIndexOf('/');
