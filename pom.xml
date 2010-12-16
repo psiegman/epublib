@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Generated from archetype; please customize.
--->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>nl.siegmann.epublib</groupId>
-    <artifactId>epublib</artifactId>
-    <name>epublib</name>
-    <version>2.0-SNAPSHOT</version>
+	<groupId>nl.siegmann.epublib</groupId>
+	<artifactId>epublib</artifactId>
+	<name>epublib</name>
+	<version>2.0-SNAPSHOT</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
@@ -20,11 +18,11 @@
 	</properties>
 
 	<licenses>
-	  <license>
-		<name>LGPL</name>
-		<url>http://www.gnu.org/licenses/lgpl.html</url>
-		<distribution>repo</distribution>
-	  </license>
+		<license>
+			<name>LGPL</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+		</license>
 	</licenses>
 
 	<developers>
@@ -48,12 +46,12 @@
 		<developerConnection>scm:git:https://psiegman@github.com/psiegman/epublib.git</developerConnection>
 	</scm>
 
-    <dependencies>
-        <dependency>
+	<dependencies>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
-        </dependency>
+		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlcleaner</groupId>
 			<artifactId>htmlcleaner</artifactId>
@@ -66,45 +64,62 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		  <groupId>commons-lang</groupId>
-		  <artifactId>commons-lang</artifactId>
-		  <version>2.4</version>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
-		  <groupId>commons-io</groupId>
-		  <artifactId>commons-io</artifactId>
-		  <version>2.0</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-api</artifactId>
-		  <version>${slf4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-log4j12</artifactId>
-		  <version>${slf4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-		  <groupId>commons-collections</groupId>
-		  <artifactId>commons-collections</artifactId>
-		  <version>3.2.1</version>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
 		</dependency>
 		<dependency>
-		  <groupId>commons-vfs</groupId>
-		  <artifactId>commons-vfs</artifactId>
-		  <version>1.0</version>
+			<groupId>commons-vfs</groupId>
+			<artifactId>commons-vfs</artifactId>
+			<version>1.0</version>
 		</dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<shadedClassifierName>complete</shadedClassifierName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -113,35 +128,35 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.dstovall</groupId>
-                <artifactId>onejar-maven-plugin</artifactId>
-                <version>1.4.4</version>
-                <executions>
-                    <execution>
-                    	<id>epublib commandline</id>
-                        <configuration>
+			<plugin>
+				<groupId>org.dstovall</groupId>
+				<artifactId>onejar-maven-plugin</artifactId>
+				<version>1.4.4</version>
+				<executions>
+					<execution>
+						<id>epublib commandline</id>
+						<configuration>
 							<mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
 							<filename>${name}-commandline-${version}.jar</filename>
-                        </configuration>
-                        <goals>
-                            <goal>one-jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                    	<id>epublib viewer</id>
-                        <configuration>
-                            <mainClass>nl.siegmann.epublib.viewer.Viewer</mainClass>
+						</configuration>
+						<goals>
+							<goal>one-jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>epublib viewer</id>
+						<configuration>
+							<mainClass>nl.siegmann.epublib.viewer.Viewer</mainClass>
 							<filename>${name}-viewer-${version}.jar</filename>
-                        </configuration>
-                        <goals>
-                            <goal>one-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+						</configuration>
+						<goals>
+							<goal>one-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 	<reporting>
 		<plugins>
 			<plugin>
@@ -169,9 +184,9 @@
 	</repositories>
 
 	<pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>
+		<pluginRepository>
+			<id>onejar-maven-plugin.googlecode.com</id>
+			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
