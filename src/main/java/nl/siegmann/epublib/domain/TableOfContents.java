@@ -44,7 +44,7 @@ public class TableOfContents implements Serializable {
 		this.tocReferences = tocReferences;
 	}
 	
-	public TOCReference addResourceAtLocation(Resource resource, String path,  String pathSeparator) {
+	public TOCReference addResourceAtLocation(Resource resource, String path, String pathSeparator) {
 		String[] pathElements = path.split(pathSeparator);
 		return addTOCReferenceAtLocation(resource, pathElements, 0, tocReferences);
 	}
