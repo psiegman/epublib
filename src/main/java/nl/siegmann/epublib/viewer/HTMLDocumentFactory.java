@@ -9,6 +9,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLEditorKit.Parser;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
@@ -41,10 +44,10 @@ public class HTMLDocumentFactory {
 	private Lock cacheReadLock = cacheLock.readLock();
 	private Lock cacheWriteLock = cacheLock.writeLock();
 	private Map<String, HTMLDocument> documentCache = new HashMap<String, HTMLDocument>();
-	private EditorKit editorKit;
+	private MyHtmlEditorKit editorKit;
 
 	public HTMLDocumentFactory(Navigator navigator, EditorKit editorKit) {
-		this.editorKit = editorKit;
+		this.editorKit = new MyHtmlEditorKit((HTMLEditorKit) editorKit);
 		this.imageLoaderCache = new ImageLoaderCache(navigator);
 		init(navigator.getBook());
 	}
@@ -107,8 +110,7 @@ public class HTMLDocumentFactory {
 
 	private String stripHtml(String input) {
 		String result = removeControlTags(input);
-		result = result.replaceAll(
-				"<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>", "");
+//		result = result.replaceAll("<meta\\s+[^>]*http-equiv=\"Content-Type\"[^>]*>", "");
 		return result;
 	}
 
@@ -146,18 +148,23 @@ public class HTMLDocumentFactory {
 		}
 		try {
 			HTMLDocument document = (HTMLDocument) editorKit.createDefaultDocument();
+			MyParserCallback parserCallback = new MyParserCallback(document.getReader(0));
+			Parser parser = editorKit.getParser();
 			String pageContent = IOUtils.toString(resource.getReader());
 			pageContent = stripHtml(pageContent);
 			document.remove(0, document.getLength());
 			Reader contentReader = new StringReader(pageContent);
-			editorKit.read(contentReader, document, 0);
-			result = document;
+		    parser.parse(contentReader, parserCallback, true);
+		    parserCallback.flush();
+//		    for (String stylesheetHref: parserCallback.getStylesheetHrefs()) {
+//		    	System.out.println(this.getClass().getName() + ": stylesheet hef:" + stylesheetHref);
+//		    }
+		    result = document;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 		return result;
 	}
-	
 	
 	private void initDocumentCache(Book book) {
 		if (book == null) {
@@ -171,6 +178,7 @@ public class HTMLDocumentFactory {
 //		addAllDocumentsToCache(book);
 	}
 
+	
 	private class DocumentIndexer implements Runnable {
 		private Book book;
 		
@@ -186,7 +194,6 @@ public class HTMLDocumentFactory {
 			}
 			addAllDocumentsToCache(book);
 		}
-		
 		
 		private void addAllDocumentsToCache(Book book) {
 			for (Resource resource: book.getResources().getAll()) {
