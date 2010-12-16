@@ -130,9 +130,7 @@ public class Resource implements Serializable {
 	/**
 	 * Gets the contents of the Resource as Reader.
 	 * 
-	 * Does all sorts of smart things (courtesy of commons io XmlStreamReader) to handle encodings, byte order markers, etc.
-	 * 
-	 * @see http://commons.apache.org/io/api-release/org/apache/commons/io/input/XmlStreamReader.html
+	 * Does all sorts of smart things (courtesy of google gdata UnicodeReader) to handle encodings, byte order markers, etc.
 	 * 
 	 * @param resource
 	 * @return
