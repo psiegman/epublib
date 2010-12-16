@@ -2,6 +2,7 @@ package nl.siegmann.epublib.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -19,6 +20,13 @@ public class TOCReference extends TitledResourceReference implements Serializabl
 	 */
 	private static final long serialVersionUID = 5787958246077042456L;
 	private List<TOCReference> children;
+	private static final Comparator<TOCReference> COMPARATOR_BY_TITLE_IGNORE_CASE = new Comparator<TOCReference>() {
+
+		@Override
+		public int compare(TOCReference tocReference1, TOCReference tocReference2) {
+			return String.CASE_INSENSITIVE_ORDER.compare(tocReference1.getTitle(), tocReference2.getTitle());
+		}
+	};
 	
 	public TOCReference() {
 		this(null, null, null);
@@ -37,6 +45,10 @@ public class TOCReference extends TitledResourceReference implements Serializabl
 		this.children = children;
 	}
 
+	public static Comparator<TOCReference> getComparatorByTitleIgnoreCase() {
+		return COMPARATOR_BY_TITLE_IGNORE_CASE;
+	}
+	
 	public List<TOCReference> getChildren() {
 		return children;
 	}
