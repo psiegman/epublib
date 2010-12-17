@@ -15,7 +15,6 @@ import org.apache.commons.vfs.VFS;
 
 public class ChmParserTest extends TestCase {
 	
-	@SuppressWarnings("unchecked")
 	public void test1() {
 		try {
 			FileSystemManager fsManager = VFS.getManager();
