@@ -17,9 +17,9 @@ public class HtmlSplitterTest extends TestCase {
 	public void test1() {
 		HtmlSplitter htmlSplitter = new HtmlSplitter();
 		try {
-			String bookResourceName = "/moby_dick.html";
+			String bookResourceName = "/holmes_scandal_bohemia.html";
 			Reader input = new InputStreamReader(HtmlSplitterTest.class.getResourceAsStream(bookResourceName), Constants.ENCODING);
-			int maxSize = 10000;
+			int maxSize = 3000;
 			List<List<XMLEvent>> result = htmlSplitter.splitHtml(input, maxSize);
 //			System.out.println(this.getClass().getName() + ": split in " + result.size() + " pieces");
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
