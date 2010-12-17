@@ -48,6 +48,10 @@ public class FilesetBookCreator {
 		return createBookFromDirectory(rootFileObject, encoding);
 	}
 	
+	public static Book createBookFromDirectory(FileObject rootDirectory) throws IOException {
+		return createBookFromDirectory(rootDirectory, Constants.ENCODING);
+	}
+	
 	/**
 	 * Recursively adds all files that are allowed to be part of an epub to the Book.
 	 * 
@@ -75,6 +79,8 @@ public class FilesetBookCreator {
 			FileObject file = files[i];
 			if(file.getType() == FileType.FOLDER) {
 				processSubdirectory(rootDir, file, sections, resources, inputEncoding);
+			} else if (MediatypeService.determineMediaType(file.getName().getBaseName()) == null) {
+				continue;
 			} else {
 				Resource resource = ResourceUtil.createResource(rootDir, file, inputEncoding);
 				if(resource == null) {
