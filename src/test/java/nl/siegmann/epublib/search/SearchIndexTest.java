@@ -32,7 +32,7 @@ public class SearchIndexTest extends TestCase {
 		}
 	}
 	
-	public void unicodeTrim() {
+	public void testUnicodeTrim() {
 		String[] testData = new String[] {
 				"", "",
 				" ", "",
@@ -41,7 +41,7 @@ public class SearchIndexTest extends TestCase {
 				" a", "a",
 				" a ", "a",
 				"\ta", "a",
-				"\u00a0a", "a",
+				"\u00a0a", "a"
 		};		
 		for (int i = 0; i < testData.length; i+= 2) {
 			String actualText = SearchIndex.unicodeTrim(testData[i]);
