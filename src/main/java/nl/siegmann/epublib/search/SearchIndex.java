@@ -30,8 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class SearchIndex {
+
 	private static final Logger log = LoggerFactory.getLogger(SearchIndex.class);
 	
+	public static int NBSP = 0x00A0;
+
 	// whitespace pattern that also matches U+00A0 (&nbsp; in html)
 	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[\\p{Z}\\s]+");
 	
@@ -159,23 +162,33 @@ public class SearchIndex {
 		return result.toString();
 	}
 	
+	/**
+	 * Checks whether the given character is a java whitespace or a non-breaking-space (&amp;nbsp;).
+	 * 
+	 * @param c
+	 * @return
+	 */
+	private static boolean isHtmlWhitespace(int c) {
+		return c == NBSP || Character.isWhitespace(c);
+	}
+	
 	public static String unicodeTrim(String text) {
 		int leadingWhitespaceCount = 0;
 		int trailingWhitespaceCount = 0;
 		for (int i = 0; i < text.length(); i++) {
-			if (! Character.isWhitespace(text.charAt(i))) {
-				leadingWhitespaceCount = i;
+			if (! isHtmlWhitespace(text.charAt(i))) {
 				break;
 			}
+			leadingWhitespaceCount++;
 		}
 		for (int i = (text.length() - 1); i > leadingWhitespaceCount; i--) {
-			if (! Character.isWhitespace(text.charAt(i))) {
-				trailingWhitespaceCount = i;
+			if (! isHtmlWhitespace(text.charAt(i))) {
 				break;
 			}
+			trailingWhitespaceCount++;
 		}
-		if (leadingWhitespaceCount > 0 || trailingWhitespaceCount < text.length()) {
-			text = text.substring((leadingWhitespaceCount - 1), (trailingWhitespaceCount + 1));
+		if (leadingWhitespaceCount > 0 || trailingWhitespaceCount > 0) {
+			text = text.substring(leadingWhitespaceCount, text.length() - trailingWhitespaceCount);
 		}
 		return text;
 	}
@@ -191,7 +204,7 @@ public class SearchIndex {
 	 * @return
 	 */
 	public static String cleanText(String text) {
-		text = text.trim();
+		text = unicodeTrim(text);
 		
 		// replace all multiple whitespaces by a single space
 		Matcher matcher = WHITESPACE_PATTERN.matcher(text);
