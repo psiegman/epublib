@@ -1,4 +1,4 @@
-package nl.siegmann.epub.browsersupport;
+package nl.siegmann.epublib.browsersupport;
 
 import java.util.HashMap;
 import java.util.Map;
