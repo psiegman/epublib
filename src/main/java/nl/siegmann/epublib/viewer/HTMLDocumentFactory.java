@@ -11,7 +11,7 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLEditorKit.Parser;
-import javax.swing.text.html.HTMLEditorKit.ParserCallback;
+
 
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
@@ -171,7 +171,7 @@ public class HTMLDocumentFactory {
 			return;
 		}
 		documentCache.clear();
-		Thread documentIndexerThread = new Thread(new DocumentIndexer(book));
+		Thread documentIndexerThread = new Thread(new DocumentIndexer(book), "DocumentIndexer");
 		documentIndexerThread.setPriority(Thread.MIN_PRIORITY);
 		documentIndexerThread.start();
 		
