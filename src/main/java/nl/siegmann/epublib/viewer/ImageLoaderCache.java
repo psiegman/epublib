@@ -104,7 +104,7 @@ class ImageLoaderCache extends Dictionary {
 		String imageURL = key.toString();
 
 		// see if the image is already in the cache
-		Image result = (Image) cache.get(imageURL);
+		Image result = cache.get(imageURL);
 		if (result != null) {
 			return result;
 		}

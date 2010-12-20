@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import nl.siegmann.epublib.browsersupport.NavigationHistory;
-import nl.siegmann.epublib.browsersupport.Navigator;
+
+
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 

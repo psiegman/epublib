@@ -35,7 +35,7 @@ public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookP
 		Reader reader = resource.getReader();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out, Constants.ENCODING);
-		for(String line: (List<String>) IOUtils.readLines(reader)) {
+		for(String line: IOUtils.readLines(reader)) {
 			writer.write(processLine(line));
 			writer.flush();
 		}
