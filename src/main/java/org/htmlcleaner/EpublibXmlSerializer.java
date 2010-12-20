@@ -5,13 +5,13 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
-import org.htmlcleaner.BaseToken;
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.ContentToken;
-import org.htmlcleaner.SpecialEntities;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.Utils;
-import org.htmlcleaner.XmlSerializer;
+
+
+
+
+
+
+
 
 public class EpublibXmlSerializer extends XmlSerializer {
 	public EpublibXmlSerializer(CleanerProperties paramCleanerProperties) {
@@ -117,7 +117,7 @@ public class EpublibXmlSerializer extends XmlSerializer {
 										: "&amp;");
 								j += 4;
 							} else if (str1.startsWith("&apos;")) {
-								localStringBuffer.append("'");
+								localStringBuffer.append('\'');
 								j += 5;
 							} else if (str1.startsWith("&gt;")) {
 								localStringBuffer.append((paramBoolean) ? ">"
@@ -140,7 +140,7 @@ public class EpublibXmlSerializer extends XmlSerializer {
 						}
 					}
 				} else if (c1 == '\'') {
-					localStringBuffer.append("'");
+					localStringBuffer.append('\'');
 				} else if (c1 == '>') {
 					localStringBuffer.append("&gt;");
 				} else if (c1 == '<') {
