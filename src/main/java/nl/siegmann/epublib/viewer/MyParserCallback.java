@@ -1,10 +1,10 @@
 package nl.siegmann.epublib.viewer;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+
 import java.util.List;
 
-import javax.smartcardio.ATR;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
