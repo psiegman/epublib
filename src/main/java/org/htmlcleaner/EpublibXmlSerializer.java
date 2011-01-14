@@ -7,8 +7,8 @@ import java.util.List;
 
 
 
-
-
+import org.htmlcleaner.ContentNode;
+import org.htmlcleaner.SpecialEntity;
 
 
 
@@ -30,8 +30,8 @@ public class EpublibXmlSerializer extends XmlSerializer {
 			if (localObject == null) {
 				continue;
 			}
-			if (localObject instanceof ContentToken) {
-				String str = ((ContentToken) localObject).getContent();
+			if (localObject instanceof ContentNode) {
+				String str = ((ContentNode) localObject).getContent().toString();
 				paramWriter.write((dontEscape(paramTagNode)) ? str.replaceAll(
 						"]]>", "]]&gt;") : escapeXml(str, this.props, false));
 			} else {
@@ -95,8 +95,7 @@ public class EpublibXmlSerializer extends XmlSerializer {
 							int l = str1.indexOf(59);
 							if (l > 0) {
 								String str3 = str1.substring(1, l);
-								Integer localInteger = (Integer) SpecialEntities.entities
-										.get(str3);
+								Integer localInteger = (Integer) SpecialEntity.getEntity(str3).getIntCode();
 								if (localInteger != null) {
 									int i2 = str3.length();
 									if (recognizeUnicodeChars) {
