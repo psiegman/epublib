@@ -8,8 +8,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.CommentToken;
-import org.htmlcleaner.ContentToken;
+import org.htmlcleaner.CommentNode;
+import org.htmlcleaner.ContentNode;
 import org.htmlcleaner.EndTagToken;
 import org.htmlcleaner.TagNode;
 
@@ -102,10 +102,10 @@ public class XmlSerializer {
 
 
 	private void serializeToken(Object item, XMLStreamWriter writer) throws XMLStreamException {
-        if ( item instanceof ContentToken ) {
-            writer.writeCharacters(((ContentToken) item).getContent());
-        } else if(item instanceof CommentToken) {
-			writer.writeComment(((CommentToken) item).getContent());
+        if ( item instanceof ContentNode ) {
+            writer.writeCharacters(((ContentNode) item).getContent().toString());
+        } else if(item instanceof CommentNode) {
+			writer.writeComment(((CommentNode) item).getContent().toString());
         } else if(item instanceof EndTagToken) {
 //        	writer.writeEndElement();
         } else if(item instanceof TagNode) {
