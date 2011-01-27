@@ -54,7 +54,7 @@ public class SearchIndexTest extends TestCase {
 				"a", "a", new Integer[] {0},
 				"a", "aa", new Integer[] {0,1},
 				"a", "a   \n\t\t\ta", new Integer[] {0,2},
-				"a", "ä", new Integer[] {0},
+				"a", "\u00c3\u00a4", new Integer[] {0}, // ä
 				"a", "A", new Integer[] {0},
 				// &auml;&nbsp;
 				"a", "\u00a0\u00c4", new Integer[] {0},
