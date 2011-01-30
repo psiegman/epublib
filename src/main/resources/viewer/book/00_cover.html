@@ -1,0 +1,59 @@
+<html>
+<head><title>epublib - a java epub library</title></head>
+<body>
+<h1>Epublib - a java epub library</h1>
+<p>
+Epublib is a java library for reading/writing epub files. It comes with both a viewer and a command-line tool.
+It&#8217;s intended use is both as part of a larger java application and as a command-line tool.</p>
+<h2>Features</h2>
+<dl>
+<dt>Builtin viewer</dt>
+<dd>
+A viewer that supports table of contents, guide, meta info and pages.
+</dd>
+
+<dt>Comprehensive coverage of the epub standard </dt>
+<dd>
+<ul>
+<li>Has support for the spine, the table of contents and the guide.</li>
+<li>Since the latest version it supports all the roles as defined in the Library of Congress relator list (<a href="http://www.loc.gov/marc/relators/relaterm.html">http://www.loc.gov/marc/relators/relaterm.html</a>)</li>
+</ul>
+</dd>
+<dt>Simple things are simple</dt>
+<dd>
+<p>The api is designed to be as simple as possible, while at the same time making complex things possible too.</p>
+<pre>
+// read epub
+EpubReader epubReader = new EpubReader();
+Book book = epubReader.readEpub(new FileInputStream(&quot;mybook.epub&quot;));
+
+// set title
+book.getMetadata().setTitles(new ArrayList&lt;String&gt;() {{ add(&quot;an awesome book&quot;);}});
+
+// write epub
+EpubWriter epubWriter = new EpubWriter();
+epubWriter.write(book, new FileOutputStream(&quot;mynewbook.epub&quot;));
+</pre>
+</dd>
+<dt>Cleans up html into xhtml</dt>
+<dd>Does not remove non-standard tags and attributes, but makes html files into valid xml (using xmlcleaner <a href="http://htmlcleaner.sourceforge.net/">http://htmlcleaner.sourceforge.net/</a>)</dd>
+<dt>Cleans up non-standards compliant epub</dt>
+<dd>
+Epublib tries to be as forgiving as possible when reading epubs and writes them as standards-compliant as possible.<br />
+If you&#8217;ve created an epub by zipping up several html files then running it through epub will make it much more standards-compliant.
+</dd>
+<dt>Fixes the coverpage on many readers</dt>
+<dd>
+For different epub readers the coverpage needs to be specified in a different way. Epublib tries several ways of extracting the coverpage from an existing epub and writes it in such a way that most (all the readers I&#8217;ve tested it on) display the coverpage correctly.</li>
+</dd>
+<dt>Support for creation of epubs</dt>
+<dd>
+The api supports the creation of epubs from scratch. See <a href="/epublib/example-programs/epub-sample-simple1">Creating a simple book example</a> for an example.</dd>
+<dt>Convert (uncompressed) windows help (.chm)  files to epub</dt>
+<dd>
+After uncompressing a windows help file with something like <a href="http://www.jedrea.com/chmlib/">chmlib</a> epublib can make an epub file out of the resulting html and windows help index files.
+</dd>
+</dl>
+</p>
+</body>
+</html>

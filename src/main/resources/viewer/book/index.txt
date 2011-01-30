@@ -1,0 +1,4 @@
+title: Epublib - a java epub library
+author: P. Siegmann
+
+00_cover.html
