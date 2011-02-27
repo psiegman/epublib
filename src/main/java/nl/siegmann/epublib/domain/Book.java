@@ -20,6 +20,8 @@ public class Book implements Serializable {
 	private Spine spine = new Spine();
 	private TableOfContents tableOfContents = new TableOfContents();
 	private Guide guide = new Guide();
+	private Resource opfResource;
+	private Resource ncxResource;
 	
 	
 	/**
@@ -169,4 +171,20 @@ public class Book implements Serializable {
 		return guide;
 	}
 
+	public Resource getOpfResource() {
+		return opfResource;
+	}
+	
+	public void setOpfResource(Resource opfResource) {
+		this.opfResource = opfResource;
+	}
+	
+	public void setNcxResource(Resource ncxResource) {
+		this.ncxResource = ncxResource;
+	}
+
+	public Resource getNcxResource() {
+		return ncxResource;
+	}
 }
+
