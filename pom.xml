@@ -167,6 +167,14 @@
 	</reporting>
 	<repositories>
 		<repository>
+			<id>maven</id>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/</url>
+		</repository>
+		<repository>
 			<id>net.java.repository</id>
 			<name>Java.net repository</name>
 			<url>http://download.java.net/maven/2/</url>
