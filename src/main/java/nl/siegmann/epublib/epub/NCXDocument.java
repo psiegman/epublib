@@ -75,23 +75,25 @@ public class NCXDocument {
 		
 	}
 	
-	public static void read(Book book, EpubReader epubReader) {
+	public static Resource read(Book book, EpubReader epubReader) {
+		Resource result = null;
 		if(book.getSpine().getTocResource() == null) {
 			log.error("Book does not contain a table of contents file");
-			return;
+			return result;
 		}
 		try {
-			Resource ncxResource = book.getSpine().getTocResource();
-			if(ncxResource == null) {
-				return;
+			result = book.getSpine().getTocResource();
+			if(result == null) {
+				return result;
 			}
-			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource, epubReader);
+			Document ncxDocument = ResourceUtil.getAsDocument(result, epubReader);
 			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+		return result;
 	}
 	
 	private static List<TOCReference> readTOCReferences(NodeList navpoints, Book book) {

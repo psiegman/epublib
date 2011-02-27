@@ -52,6 +52,14 @@ public class EpubReader extends EpubProcessor {
 	}
 	
 	
+	/**
+	 * Read epub from inputstream
+	 * 
+	 * @param in the inputstream from which to read the epub
+	 * @param encoding the encoding to use for the html files within the epub
+	 * @return
+	 * @throws IOException
+	 */
 	public Book readEpub(InputStream in, String encoding) throws IOException {
 		return readEpub(new ZipInputStream(in), encoding);
 	}
@@ -62,15 +70,17 @@ public class EpubReader extends EpubProcessor {
 		handleMimeType(result, resources);
 		String packageResourceHref = getPackageResourceHref(result, resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
-		processNcxResource(packageResource, result);
+		result.setOpfResource(packageResource);
+		Resource ncxResource = processNcxResource(packageResource, result);
+		result.setNcxResource(ncxResource);
 		if (epubCleaner != null) {
 			result = epubCleaner.cleanEpub(result);
 		}
 		return result;
 	}
 
-	private void processNcxResource(Resource packageResource, Book book) {
-		NCXDocument.read(book, this);
+	private Resource processNcxResource(Resource packageResource, Book book) {
+		return NCXDocument.read(book, this);
 	}
 
 	private Resource processPackageResource(String packageResourceHref, Book book, Map<String, Resource> resources) {
