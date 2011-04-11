@@ -58,7 +58,7 @@
 			<version>2.2</version>
 			<exclusions>
 				<exclusion>
-					<groupId>jdom</groupId>
+					<groupId>org.jdom</groupId>
 					<artifactId>jdom</artifactId>
 				</exclusion>
 			</exclusions>
