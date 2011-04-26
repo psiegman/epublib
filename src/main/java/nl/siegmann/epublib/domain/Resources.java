@@ -23,8 +23,8 @@ public class Resources implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2450876953383871451L;
-	public static final String IMAGE_PREFIX = "image_";
-	public static final String ITEM_PREFIX = "item_";
+	private static final String IMAGE_PREFIX = "image_";
+	private static final String ITEM_PREFIX = "item_";
 	
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
 	
@@ -43,6 +43,11 @@ public class Resources implements Serializable {
 		return resource;
 	}
 
+	/**
+	 * Checks the id of the given resource and changes to a unique identifier if it isn't one already.
+	 * 
+	 * @param resource
+	 */
 	public void fixResourceId(Resource resource) {
 		String  resourceId = resource.getId();
 		
@@ -107,7 +112,12 @@ public class Resources implements Serializable {
 		return false;
 	}
 	
-
+	/**
+	 * Gets the resource with the given id.
+	 * 
+	 * @param id
+	 * @return null if not found
+	 */
 	public Resource getById(String id) {
 		if (StringUtils.isBlank(id)) {
 			return null;
@@ -120,6 +130,12 @@ public class Resources implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Remove the resource with the given href.
+	 * 
+	 * @param href
+	 * @return the removed resource, null if not found
+	 */
 	public Resource remove(String href) {
 		return resources.remove(href);
 	}
@@ -155,6 +171,10 @@ public class Resources implements Serializable {
 		return resources.isEmpty();
 	}
 	
+	/**
+	 * The number of resources
+	 * @return
+	 */
 	public int size() {
 		return resources.size();
 	}
@@ -174,6 +194,11 @@ public class Resources implements Serializable {
 	}
 	
 	
+	/**
+	 * Whether there exists a resource with the given href
+	 * @param href
+	 * @return
+	 */
 	public boolean containsByHref(String href) {
 		if (StringUtils.isBlank(href)) {
 			return false;
@@ -181,11 +206,21 @@ public class Resources implements Serializable {
 		return resources.containsKey(StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR));
 	}
 	
+	/**
+	 * Sets the collection of Resources to the given collection of resources
+	 * 
+	 * @param resources
+	 */
 	public void set(Collection<Resource> resources) {
 		this.resources.clear();
 		addAll(resources);
 	}
 	
+	/**
+	 * Adds all resources from the given Collection of resources to the existing collection.
+	 * 
+	 * @param resources
+	 */
 	public void addAll(Collection<Resource> resources) {
 		for(Resource resource: resources) {
 			fixResourceHref(resource);
@@ -193,6 +228,11 @@ public class Resources implements Serializable {
 		}
 	}
 
+	/**
+	 * Sets the collection of Resources to the given collection of resources
+	 * 
+	 * @param resources A map with as keys the resources href and as values the Resources
+	 */
 	public void set(Map<String, Resource> resources) {
 		this.resources = new HashMap<String, Resource>(resources);
 	}
