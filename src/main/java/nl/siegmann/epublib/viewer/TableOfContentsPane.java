@@ -3,9 +3,11 @@ package nl.siegmann.epublib.viewer;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,8 +24,6 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -36,7 +36,7 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 
 	private static final long serialVersionUID = 2277717264176049700L;
 	
-	private MultiMap href2treeNode = new MultiValueMap();
+	private Map<String, Collection<DefaultMutableTreeNode>> href2treeNode = new HashMap<String, Collection<DefaultMutableTreeNode>>();
 	private JScrollPane scrollPane;
 	private Navigator navigator;
 	private JTree tree;
@@ -85,7 +85,12 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 		if (resource == null || StringUtils.isBlank(resource.getHref())) {
 			return;
 		}
-		href2treeNode.put(resource.getHref(), treeNode);
+		Collection<DefaultMutableTreeNode> treeNodes = href2treeNode.get(resource.getHref());
+		if (treeNodes == null) {
+			treeNodes = new ArrayList<DefaultMutableTreeNode>();
+			href2treeNode.put(resource.getHref(), treeNodes);
+		}
+		treeNodes.add(treeNode);
 	}
 	
 	private DefaultMutableTreeNode createTree(Book book) {
@@ -129,16 +134,15 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 		if (navigationEvent.getCurrentResource() == null) {
 			return;
 		}
-		Collection treenodes = (Collection) href2treeNode.get(navigationEvent.getCurrentResource().getHref());
-		if (treenodes == null || treenodes.isEmpty()) {
+		Collection<DefaultMutableTreeNode> treeNodes = href2treeNode.get(navigationEvent.getCurrentResource().getHref());
+		if (treeNodes == null || treeNodes.isEmpty()) {
 			if (navigationEvent.getCurrentSpinePos() == (navigationEvent.getOldSpinePos() + 1)) {
 				return;
 			}
 			tree.setSelectionPath(null);
 			return;
 		}
-		for (Iterator iter = treenodes.iterator(); iter.hasNext();) {
-			DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) iter.next();
+		for (DefaultMutableTreeNode treeNode: treeNodes) {
 			TreeNode[] path = treeNode.getPath();
 			TreePath treePath = new TreePath(path);
 			tree.setSelectionPath(treePath);

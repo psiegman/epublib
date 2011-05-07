@@ -18,7 +18,6 @@ import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
 import nl.siegmann.epublib.util.VFSUtil;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
@@ -107,7 +106,7 @@ public class Fileset2Epub {
 	}
 
 	private static void initAuthors(List<String> authorNames, Book book) {
-		if(CollectionUtils.isEmpty(authorNames)) {
+		if(authorNames == null || authorNames.isEmpty()) {
 			return;
 		}
 		List<Author> authorObjects = new ArrayList<Author>();
