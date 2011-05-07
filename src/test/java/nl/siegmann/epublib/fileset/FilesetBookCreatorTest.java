@@ -55,7 +55,7 @@ public class FilesetBookCreatorTest extends TestCase {
 				"chapter3.html",
 				"cover.html",
 				"flowers_320x240.jpg",
-				"test_cover.png"
+				"cover.png"
 		};
 		String testSourcesDir = "/book1";
 		for (String filename: sourceFiles) {

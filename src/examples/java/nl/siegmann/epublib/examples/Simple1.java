@@ -22,7 +22,7 @@ public class Simple1 {
 			book.getMetadata().addAuthor(new Author("Joe", "Tester"));
 	
 			// Set cover image
-			book.setCoverImage(new InputStreamResource(Simple1.class.getResourceAsStream("/book1/test_cover.png"), MediatypeService.PNG));
+			book.setCoverImage(new InputStreamResource(Simple1.class.getResourceAsStream("/book1/cover.png"), MediatypeService.PNG));
 			
 			// Add Chapter 1
 			book.addResourceAsSection("Introduction", new InputStreamResource(Simple1.class.getResourceAsStream("/book1/chapter1.html"), MediatypeService.XHTML));
