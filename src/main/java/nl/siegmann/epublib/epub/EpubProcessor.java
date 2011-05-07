@@ -9,8 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.Constants;
@@ -20,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
 
 public class EpubProcessor {
 	
@@ -63,10 +64,39 @@ public class EpubProcessor {
 		this.xPathFactory = XPathFactory.newInstance();
 	}
 	
-	XMLStreamWriter createXMLStreamWriter(OutputStream out) throws XMLStreamException {
-		return xmlOutputFactory.createXMLStreamWriter(out, Constants.ENCODING);
-	}
+	XmlSerializer createXmlSerializer(OutputStream out) {
+		XmlSerializer result = null;
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+//			factory.setNamespaceAware(true);
+			factory.setValidating(true);
+			result = factory.newSerializer();
+//			result.setProperty("SERIALIZER_INDENTATION", "\t");
+			result.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+			// indentation as 3 spaces
+//			result.setProperty(
+//			   "http://xmlpull.org/v1/doc/properties.html#serializer-indentation", "   ");
+//			// also set the line separator
+//			result.setProperty(
+//			   "http://xmlpull.org/v1/doc/properties.html#serializer-line-separator", "\n");
 
+			result.setOutput(out, Constants.ENCODING);
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	public DocumentBuilderFactory getDocumentBuilderFactory() {
 		return documentBuilderFactory;
 	}

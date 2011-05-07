@@ -11,7 +11,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
@@ -22,7 +21,6 @@ import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
-import nl.siegmann.epublib.utilities.IndentingXMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +29,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlSerializer;
 
 /**
  * Writes the ncx document as defined by namespace http://www.daisy.org/z3986/2005/ncx/
@@ -58,6 +57,7 @@ public class NCXDocument {
 		String text = "text";
 		String docTitle = "docTitle";
 		String docAuthor = "docAuthor";
+		String head = "head";
 	}
 	
 	private interface NCXAttributes {
@@ -67,11 +67,13 @@ public class NCXDocument {
 		String id = "id";
 		String playOrder = "playOrder";
 		String clazz = "class";
+		String version = "version";
 	}
 
 	private interface NCXAttributeValues {
 
 		String chapter = "chapter";
+		String version = "2005-1";
 		
 	}
 	
@@ -150,7 +152,7 @@ public class NCXDocument {
 	
 	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
 		resultStream.putNextEntry(new ZipEntry(book.getSpine().getTocResource().getHref()));
-		XMLStreamWriter out = epubWriter.createXMLStreamWriter(resultStream);
+		XmlSerializer out = epubWriter.createXmlSerializer(resultStream);
 		write(out, book);
 		out.flush();
 	}
@@ -162,97 +164,102 @@ public class NCXDocument {
 	 * @param epubWriter
 	 * @param book
 	 * @return
-	 * @throws XMLStreamException
+	 * @
 	 * @throws FactoryConfigurationError
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 * @throws IllegalArgumentException 
 	 */
-	public static Resource createNCXResource(EpubWriter epubWriter, Book book) throws XMLStreamException, FactoryConfigurationError {
+	public static Resource createNCXResource(EpubWriter epubWriter, Book book) throws IllegalArgumentException, IllegalStateException, IOException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		XMLStreamWriter out = epubWriter.createXMLStreamWriter(data);
+		XmlSerializer out = epubWriter.createXmlSerializer(data);
 		write(out, book);
 		Resource resource = new Resource(NCX_ITEM_ID, data.toByteArray(), DEFAULT_NCX_HREF, MediatypeService.NCX);
 		return resource;
 	}
 	
 	
-	public static void write(XMLStreamWriter writer, Book book) throws XMLStreamException {
-		writer = new IndentingXMLStreamWriter(writer);
-		writer.writeStartDocument(Constants.ENCODING, "1.0");
-		writer.setDefaultNamespace(NAMESPACE_NCX);
-		writer.writeStartElement(NAMESPACE_NCX, "ncx");
-//		writer.writeNamespace("ncx", NAMESPACE_NCX);
-		writer.writeAttribute("xmlns", NAMESPACE_NCX);
-		writer.writeAttribute("version", "2005-1");
-		writer.writeStartElement(NAMESPACE_NCX, "head");
+	public static void write(XmlSerializer serializer, Book book) throws IllegalArgumentException, IllegalStateException, IOException {
+		serializer.startDocument(Constants.ENCODING, false);
+		serializer.setPrefix(EpubWriter.EMPTY_NAMESPACE_PREFIX, NAMESPACE_NCX);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.ncx);
+//		serializer.writeNamespace("ncx", NAMESPACE_NCX);
+//		serializer.attribute("xmlns", NAMESPACE_NCX);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.version, NCXAttributeValues.version);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.head);
 
 		for(Identifier identifier: book.getMetadata().getIdentifiers()) {
-			writeMetaElement(identifier.getScheme(), identifier.getValue(), writer);
+			writeMetaElement(identifier.getScheme(), identifier.getValue(), serializer);
 		}
 		
-		writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, writer);
-		writeMetaElement("depth", String.valueOf(book.getTableOfContents().calculateDepth()), writer);
-		writeMetaElement("totalPageCount", "0", writer);
-		writeMetaElement("maxPageNumber", "0", writer);
+		writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, serializer);
+		writeMetaElement("depth", String.valueOf(book.getTableOfContents().calculateDepth()), serializer);
+		writeMetaElement("totalPageCount", "0", serializer);
+		writeMetaElement("maxPageNumber", "0", serializer);
 
-		writer.writeEndElement();
+		serializer.endTag(NAMESPACE_NCX, "head");
 		
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.docTitle);
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.docTitle);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.text);
 		// write the first title
-		writer.writeCharacters(StringUtils.defaultString(book.getTitle()));
-		writer.writeEndElement(); // text
-		writer.writeEndElement(); // docTitle
+		serializer.text(StringUtils.defaultString(book.getTitle()));
+		serializer.endTag(NAMESPACE_NCX, NCXTags.text);
+		serializer.endTag(NAMESPACE_NCX, NCXTags.docTitle);
 		
 		for(Author author: book.getMetadata().getAuthors()) {
-			writer.writeStartElement(NAMESPACE_NCX, NCXTags.docAuthor);
-			writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
-			writer.writeCharacters(author.getLastname() + ", " + author.getFirstname());
-			writer.writeEndElement();
-			writer.writeEndElement();
+			serializer.startTag(NAMESPACE_NCX, NCXTags.docAuthor);
+			serializer.startTag(NAMESPACE_NCX, NCXTags.text);
+			serializer.text(author.getLastname() + ", " + author.getFirstname());
+			serializer.endTag(NAMESPACE_NCX, NCXTags.text);
+			serializer.endTag(NAMESPACE_NCX, NCXTags.docAuthor);
 		}
 		
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navMap);
-		writeNavPoints(book.getTableOfContents().getTocReferences(), 1, writer);
-		writer.writeEndElement();
-		writer.writeEndElement();
-		writer.writeEndDocument();
+		serializer.startTag(NAMESPACE_NCX, NCXTags.navMap);
+		writeNavPoints(book.getTableOfContents().getTocReferences(), 1, serializer);
+		serializer.endTag(NAMESPACE_NCX, NCXTags.navMap);
+		
+		serializer.endTag(NAMESPACE_NCX, "ncx");
+		serializer.endDocument();
 	}
 
 
-	private static void writeMetaElement(String dtbName, String content, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.meta);
-		writer.writeAttribute(NCXAttributes.name, PREFIX_DTB + ":" + dtbName);
-		writer.writeAttribute(NCXAttributes.content, content);
+	private static void writeMetaElement(String dtbName, String content, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
+		serializer.startTag(NAMESPACE_NCX, NCXTags.meta);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.name, PREFIX_DTB + ":" + dtbName);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.content, content);
+		serializer.endTag(NAMESPACE_NCX, NCXTags.meta);
 	}
 	
 	private static int writeNavPoints(List<TOCReference> tocReferences, int playOrder,
-			XMLStreamWriter writer) throws XMLStreamException {
+			XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
 		for(TOCReference tocReference: tocReferences) {
-			writeNavPointStart(tocReference, playOrder, writer);
+			writeNavPointStart(tocReference, playOrder, serializer);
 			playOrder++;
 			if(! tocReference.getChildren().isEmpty()) {
-				playOrder = writeNavPoints(tocReference.getChildren(), playOrder, writer);
+				playOrder = writeNavPoints(tocReference.getChildren(), playOrder, serializer);
 			}
-			writeNavPointEnd(tocReference, writer);
+			writeNavPointEnd(tocReference, serializer);
 		}
 		return playOrder;
 	}
 
 
-	private static void writeNavPointStart(TOCReference tocReference, int playOrder, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navPoint);
-		writer.writeAttribute(NCXAttributes.id, "navPoint-" + playOrder);
-		writer.writeAttribute(NCXAttributes.playOrder, String.valueOf(playOrder));
-		writer.writeAttribute(NCXAttributes.clazz, NCXAttributeValues.chapter);
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.navLabel);
-		writer.writeStartElement(NAMESPACE_NCX, NCXTags.text);
-		writer.writeCharacters(tocReference.getTitle());
-		writer.writeEndElement(); // text
-		writer.writeEndElement(); // navLabel
-		writer.writeEmptyElement(NAMESPACE_NCX, NCXTags.content);
-		writer.writeAttribute(NCXAttributes.src, tocReference.getCompleteHref());
+	private static void writeNavPointStart(TOCReference tocReference, int playOrder, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
+		serializer.startTag(NAMESPACE_NCX, NCXTags.navPoint);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.id, "navPoint-" + playOrder);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.playOrder, String.valueOf(playOrder));
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.clazz, NCXAttributeValues.chapter);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.navLabel);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.text);
+		serializer.text(tocReference.getTitle());
+		serializer.endTag(NAMESPACE_NCX, NCXTags.text);
+		serializer.endTag(NAMESPACE_NCX, NCXTags.navLabel);
+		serializer.startTag(NAMESPACE_NCX, NCXTags.content);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, NCXAttributes.src, tocReference.getCompleteHref());
+		serializer.endTag(NAMESPACE_NCX, NCXTags.content);
 	}
 
-	private static void writeNavPointEnd(TOCReference tocReference, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeEndElement(); // navPoint
+	private static void writeNavPointEnd(TOCReference tocReference, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
+		serializer.endTag(NAMESPACE_NCX, NCXTags.navPoint);
 	}
 }

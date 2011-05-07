@@ -11,7 +11,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -20,6 +19,7 @@ import nl.siegmann.epublib.service.MediatypeService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlSerializer;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 public class EpubWriter extends EpubProcessor {
 	
 	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
+	
+	// package
+	static final String EMPTY_NAMESPACE_PREFIX = "";
 	
 	private HtmlProcessor htmlProcessor;
 	private MediatypeService mediatypeService = new MediatypeService();
@@ -62,13 +65,18 @@ public class EpubWriter extends EpubProcessor {
 	}
 
 	private void initTOCResource(Book book) throws XMLStreamException, FactoryConfigurationError {
-		Resource tocResource = NCXDocument.createNCXResource(this, book);
-		Resource currentTocResource = book.getSpine().getTocResource();
-		if (currentTocResource != null) {
-			book.getResources().remove(currentTocResource.getHref());
+		Resource tocResource;
+		try {
+			tocResource = NCXDocument.createNCXResource(this, book);
+			Resource currentTocResource = book.getSpine().getTocResource();
+			if (currentTocResource != null) {
+				book.getResources().remove(currentTocResource.getHref());
+			}
+			book.getSpine().setTocResource(tocResource);
+			book.getResources().add(tocResource);
+		} catch (Exception e) {
+			log.error("Error writing table of contents: " + e.getClass().getName() + ": " + e.getMessage());
 		}
-		book.getSpine().setTocResource(tocResource);
-		book.getResources().add(tocResource);
 	}
 	
 
@@ -103,9 +111,11 @@ public class EpubWriter extends EpubProcessor {
 
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
-		XMLStreamWriter xmlStreamWriter = createXMLStreamWriter(resultStream);
-		PackageDocumentWriter.write(this, xmlStreamWriter, book);
-		xmlStreamWriter.flush();
+		XmlSerializer xmlSerializer = createXmlSerializer(resultStream);
+		PackageDocumentWriter.write(this, xmlSerializer, book);
+		xmlSerializer.flush();
+//		String resultAsString = result.toString();
+//		resultStream.write(resultAsString.getBytes(Constants.ENCODING));
 	}
 
 	/**
