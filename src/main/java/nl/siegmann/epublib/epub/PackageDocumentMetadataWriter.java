@@ -1,11 +1,10 @@
 package nl.siegmann.epublib.epub;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
@@ -14,97 +13,104 @@ import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 
 import org.apache.commons.lang.StringUtils;
+import org.xmlpull.v1.XmlSerializer;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 
+	
 	/**
 	 * Writes the book's metadata.
 	 * 
 	 * @param book
-	 * @param writer
-	 * @throws XMLStreamException
+	 * @param serializer
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 * @throws IllegalArgumentException 
+	 * @
 	 */
-	public static void writeMetaData(Book book, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement(NAMESPACE_OPF, OPFTags.metadata);
-		writer.writeNamespace(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
-		writer.writeNamespace(PREFIX_OPF, NAMESPACE_OPF);
+	public static void writeMetaData(Book book, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
+		serializer.startTag(NAMESPACE_OPF, OPFTags.metadata);
+		serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
+		serializer.setPrefix(PREFIX_OPF, NAMESPACE_OPF);
 		
-		writeIdentifiers(book.getMetadata().getIdentifiers(), writer);
-		writeSimpleMetdataElements(DCTags.title, book.getMetadata().getTitles(), writer);
-		writeSimpleMetdataElements(DCTags.subject, book.getMetadata().getSubjects(), writer);
-		writeSimpleMetdataElements(DCTags.description, book.getMetadata().getDescriptions(), writer);
-		writeSimpleMetdataElements(DCTags.publisher, book.getMetadata().getPublishers(), writer);
-		writeSimpleMetdataElements(DCTags.type, book.getMetadata().getTypes(), writer);
-		writeSimpleMetdataElements(DCTags.rights, book.getMetadata().getRights(), writer);
+		writeIdentifiers(book.getMetadata().getIdentifiers(), serializer);
+		writeSimpleMetdataElements(DCTags.title, book.getMetadata().getTitles(), serializer);
+		writeSimpleMetdataElements(DCTags.subject, book.getMetadata().getSubjects(), serializer);
+		writeSimpleMetdataElements(DCTags.description, book.getMetadata().getDescriptions(), serializer);
+		writeSimpleMetdataElements(DCTags.publisher, book.getMetadata().getPublishers(), serializer);
+		writeSimpleMetdataElements(DCTags.type, book.getMetadata().getTypes(), serializer);
+		writeSimpleMetdataElements(DCTags.rights, book.getMetadata().getRights(), serializer);
 
 		// write authors
 		for(Author author: book.getMetadata().getAuthors()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.creator);
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
-			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
-			writer.writeEndElement(); // dc:creator
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, DCTags.creator);
+			serializer.attribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
+			serializer.attribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
+			serializer.text(author.getFirstname() + " " + author.getLastname());
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, DCTags.creator);
 		}
 
 		// write contributors
 		for(Author author: book.getMetadata().getContributors()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.contributor);
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
-			writer.writeAttribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
-			writer.writeCharacters(author.getFirstname() + " " + author.getLastname());
-			writer.writeEndElement(); // dc:contributor
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, DCTags.contributor);
+			serializer.attribute(NAMESPACE_OPF, OPFAttributes.role, author.getRelator().getCode());
+			serializer.attribute(NAMESPACE_OPF, OPFAttributes.file_as, author.getLastname() + ", " + author.getFirstname());
+			serializer.text(author.getFirstname() + " " + author.getLastname());
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, DCTags.contributor);
 		}
 		
 		// write dates
 		for (Date date: book.getMetadata().getDates()) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.date);
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, DCTags.date);
 			if (date.getEvent() != null) {
-				writer.writeAttribute(PREFIX_OPF, NAMESPACE_OPF, OPFAttributes.event, date.getEvent().toString());
+				serializer.attribute(NAMESPACE_OPF, OPFAttributes.event, date.getEvent().toString());
 			}
-			writer.writeCharacters(date.getValue());
-			writer.writeEndElement(); // dc:date
+			serializer.text(date.getValue());
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, DCTags.date);
 		}
 
 		// write language
 		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, "language");
-			writer.writeCharacters(book.getMetadata().getLanguage());
-			writer.writeEndElement(); // dc:language
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, "language");
+			serializer.text(book.getMetadata().getLanguage());
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, "language");
 		}
 
 		// write other properties
 		if(book.getMetadata().getOtherProperties() != null) {
 			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
-				writer.writeStartElement(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
-				writer.writeCharacters(mapEntry.getValue());
-				writer.writeEndElement();
+				serializer.startTag(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
+				serializer.text(mapEntry.getValue());
+				serializer.endTag(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
 				
 			}
 		}
 
 		// write coverimage
 		if(book.getMetadata().getCoverImage() != null) { // write the cover image
-			writer.writeEmptyElement(OPFTags.meta);
-			writer.writeAttribute(OPFAttributes.name, OPFValues.meta_cover);
-			writer.writeAttribute(OPFAttributes.content, book.getMetadata().getCoverImage().getId());
+			serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.name, OPFValues.meta_cover);
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.content, book.getMetadata().getCoverImage().getId());
+			serializer.endTag(NAMESPACE_OPF, OPFTags.meta);
 		}
 
 		// write generator
-		writer.writeEmptyElement(OPFTags.meta);
-		writer.writeAttribute(OPFAttributes.name, OPFValues.generator);
-		writer.writeAttribute(OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
+		serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.name, OPFValues.generator);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
+		serializer.endTag(NAMESPACE_OPF, OPFTags.meta);
 		
-		writer.writeEndElement(); // dc:metadata
+		serializer.endTag(NAMESPACE_OPF, OPFTags.metadata);
 	}
 	
-	private static void writeSimpleMetdataElements(String tagName, List<String> values, XMLStreamWriter writer) throws XMLStreamException {
+	private static void writeSimpleMetdataElements(String tagName, List<String> values, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
 		for(String value: values) {
 			if (StringUtils.isBlank(value)) {
 				continue;
 			}
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, tagName);
-			writer.writeCharacters(value);
-			writer.writeEndElement();
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, tagName);
+			serializer.text(value);
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, tagName);
 		}
 	}
 
@@ -115,29 +121,32 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
 	 * 
 	 * @param identifiers
-	 * @param writer
-	 * @throws XMLStreamException
+	 * @param serializer
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 * @throws IllegalArgumentException 
+	 * @
 	 */
-	private static void writeIdentifiers(List<Identifier> identifiers, XMLStreamWriter writer) throws XMLStreamException {
+	private static void writeIdentifiers(List<Identifier> identifiers, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
 		Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);
 		if(bookIdIdentifier == null) {
 			return;
 		}
 		
-		writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
-		writer.writeAttribute("id", BOOK_ID_ID);
-		writer.writeAttribute(NAMESPACE_OPF, "scheme", bookIdIdentifier.getScheme());
-		writer.writeCharacters(bookIdIdentifier.getValue());
-		writer.writeEndElement(); // dc:identifier
+		serializer.startTag(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
+		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, DCAttributes.id, BOOK_ID_ID);
+		serializer.attribute(NAMESPACE_OPF, OPFAttributes.scheme, bookIdIdentifier.getScheme());
+		serializer.text(bookIdIdentifier.getValue());
+		serializer.endTag(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
 
 		for(Identifier identifier: identifiers.subList(1, identifiers.size())) {
 			if(identifier == bookIdIdentifier) {
 				continue;
 			}
-			writer.writeStartElement(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
-			writer.writeAttribute(NAMESPACE_OPF, "scheme", identifier.getScheme());
-			writer.writeCharacters(identifier.getValue());
-			writer.writeEndElement(); // dc:identifier
+			serializer.startTag(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
+			serializer.attribute(NAMESPACE_OPF, "scheme", identifier.getScheme());
+			serializer.text(identifier.getValue());
+			serializer.endTag(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
 		}
 	}
 

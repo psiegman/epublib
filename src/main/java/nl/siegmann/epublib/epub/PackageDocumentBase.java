@@ -35,6 +35,7 @@ public class PackageDocumentBase {
 	
 	protected interface DCAttributes {
 		String scheme = "scheme";
+		String id = "id";
 	}
 	
 	protected interface OPFTags {
@@ -64,6 +65,8 @@ public class PackageDocumentBase {
 		String media_type = "media-type";
 		String title = "title";
 		String toc = "toc";
+		String version = "version";
+		String scheme = "scheme";
 	}
 	
 	protected interface OPFValues {
