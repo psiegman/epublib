@@ -2,6 +2,7 @@ package nl.siegmann.epublib.epub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -24,6 +25,10 @@ public class EpubWriterTest extends TestCase {
 			
 			// write book to byte[]
 			byte[] bookData = writeBookToByteArray(book);
+			FileOutputStream fileOutputStream = new FileOutputStream("foo.zip");
+			fileOutputStream.write(bookData);
+			fileOutputStream.flush();
+			fileOutputStream.close();
 			assertNotNull(bookData);
 			assertTrue(bookData.length > 0);
 			
@@ -58,7 +63,7 @@ public class EpubWriterTest extends TestCase {
 		book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, "987654321"));
 		book.getMetadata().addAuthor(new Author("Joe", "Tester"));
 		book.setCoverPage(new Resource(this.getClass().getResourceAsStream("/book1/cover.html"), "cover.html"));
-		book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+		book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/cover.png"), "cover.png"));
 		book.addSection("Chapter 1", new Resource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 		book.addResource(new Resource(this.getClass().getResourceAsStream("/book1/book1.css"), "book1.css"));
 		TOCReference chapter2 = book.addSection("Second chapter", new Resource(this.getClass().getResourceAsStream("/book1/chapter2.html"), "chapter2.html"));

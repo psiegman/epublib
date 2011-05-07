@@ -14,7 +14,7 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/cover.png"), "cover.png"));
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			(new EpubWriter()).write(book, out);
@@ -33,7 +33,7 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/cover.png"), "cover.png"));
 			book.addSection("Introduction", new Resource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.generateSpineFromTableOfContents();
 			
@@ -55,7 +55,7 @@ public class EpubReaderTest extends TestCase {
 		try {
 			Book book = new Book();
 			
-			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/test_cover.png"), "cover.png"));
+			book.setCoverImage(new Resource(this.getClass().getResourceAsStream("/book1/cover.png"), "cover.png"));
 			book.addSection("Introduction", new Resource(this.getClass().getResourceAsStream("/book1/chapter1.html"), "chapter1.html"));
 			book.generateSpineFromTableOfContents();
 			
