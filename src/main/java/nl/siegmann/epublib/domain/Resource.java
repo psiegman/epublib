@@ -10,9 +10,8 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import com.google.gdata.util.io.base.UnicodeReader;
 
 /**
  * Represents a resource that is part of the epub.
@@ -130,14 +129,14 @@ public class Resource implements Serializable {
 	/**
 	 * Gets the contents of the Resource as Reader.
 	 * 
-	 * Does all sorts of smart things (courtesy of google gdata UnicodeReader) to handle encodings, byte order markers, etc.
+	 * Does all sorts of smart things (courtesy of apache commons io XMLStreamREader) to handle encodings, byte order markers, etc.
 	 * 
 	 * @param resource
 	 * @return
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
-		return new UnicodeReader(new ByteArrayInputStream(data), inputEncoding);
+		return new XmlStreamReader(new ByteArrayInputStream(data), inputEncoding);
 	}
 	
 	public int hashCode() {
