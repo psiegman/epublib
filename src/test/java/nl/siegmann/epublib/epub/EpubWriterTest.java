@@ -2,7 +2,6 @@ package nl.siegmann.epublib.epub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -25,10 +24,10 @@ public class EpubWriterTest extends TestCase {
 			
 			// write book to byte[]
 			byte[] bookData = writeBookToByteArray(book);
-			FileOutputStream fileOutputStream = new FileOutputStream("foo.zip");
-			fileOutputStream.write(bookData);
-			fileOutputStream.flush();
-			fileOutputStream.close();
+//			FileOutputStream fileOutputStream = new FileOutputStream("foo.zip");
+//			fileOutputStream.write(bookData);
+//			fileOutputStream.flush();
+//			fileOutputStream.close();
 			assertNotNull(bookData);
 			assertTrue(bookData.length > 0);
 			
