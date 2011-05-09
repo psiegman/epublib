@@ -1,0 +1,177 @@
+/* Formatvorlage*/
+/* (c) Ulrich Kulle Hannover*/
+/*---------------------------------------------*/
+/* Die Formatierungen gelten für alle Dateien,*/
+/* die im Hauptframe angezeigt werden*/
+
+/*mögliche Einstellung Rollbalken MS IE 5.5*/
+/*scrollbar-3d-light-color : red*/
+/*scrollbar-arrow-color	 : yellow*/
+/*scrollbar-base-color : green*/
+/*scrollbar-dark-shadow-color : orange*/
+/*scrollbar-face-color : purple */
+/*scrollbar-highloight-color : black*/
+/*scrollbar-shadow-color : blue						*/
+
+/*BODY-tag Steuermöglichkeit							*/
+/*margin-top:0px; margin-left=0px;						*/
+
+body
+{
+	background: #ffffff;
+	scrollbar-base-color: #A88000;
+	scrollbar-arrow-color: yellow;
+	margin-left : 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+}
+
+hr {
+color: #FFCC00;
+margin-left : 10px;
+margin-right: 10px;
+}
+
+hr.simple {
+margin-left : 10px;
+margin-right: 10px;
+}
+h1 {
+background-image: url(images/verlauf-gelb.jpg);
+font-family: Verdana;
+font-size: 10pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;
+}
+h2 {
+background-image: url(images/verlauf-blau.jpg);
+font-family: Verdana;
+font-size: 10pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;
+}
+h3 {
+background-image: url(images/verlauf-rot.jpg);
+color:white;
+font-family: Verdana;
+font-size: 10pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;
+}
+h4 {
+background-image: url(images/verlauf-gelb.jpg);
+font-family: Verdana;
+font-size: 8pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;
+}
+h5{
+background-image: url(images/verlauf-blau.jpg);
+font-family: Verdana;
+font-size: 8pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;	
+}
+h6 {
+background-image: url(images/verlauf-rot.jpg);
+color:white;
+font-family: Verdana;
+font-size: 8pt;
+font-weight: bold;
+margin-left : 10px;
+margin-right: 10px;	
+}
+li {
+font-family: Verdana, Arial, Helvetica;
+font-size:10pt;
+line-height:13pt;
+margin-left : 10px;
+}
+p {
+font-family: Verdana, Arial, Helvetica;
+font-size:10pt;
+line-height:13pt;
+margin-left : 10px;
+margin-right: 10px;
+}
+/* note box */
+p.note {
+	background-color : #FFFFCC;
+	border : 1px solid #FFCC00;
+	clear : both;
+	color : black;
+	margin : 12px 30px 12px 20px;
+	padding : 6px 6px;
+}
+/* used in tutorial */
+p.tip {
+	background-color : #FFFFCC;
+	border : 1px solid black;
+	clear : both;
+	color : black;
+	margin-left : 10%;
+	padding : 6px 6px;
+	width : 90%;
+}
+/* pre note box */
+pre {
+	background-color : #FFFFCC;
+	border : 1px solid #FFCC00;
+	clear : both;
+	color : black;
+	margin : 12px 30px 12px 20px;
+	padding : 6px 6px;
+}
+table.sitemap {
+margin-left: 10px;
+}
+
+table.code {
+margin-left:10px;
+}
+
+table.top {
+background-image: url(images/site/help-info_logo_3px.jpg);
+margin-left:0px;
+margin-top:0px;
+}
+
+td.siteheader {
+	background-color:#E10033;
+	COLOR:white;
+	padding-left:3px;
+} 
+
+td {
+font-family: Verdana, Arial, Helvetica;
+font-size:10pt;
+line-height:13pt;
+}
+tr {
+font-family: Verdana, Arial, Helvetica;
+font-size:10pt;
+line-height:13pt;
+}
+
+ul{
+	list-style-image : url(images/list_arrow.gif);
+	list-style-position : outside;		
+}
+ul.extlinklist {
+	list-style-image : url(images/extlink.gif);
+}
+
+A:visited	{
+	color: Blue;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 10pt
+}
+A:link 	    {color: #800080;text-decoration: none;font-weight: bold;font-size: 10pt}
+A:hover 	{color: #FF0000;text-decoration: underline;font-weight: bold;font-size: 10pt}
+A:active 	{color: #FF0000;text-decoration: none;font-weight: bold;font-size: 10pt}

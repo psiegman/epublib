@@ -56,7 +56,7 @@ public class Viewer {
 		mainWindow = createMainWindow();
 		Book book;
 		try {
-			book = (new EpubReader(epubCleaner)).readEpub(bookStream);
+			book = (new EpubReader()).readEpub(bookStream);
 			gotoBook(book);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
@@ -160,7 +160,7 @@ public class Viewer {
 					previousDir = selectedFile.getParentFile();
 				}
 				try {
-					Book book = (new EpubReader(epubCleaner)).readEpub(new FileInputStream(selectedFile));
+					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
 					gotoBook(book);
 				} catch (Exception e1) {
 					log.error(e1.getMessage(), e1);

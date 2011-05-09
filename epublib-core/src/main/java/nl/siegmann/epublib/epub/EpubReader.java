@@ -33,15 +33,6 @@ import org.xml.sax.SAXException;
 public class EpubReader extends EpubProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(EpubReader.class);
-	private EpubCleaner epubCleaner;
-	
-	public EpubReader() {
-		this(null);
-	}
-
-	public EpubReader(EpubCleaner epubCleaner) {
-		this.epubCleaner = epubCleaner;
-	}
 	
 	public Book readEpub(InputStream in) throws IOException {
 		return readEpub(in, Constants.ENCODING);
@@ -73,9 +64,6 @@ public class EpubReader extends EpubProcessor {
 		result.setOpfResource(packageResource);
 		Resource ncxResource = processNcxResource(packageResource, result);
 		result.setNcxResource(ncxResource);
-		if (epubCleaner != null) {
-			result = epubCleaner.cleanEpub(result);
-		}
 		return result;
 	}
 

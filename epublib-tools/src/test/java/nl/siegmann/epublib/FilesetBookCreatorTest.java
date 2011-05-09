@@ -1,4 +1,4 @@
-package nl.siegmann.epublib.epub;
+package nl.siegmann.epublib;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.Constants;

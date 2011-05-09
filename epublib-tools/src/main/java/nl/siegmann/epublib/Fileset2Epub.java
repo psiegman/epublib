@@ -60,7 +60,7 @@ public class Fileset2Epub {
 			usage();
 		}
 		EpubCleaner epubCleaner = new EpubCleaner();
-		EpubWriter epubWriter = new EpubWriter(epubCleaner);
+		EpubWriter epubWriter = new EpubWriter();
 		if(! StringUtils.isBlank(xslFile)) {
 			epubCleaner.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
 		}
