@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Using window.open</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="Shortcut, Link" />
+<meta name="MS-HKWD" content="Shortcut" />
+<meta name="MS-HKWD" content="Link" />
+<link href="../design.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+  function NeuFenster () {
+    MeinFenster = window.open("shortcut_link.htm"
+  'Window Open Sample','toolbar=no,width=850,height=630,left=300,top=200,
+  status=no,scrollbars=no,resize=no');
+    MeinFenster.focus();
+  }
+  </script>
+
+</head>
+
+<body>
+<a name="top" id="top"></a>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>Using window.open</h1>
+<p>This is a simple example how to use the &quot;window.open&quot; command</p>
+<p><A HREF= "#" onClick="window.open('shortcut_link.htm',
+  'Window Open Sample','toolbar=no,width=850,height=630,left=300,top=200,
+  status=no,scrollbars=no,resize=no');">Click here to open a HTML file</A></p>
+<p>&nbsp;</p>
+<p><a href="javascript:NeuFenster()">Neues Fenster</a>
+</p>
+<p>&lt;script type=&quot;text/javascript&quot;&gt;<br />
+  function NeuFenster () {<br />
+  MeinFenster = window.open(&quot;datei2.htm&quot;, &quot;Zweitfenster&quot;, 
+  &quot;width=300,height=200,scrollbars&quot;);<br />
+  MeinFenster.focus();<br />
+  }<br />
+  &lt;/script&gt;<br />
+</p>
+<p>&nbsp;</p>
+<p>Put this code in your &lt;body&gt; section:</p>
+<p>&lt;A HREF= &quot;#&quot; onClick=&quot;window.open('/external_files/external.htm',<br />
+  'Window Open Sample','toolbar=no,width=850,height=630,left=300,top=200,<br />
+  status=no,scrollbars=no,resize=no');return false&quot;&gt; Click here to open 
+  a HTML file&lt;/A&gt;</p>
+
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+<p>&nbsp;</p>
+</body>
+</html>

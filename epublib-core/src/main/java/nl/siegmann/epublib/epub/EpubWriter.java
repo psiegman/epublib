@@ -36,13 +36,8 @@ public class EpubWriter extends EpubProcessor {
 	
 	private HtmlProcessor htmlProcessor;
 	private MediatypeService mediatypeService = new MediatypeService();
-	private EpubCleaner epubCleaner;
 
 	public EpubWriter() {
-	}
-	
-	public EpubWriter(EpubCleaner epubCleaner) {
-		this.epubCleaner = epubCleaner;
 	}
 	
 	
@@ -58,9 +53,6 @@ public class EpubWriter extends EpubProcessor {
 	}
 
 	private Book processBook(Book book) {
-		if (epubCleaner != null) {
-			book = epubCleaner.cleanEpub(book);
-		}
 		return book;
 	}
 

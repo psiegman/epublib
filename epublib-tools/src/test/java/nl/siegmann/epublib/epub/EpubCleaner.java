@@ -10,6 +10,7 @@ import nl.siegmann.epublib.bookprocessor.FixIdentifierBookProcessor;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.bookprocessor.SectionHrefSanityCheckBookProcessor;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubProcessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

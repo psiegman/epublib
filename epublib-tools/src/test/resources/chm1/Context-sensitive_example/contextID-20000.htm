@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Context sensitive help topic 20000</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="alias, map, contextID">
+<link href="../design.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<a name="top" id="top"></a>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>Context sensitive help topic 20000</h1>
+<p>This topic is only used to show context sensitive help with Visual Basic applications. 
+  This is contextID 20000.</p>
+<p><img src="../images/ditzum.jpg" width="150" height="100" /></p>
+<p>Open your project (.hhp) file in notepad and add following sections:</p>
+<h2>[MAP]</h2>
+<p>Add a [MAP] section and define the IDs your require.</p>
+<p>#define IDH_frmMainControl1 10000<br />
+  #define IDH_frmMainControl2 10010<br />
+  #define IDH_frmChildControl1 20000<br />
+  #define IDH_frmChildControl2 20010<br />
+</p>
+<h2> [ALIAS]</h2>
+<p>Add an [ALIAS] section and define the mapping between each ID and a help topic.</p>
+<p>[ALIAS]<br />
+  IDH_frmMainControl1=Context-sensitive example\contextID-10000.htm<br />
+  IDH_frmMainControl2=Context-sensitive example\contextID-10010.htm<br />
+  IDH_frmChildControl1=Context-sensitive example\contextID-20000.htm<br />
+  IDH_frmChildControl2=Context-sensitive example\contextID-20010.htm</p>
+<h2>Alternatively you can do this:</h2>
+<p>In a text editor enter the ALIAS details like <strong>IDH_90000=index.htm</strong>. 
+  Save the file as 'alias.h' in same folder as your help project file.</p>
+<pre>;---------------------------------------------------<br />; alias.h file example for HTMLHelp (CHM)<br />; www.help-info.de<br />;<br />; All IDH's &gt; 10000 for better format<br />; last edited: 2006-07-09<br />;---------------------------------------------------<br />IDH_90000=index.htm<br />IDH_10000=Context-sensitive_example\contextID-10000.htm<br />IDH_10010=Context-sensitive_example\contextID-10010.htm<br />IDH_20000=Context-sensitive_example\contextID-20000.htm<br />IDH_20010=Context-sensitive_example\contextID-20010.htm</pre>
+<p> In a text editor enter the MAP details like <strong>#define IDH_90000 90000;frmMain</strong>. 
+  Save the file as 'map.h' in same folder as your help project file.</p>
+<pre>;--------------------------------------------------<br />; map.h file example for HTMLHelp (CHM)<br />; www.help-info.de<br />;<br />; All IDH's &gt; 10000 for better format<br />; ;comment at end of line<br />;--------------------------------------------------<br />#define IDH_90000 90000;frmMain<br />#define IDH_10000 10000;frmAddressDataContextID-1<br />#define IDH_10010 10010;frmAddressDataContextID-2<br />#define IDH_20000 20000;frmAddressDataContextID-3<br />#define IDH_20010 20010;frmAddressDataContextID-4</pre>
+<p>Open your .hhp file in a text editor and add these sections</p>
+<p>[ALIAS]<br />
+  #include alias.h</p>
+<p>[MAP]<br />
+  #include map.h</p>
+<p>Recompile your .HHP file. Now your application can call help using context 
+  help ID's instead of topic file names.</p>
+<p>&nbsp;</p>
+<p></p>
+<p>&nbsp; </p>
+<p>&nbsp; </p>
+
+
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+<p>&nbsp;</p>
+</body>
+</html>

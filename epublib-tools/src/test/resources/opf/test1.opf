@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:title>Epublib test book 1</dc:title>
+    <dc:creator opf:role="aut" opf:file-as="Tester, Joe">Joe Tester</dc:creator>
+    <dc:date>2010-05-27</dc:date>
+    <dc:language>en</dc:language>
+    <meta name="cover" content="cover.html"/>
+    <meta name="generator" content="EPUBLib version 0.1"/>
+  </metadata>
+  <manifest>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="cover-image" href="cover.png" media-type="image/png"/>
+    <item id="cover" href="cover.html" media-type="application/xhtml+xml"/>
+    <item id="item_1" href="chapter1.html" media-type="application/xhtml+xml"/>
+    <item id="item_2" href="book1.css" media-type="text/css"/>
+    <item id="item_3" href="chapter2.html" media-type="application/xhtml+xml"/>
+    <item id="item_4" href="flowers.jpg" media-type="image/jpeg"/>
+    <item id="item_5" href="chapter2_1.html" media-type="application/xhtml+xml"/>
+    <item id="item_6" href="chapter3.html" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="cover" linear="no"/>
+    <itemref idref="item_1"/>
+    <itemref idref="item_3"/>
+    <itemref idref="item_5"/>
+    <itemref idref="item_6"/>
+  </spine>
+  <guide>
+    <reference type="cover" href="cover.html"/>
+  </guide>
+</package>

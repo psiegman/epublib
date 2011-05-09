@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linking from CHM with standard HTML</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="keywords" content="windmill" />
+<meta name="MS-HKWD" content="sample" />
+<meta name="MS-HKWD" content="sample, link" />
+<meta name="MS-HKWD" content="windmill" />
+<meta name="MS-HKWD" content="windmill, old" />
+<meta name="MS-HKWD" content="windmill, new" />
+<link href="../design.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<a name="top" id="top"></a>
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><img src="../images/riffel_helpinformation.jpg" width="209" height="40" /></td>
+  </tr>
+</table>
+
+<h1>Linking from CHM with standard HTML</h1>
+<p>This is a simple sample how to link from a compiled CHM to HTML files. Some 
+  files are on a web server some are local and relative to the CHM file.</p>
+<p>&nbsp;</p>
+<h2>Link relative to a HTML file that isn't compiled into the CHM</h2>
+
+<SCRIPT Language="JScript">
+function parser(fn) {
+  var X, Y, sl, a, ra, link;
+  ra = /:/;
+  a = location.href.search(ra);
+  if (a == 2)
+    X = 14;
+  else
+    X = 7;
+  sl = "\\";
+  Y = location.href.lastIndexOf(sl) + 1;
+  link = 'file:///' + location.href.substring(X, Y) + fn;
+  location.href = link;
+  }
+</SCRIPT>
+<p>The following technique of linking is useful if one permanently must update 
+  some files on the PC of the customer without compiling the CHM again. The external 
+  file must reside in the CHM folder or a subfolder.</p>
+<p><a onclick="parser('./external_files/external_topic.htm')" style="text-decoration: underline;
+color: green; cursor: hand">Link relative to a external HTML file (external_files/external_topic.htm)</a> 
+</p>
+
+<p>Link code:</p>
+<pre>
+&lt;p&gt;
+&lt;SCRIPT Language=&quot;JScript&quot;&gt;
+function parser(fn) {
+ var X, Y, sl, a, ra, link;
+ ra = /:/;
+ a = location.href.search(ra);
+ if (a == 2)
+  X = 14;
+ else
+  X = 7;
+  sl = &quot;\\&quot;;
+  Y = location.href.lastIndexOf(sl) + 1;
+  link = 'file:///' + location.href.substring(X, Y) + fn;
+  location.href = link;
+ }
+&lt;/SCRIPT&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;a onclick=&quot;parser('./external_files/external_topic.htm')&quot;
+  style=&quot;text-decoration: underline;
+  color: green; cursor: hand&quot;&gt;Link relative to a external HTML file (external_files/external_topic.htm)&lt;/a&gt;
+&lt;/p&gt;
+</pre>
+<h2>Links to HTML pages on the web</h2>
+<table width="95%" border="0" cellspacing="2" cellpadding="4">
+  <tr> 
+    <td><div align="center"><img src="../images/ditzum.jpg" alt="Windmill, Germany - Ditzum" width="150" height="100" /></div></td>
+    <td><div align="center">
+        <p>In the past, energy was won with windmills in Germany. </p>
+        <p>See <a href="http://www.timsmills.info/">more information</a> about 
+          mills (click the link). </p>
+      </div></td>
+  </tr>
+  <tr> 
+    <td><div align="center">
+        <p>These are modern wind energy converters today.</p>
+        <p><a href="http://www.enercon.de/en/e112.htm">Open technical information</a> on a web server with iframe inside your content window.</p>
+      </div></td>
+    <td><div align="center"><a href="http://www.enercon.de"><img src="../images/rotor_enercon.jpg" alt="Enercon, Germany" width="250" height="310" border="0" /></a></div></td>
+  </tr>
+  <tr> 
+    <td><div align="center"></div></td>
+    <td><div align="center"></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+
+<p>&nbsp; </p>
+
+<table width="100%" border="0"cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="../images/riffel_40px.jpg"><a href="#top"><img src="../images/up_rectangle.png" alt="back to top ..." width="32" height="32" border="0" /></a></td>
+  </tr>
+</table>
+<hr size="1" />
+<p>&nbsp;</p>
+</body>
+</html>
