@@ -17,6 +17,7 @@ import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.VFSUtil;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
@@ -82,7 +83,7 @@ public class FilesetBookCreator {
 			} else if (MediatypeService.determineMediaType(file.getName().getBaseName()) == null) {
 				continue;
 			} else {
-				Resource resource = ResourceUtil.createResource(rootDir, file, inputEncoding);
+				Resource resource = VFSUtil.createResource(rootDir, file, inputEncoding);
 				if(resource == null) {
 					continue;
 				}
@@ -102,7 +103,7 @@ public class FilesetBookCreator {
 		processDirectory(rootDir, file, childTOCReferences, resources, inputEncoding);
 		if(! childTOCReferences.isEmpty()) {
 			String sectionName = file.getName().getBaseName();
-			Resource sectionResource = ResourceUtil.createResource(sectionName, ResourceUtil.calculateHref(rootDir,file));
+			Resource sectionResource = ResourceUtil.createResource(sectionName, VFSUtil.calculateHref(rootDir,file));
 			resources.add(sectionResource);
 			TOCReference section = new TOCReference(sectionName, sectionResource);
 			section.setChildren(childTOCReferences);
