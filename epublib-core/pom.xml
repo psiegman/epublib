@@ -48,21 +48,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.sourceforge.htmlcleaner</groupId>
-			<artifactId>htmlcleaner</artifactId>
-			<version>2.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jdom</groupId>
-					<artifactId>jdom</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.ant</groupId>
-					<artifactId>ant</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.4</version>
@@ -91,11 +76,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-vfs</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -133,33 +113,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.dstovall</groupId>
-				<artifactId>onejar-maven-plugin</artifactId>
-				<version>1.4.4</version>
-				<executions>
-					<execution>
-						<id>epublib commandline</id>
-						<configuration>
-							<mainClass>nl.siegmann.epublib.Fileset2Epub</mainClass>
-							<filename>${project.name}-commandline-${project.version}.jar</filename>
-						</configuration>
-						<goals>
-							<goal>one-jar</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>epublib viewer</id>
-						<configuration>
-							<mainClass>nl.siegmann.epublib.viewer.Viewer</mainClass>
-							<filename>${project.name}-viewer-${project.version}.jar</filename>
-						</configuration>
-						<goals>
-							<goal>one-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -185,22 +138,5 @@
 			<name>Java.net repository</name>
 			<url>http://download.java.net/maven/2/</url>
 		</repository>
-		<repository>
-			<id>org.hippocms</id>
-			<name>Hosts htmlcleaner</name>
-			<url>http://repository.hippocms.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>xwiki</id>
-			<name>Also hosts htmlcleaner</name>
-			<url>http://maven.xwiki.org/externals/</url>
-		</repository>
 	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>onejar-maven-plugin.googlecode.com</id>
-			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>
