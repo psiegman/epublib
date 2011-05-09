@@ -5,6 +5,8 @@ text added for git testing
 
 Writing epubs works pretty well, reading them has recently started to work.
 
+a small change
+
 Right now it's useful in 2 cases:
 Creating an epub programmatically or converting a bunch of html's to an epub from the command-line.
 
