@@ -3,7 +3,7 @@ package nl.siegmann.epublib.utilities;
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
-import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.ToolsResourceUtil;
 
 public class ResourceUtilTest extends TestCase {
 
@@ -18,7 +18,7 @@ public class ResourceUtilTest extends TestCase {
 		};
 		for (int i = 0; i < testData.length; i+= 2) {
 			Resource resource = new Resource(testData[i].getBytes(), MediatypeService.XHTML);
-			String actualTitle = ResourceUtil.findTitleFromXhtml(resource);
+			String actualTitle = ToolsResourceUtil.findTitleFromXhtml(resource);
 			assertEquals(testData[i + 1], actualTitle);
 		}
 	}
