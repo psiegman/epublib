@@ -12,39 +12,12 @@
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.6.1</slf4j.version>
-	</properties>
-
-	<licenses>
-		<license>
-			<name>LGPL</name>
-			<url>http://www.gnu.org/licenses/lgpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<id>paul</id>
-			<name>Paul Siegmann</name>
-			<email>paul.siegmann+epublib@gmail.com</email>
-			<url>http://www.siegmann.nl/</url>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
-
-	<issueManagement>
-		<system>github</system>
-		<url>http://github.com/psiegman/epublib/issues</url>
-	</issueManagement>
-
-	<scm>
-		<url>http://github.com/psiegman/epublib</url>
-		<connection>scm:git:https://psiegman@github.com/psiegman/epublib.git</connection>
-		<developerConnection>scm:git:https://psiegman@github.com/psiegman/epublib.git</developerConnection>
-	</scm>
+	
+	<parent>
+    	<groupId>nl.siegmann.epublib</groupId>
+		<artifactId>epublib-parent</artifactId>
+		<version>3.0-SNAPSHOT</version>
+  	</parent>
 
 	<dependencies>
 		<dependency>
@@ -176,32 +149,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<repositories>
-		<repository>
-			<id>maven</id>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>jboss</id>
-			<url>https://repository.jboss.org/nexus/</url>
-		</repository>
-		<repository>
-			<id>net.java.repository</id>
-			<name>Java.net repository</name>
-			<url>http://download.java.net/maven/2/</url>
-		</repository>
-		<repository>
-			<id>org.hippocms</id>
-			<name>Hosts htmlcleaner</name>
-			<url>http://repository.hippocms.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>xwiki</id>
-			<name>Also hosts htmlcleaner</name>
-			<url>http://maven.xwiki.org/externals/</url>
-		</repository>
-	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>onejar-maven-plugin.googlecode.com</id>

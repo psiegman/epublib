@@ -12,39 +12,12 @@
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.6.1</slf4j.version>
-	</properties>
-
-	<licenses>
-		<license>
-			<name>LGPL</name>
-			<url>http://www.gnu.org/licenses/lgpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<id>paul</id>
-			<name>Paul Siegmann</name>
-			<email>paul.siegmann+epublib@gmail.com</email>
-			<url>http://www.siegmann.nl/</url>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
-
-	<issueManagement>
-		<system>github</system>
-		<url>http://github.com/psiegman/epublib/issues</url>
-	</issueManagement>
-
-	<scm>
-		<url>http://github.com/psiegman/epublib</url>
-		<connection>scm:git:https://psiegman@github.com/psiegman/epublib.git</connection>
-		<developerConnection>scm:git:https://psiegman@github.com/psiegman/epublib.git</developerConnection>
-	</scm>
+	
+	<parent>
+    	<groupId>nl.siegmann.epublib</groupId>
+		<artifactId>epublib-parent</artifactId>
+		<version>3.0-SNAPSHOT</version>
+  	</parent>
 
 	<dependencies>
 		<dependency>
