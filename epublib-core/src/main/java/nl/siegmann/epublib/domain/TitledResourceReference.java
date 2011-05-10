@@ -3,8 +3,7 @@ package nl.siegmann.epublib.domain;
 import java.io.Serializable;
 
 import nl.siegmann.epublib.Constants;
-
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
 
 public class TitledResourceReference extends ResourceReference implements Serializable {
 
@@ -52,10 +51,10 @@ public class TitledResourceReference extends ResourceReference implements Serial
 	 * @return
 	 */
 	public String getCompleteHref() {
-		if (StringUtils.isBlank(fragmentId)) {
+		if (StringUtil.isBlank(fragmentId)) {
 			return resource.getHref();
 		} else {
-			return resource.getHref() + Constants.FRAGMENT_SEPARATOR + fragmentId;
+			return resource.getHref() + Constants.FRAGMENT_SEPARATOR_CHAR + fragmentId;
 		}
 	}
 	

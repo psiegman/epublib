@@ -11,8 +11,8 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase {
@@ -70,7 +70,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 		}
 
 		// write language
-		if(StringUtils.isNotEmpty(book.getMetadata().getLanguage())) {
+		if(StringUtil.isNotBlank(book.getMetadata().getLanguage())) {
 			serializer.startTag(NAMESPACE_DUBLIN_CORE, "language");
 			serializer.text(book.getMetadata().getLanguage());
 			serializer.endTag(NAMESPACE_DUBLIN_CORE, "language");
@@ -105,7 +105,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 	
 	private static void writeSimpleMetdataElements(String tagName, List<String> values, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
 		for(String value: values) {
-			if (StringUtils.isBlank(value)) {
+			if (StringUtil.isBlank(value)) {
 				continue;
 			}
 			serializer.startTag(NAMESPACE_DUBLIN_CORE, tagName);

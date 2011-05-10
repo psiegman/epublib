@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nl.siegmann.epublib.domain.MediaType;
-
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
 
 
 /**
@@ -54,7 +53,7 @@ public class MediatypeService {
 		for(int i = 0; i < mediatypes.length; i++) {
 			MediaType mediatype = mediatypes[i];
 			for(String extension: mediatype.getExtensions()) {
-				if(StringUtils.endsWithIgnoreCase(filename, extension)) {
+				if(StringUtil.endsWithIgnoreCase(filename, extension)) {
 					return mediatype;
 				}
 			}

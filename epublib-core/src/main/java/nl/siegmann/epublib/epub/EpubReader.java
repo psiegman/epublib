@@ -3,7 +3,6 @@ package nl.siegmann.epublib.epub;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -16,8 +15,8 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -106,7 +105,7 @@ public class EpubReader extends EpubProcessor {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		if(StringUtils.isBlank(result)) {
+		if(StringUtil.isBlank(result)) {
 			result = defaultResult;
 		}
 		return result;

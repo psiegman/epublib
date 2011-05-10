@@ -8,10 +8,9 @@ import java.io.Serializable;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.XmlStreamReader;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import nl.siegmann.epublib.util.IOUtil;
+import nl.siegmann.epublib.util.StringUtil;
+import nl.siegmann.epublib.util.commons.io.XmlStreamReader;
 
 /**
  * Represents a resource that is part of the epub.
@@ -46,11 +45,11 @@ public class Resource implements Serializable {
 	}
 	
 	public Resource(InputStream in, String href) throws IOException {
-		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href));
+		this(null, IOUtil.toByteArray(in), href, MediatypeService.determineMediaType(href));
 	}
 	
 	public Resource(Reader in, String href) throws IOException {
-		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href), Constants.ENCODING);
+		this(null, IOUtil.toByteArray(in, Constants.ENCODING), href, MediatypeService.determineMediaType(href), Constants.ENCODING);
 	}
 	
 	public Resource(String id, byte[] data, String href, MediaType mediaType) {
@@ -168,13 +167,11 @@ public class Resource implements Serializable {
 	}
 
 	public String toString() {
-		return new ToStringBuilder(this).
-			append("id", id).
-			append("title", title).
-			append("encoding", inputEncoding).
-			append("mediaType", mediaType).
-			append("href", href).
-			append("size", data == null ? 0 : data.length).
-		toString();
+		return StringUtil.toString("id", id,
+				"title", title,
+				"encoding", inputEncoding,
+				"mediaType", mediaType,
+				"href", href,
+				"size", (data == null ? 0 : data.length));
 	}
 }

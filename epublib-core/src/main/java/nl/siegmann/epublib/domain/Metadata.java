@@ -9,8 +9,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import nl.siegmann.epublib.service.MediatypeService;
-
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
 
 /**
  * A Book's collection of Metadata.
@@ -132,7 +131,7 @@ public class Metadata implements Serializable {
 			return "";
 		}
 		for (String title: titles) {
-			if (! StringUtils.isBlank(title)) {
+			if (StringUtil.isNotBlank(title)) {
 				return title;
 			}
 		}
