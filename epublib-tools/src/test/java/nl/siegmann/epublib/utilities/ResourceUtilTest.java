@@ -1,8 +1,9 @@
-package nl.siegmann.epublib.util;
+package nl.siegmann.epublib.utilities;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 public class ResourceUtilTest extends TestCase {
 

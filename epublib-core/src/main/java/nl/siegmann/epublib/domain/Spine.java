@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
 
 /**
  * The spine sections are the sections of the book in the order in which the book should be read.
@@ -81,7 +81,7 @@ public class Spine implements Serializable {
 	 * @return
 	 */
 	public int findFirstResourceById(String resourceId) {
-		if (StringUtils.isBlank(resourceId)) {
+		if (StringUtil.isBlank(resourceId)) {
 			return -1;
 		}
 		
@@ -170,7 +170,7 @@ public class Spine implements Serializable {
 	 */
 	public int getResourceIndex(String resourceHref) {
 		int result = -1;
-		if (StringUtils.isBlank(resourceHref)) {
+		if (StringUtil.isBlank(resourceHref)) {
 			return result;
 		}
 		for (int i = 0; i < spineReferences.size(); i++) {

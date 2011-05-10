@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.GuideReference;
@@ -13,8 +15,8 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -128,11 +130,11 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 				&& book.getSpine().getTocResource() != null)) {
 			return;
 		}
-		if(StringUtils.isBlank(resource.getId())) {
+		if(StringUtil.isBlank(resource.getId())) {
 			log.error("resource id must not be empty (href: " + resource.getHref() + ", mediatype:" + resource.getMediaType() + ")");
 			return;
 		}
-		if(StringUtils.isBlank(resource.getHref())) {
+		if(StringUtil.isBlank(resource.getHref())) {
 			log.error("resource href must not be empty (id: " + resource.getId() + ", mediatype:" + resource.getMediaType() + ")");
 			return;
 		}
@@ -179,7 +181,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		serializer.startTag(NAMESPACE_OPF, OPFTags.reference);
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.type, reference.getType());
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.href, reference.getCompleteHref());
-		if (StringUtils.isNotBlank(reference.getTitle())) {
+		if (StringUtil.isNotBlank(reference.getTitle())) {
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.title, reference.getTitle());
 		}
 		serializer.endTag(NAMESPACE_OPF, OPFTags.reference);

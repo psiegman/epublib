@@ -25,8 +25,8 @@ import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -135,16 +135,16 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		for (int i = 0; i < guideReferences.getLength(); i++) {
 			Element referenceElement = (Element) guideReferences.item(i);
 			String resourceHref = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.href);
-			if (StringUtils.isBlank(resourceHref)) {
+			if (StringUtil.isBlank(resourceHref)) {
 				continue;
 			}
-			Resource resource = resourcesByHref.get(StringUtils.substringBefore(resourceHref, Constants.FRAGMENT_SEPARATOR));
+			Resource resource = resourcesByHref.get(StringUtil.substringBefore(resourceHref, Constants.FRAGMENT_SEPARATOR_CHAR));
 			if (resource == null) {
 				log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
 				continue;
 			}
 			String type = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.type);
-			if (StringUtils.isBlank(type)) {
+			if (StringUtil.isBlank(type)) {
 				log.error("Guide is referencing resource with href " + resourceHref + " which is missing the 'type' attribute");
 				continue;
 			}
@@ -152,7 +152,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if (GuideReference.COVER.equalsIgnoreCase(type)) {
 				continue; // cover is handled elsewhere
 			}
-			GuideReference reference = new GuideReference(resource, type, title, StringUtils.substringAfter(resourceHref, Constants.FRAGMENT_SEPARATOR));
+			GuideReference reference = new GuideReference(resource, type, title, StringUtil.substringAfter(resourceHref, Constants.FRAGMENT_SEPARATOR_CHAR));
 			guide.addReference(reference);
 		}
 	}
@@ -176,7 +176,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 		Map<String, Resource> result = new HashMap<String, Resource>();
 		for(Resource resource: resourcesByHref.values()) {
-			if(StringUtils.isNotBlank(resource.getHref())
+			if(StringUtil.isNotBlank(resource.getHref())
 					|| resource.getHref().length() > lastSlashPos) {
 				resource.setHref(resource.getHref().substring(lastSlashPos + 1));
 			}
@@ -208,7 +208,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		for(int i = 0; i < spineNodes.getLength(); i++) {
 			Element spineItem = (Element) spineNodes.item(i);
 			String itemref = DOMUtil.getAttribute(spineItem, NAMESPACE_OPF, OPFAttributes.idref);
-			if(StringUtils.isBlank(itemref)) {
+			if(StringUtil.isBlank(itemref)) {
 				log.error("itemref with missing or empty idref"); // XXX
 				continue;
 			}
@@ -269,7 +269,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	private static Resource findTableOfContentsResource(Element spineElement, Resources resources) {
 		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
 		Resource tocResource = null;
-		if (! StringUtils.isBlank(tocResourceId)) {
+		if (StringUtil.isNotBlank(tocResourceId)) {
 			tocResource = resources.getByIdOrHref(tocResourceId);
 		}
 		
@@ -315,11 +315,11 @@ public class PackageDocumentReader extends PackageDocumentBase {
 											OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover,
 											OPFAttributes.content);
 
-		if (StringUtils.isNotBlank(coverResourceId)) {
+		if (StringUtil.isNotBlank(coverResourceId)) {
 			String coverHref = DOMUtil.getFindAttributeValue(packageDocument, NAMESPACE_OPF,
 					OPFTags.item, OPFAttributes.id, coverResourceId,
 					OPFAttributes.href);
-			if (StringUtils.isNotBlank(coverHref)) {
+			if (StringUtil.isNotBlank(coverHref)) {
 				result.add(coverHref);
 			} else {
 				result.add(coverResourceId); // maybe there was a cover href put in the cover id attribute
@@ -329,7 +329,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		String coverHref = DOMUtil.getFindAttributeValue(packageDocument, NAMESPACE_OPF,
 											OPFTags.reference, OPFAttributes.type, OPFValues.reference_cover,
 											OPFAttributes.href);
-		if (StringUtils.isNotBlank(coverHref)) {
+		if (StringUtil.isNotBlank(coverHref)) {
 			result.add(coverHref);
 		}
 		return result;

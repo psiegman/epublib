@@ -3,7 +3,8 @@ package nl.siegmann.epublib.epub;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -29,7 +30,7 @@ class DOMUtil {
 	 */
 	public static String getAttribute(Element element, String namespace, String attribute) {
 		String result = element.getAttributeNS(namespace, attribute);
-		if (StringUtils.isEmpty(result)) {
+		if (StringUtil.isEmpty(result)) {
 			result = element.getAttribute(attribute);
 		}
 		return result;
@@ -69,7 +70,7 @@ class DOMUtil {
 		for(int i = 0; i < metaTags.getLength(); i++) {
 			Element metaElement = (Element) metaTags.item(i);
 			if(findAttributeValue.equalsIgnoreCase(metaElement.getAttribute(findAttributeName)) 
-				&& StringUtils.isNotBlank(metaElement.getAttribute(resultAttributeName))) {
+				&& StringUtil.isNotBlank(metaElement.getAttribute(resultAttributeName))) {
 				return metaElement.getAttribute(resultAttributeName);
 			}
 		}

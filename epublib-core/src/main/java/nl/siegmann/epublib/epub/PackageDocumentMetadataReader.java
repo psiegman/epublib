@@ -9,8 +9,8 @@ import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -65,7 +65,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 	
 	private static Resource readCoverImage(Element metadataElement, Resources resources) {
 		String coverResourceId = DOMUtil.getFindAttributeValue(metadataElement.getOwnerDocument(), NAMESPACE_OPF, OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover, OPFAttributes.content);
-		if (StringUtils.isBlank(coverResourceId)) {
+		if (StringUtil.isBlank(coverResourceId)) {
 			return null;
 		}
 		Resource coverResource = resources.getByIdOrHref(coverResourceId);
@@ -114,7 +114,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 
 	private static Author createAuthor(Element authorElement) {
 		String authorString = DOMUtil.getTextChild(authorElement);
-		if (StringUtils.isBlank(authorString)) {
+		if (StringUtil.isBlank(authorString)) {
 			return null;
 		}
 		int spacePos = authorString.lastIndexOf(' ');
@@ -141,7 +141,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 			Element identifierElement = (Element) identifierElements.item(i);
 			String schemeName = identifierElement.getAttributeNS(NAMESPACE_OPF, DCAttributes.scheme);
 			String identifierValue = DOMUtil.getTextChild(identifierElement);
-			if (StringUtils.isBlank(identifierValue)) {
+			if (StringUtil.isBlank(identifierValue)) {
 				continue;
 			}
 			Identifier identifier = new Identifier(schemeName, identifierValue);

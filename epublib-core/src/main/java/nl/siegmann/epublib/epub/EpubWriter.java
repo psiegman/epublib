@@ -15,8 +15,8 @@ import javax.xml.stream.XMLStreamException;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.IOUtil;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -93,7 +93,7 @@ public class EpubWriter extends EpubProcessor {
 		try {
 			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
 			InputStream inputStream = resource.getInputStream();
-			IOUtils.copy(inputStream, resultStream);
+			IOUtil.copy(inputStream, resultStream);
 			inputStream.close();
 		} catch(Exception e) {
 			log.error(e.getMessage(), e);

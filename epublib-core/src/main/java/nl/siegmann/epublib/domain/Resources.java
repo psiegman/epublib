@@ -8,7 +8,7 @@ import java.util.Map;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 
-import org.apache.commons.lang.StringUtils;
+import nl.siegmann.epublib.util.StringUtil;
 
 /**
  * All the resources that make up the book.
@@ -52,15 +52,15 @@ public class Resources implements Serializable {
 		String  resourceId = resource.getId();
 		
 		// first try and create a unique id based on the resource's href
-		if (StringUtils.isBlank(resource.getId())) {
-			resourceId = StringUtils.substringBeforeLast(resource.getHref(), ".");
-			resourceId = StringUtils.substringAfterLast(resourceId, "/");
+		if (StringUtil.isBlank(resource.getId())) {
+			resourceId = StringUtil.substringBeforeLast(resource.getHref(), '.');
+			resourceId = StringUtil.substringAfterLast(resourceId, '/');
 		}
 		
 		resourceId = makeValidId(resourceId, resource);
 		
 		// check if the id is unique. if not: create one from scratch
-		if (StringUtils.isBlank(resourceId) || containsId(resourceId)) {
+		if (StringUtil.isBlank(resourceId) || containsId(resourceId)) {
 			resourceId = createUniqueResourceId(resource);
 		}
 		resource.setId(resourceId);
@@ -73,7 +73,7 @@ public class Resources implements Serializable {
 	 * @return
 	 */
 	private String makeValidId(String resourceId, Resource resource) {
-		if (! StringUtils.isBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
+		if (StringUtil.isNotBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
 			resourceId = getResourceItemPrefix(resource) + resourceId;
 		}
 		return resourceId;
@@ -101,7 +101,7 @@ public class Resources implements Serializable {
 	}
 
 	public boolean containsId(String id) {
-		if (StringUtils.isBlank(id)) {
+		if (StringUtil.isBlank(id)) {
 			return false;
 		}
 		for (Resource resource: resources.values()) {
@@ -119,7 +119,7 @@ public class Resources implements Serializable {
 	 * @return null if not found
 	 */
 	public Resource getById(String id) {
-		if (StringUtils.isBlank(id)) {
+		if (StringUtil.isBlank(id)) {
 			return null;
 		}
 		for (Resource resource: resources.values()) {
@@ -141,11 +141,11 @@ public class Resources implements Serializable {
 	}
 	
 	private void fixResourceHref(Resource resource) {
-		if(! StringUtils.isBlank(resource.getHref())
+		if(StringUtil.isNotBlank(resource.getHref())
 				&& ! resources.containsKey(resource.getHref())) {
 			return;
 		}
-		if(StringUtils.isBlank(resource.getHref())) {
+		if(StringUtil.isBlank(resource.getHref())) {
 			if(resource.getMediaType() == null) {
 				throw new IllegalArgumentException("Resource must have either a MediaType or a href");
 			}
@@ -200,10 +200,10 @@ public class Resources implements Serializable {
 	 * @return
 	 */
 	public boolean containsByHref(String href) {
-		if (StringUtils.isBlank(href)) {
+		if (StringUtil.isBlank(href)) {
 			return false;
 		}
-		return resources.containsKey(StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR));
+		return resources.containsKey(StringUtil.substringBefore(href, Constants.FRAGMENT_SEPARATOR_CHAR));
 	}
 	
 	/**
@@ -262,10 +262,10 @@ public class Resources implements Serializable {
 	 * @return null if not found.
 	 */
 	public Resource getByHref(String href) {
-		if (StringUtils.isBlank(href)) {
+		if (StringUtil.isBlank(href)) {
 			return null;
 		}
-		href = StringUtils.substringBefore(href, Constants.FRAGMENT_SEPARATOR);
+		href = StringUtil.substringBefore(href, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource result = resources.get(href);
 		return result;
 	}

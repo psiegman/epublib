@@ -21,8 +21,8 @@ import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -120,8 +120,8 @@ public class NCXDocument {
 	private static TOCReference readTOCReference(Element navpointElement, Book book) {
 		String label = readNavLabel(navpointElement);
 		String reference = readNavReference(navpointElement);
-		String href = StringUtils.substringBefore(reference, Constants.FRAGMENT_SEPARATOR);
-		String fragmentId = StringUtils.substringAfter(reference, Constants.FRAGMENT_SEPARATOR);
+		String href = StringUtil.substringBefore(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
+		String fragmentId = StringUtil.substringAfter(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource resource = book.getResources().getByHref(href);
 		if (resource == null) {
 			log.error("Resource with href " + href + " in NCX document not found");
@@ -202,7 +202,7 @@ public class NCXDocument {
 		serializer.startTag(NAMESPACE_NCX, NCXTags.docTitle);
 		serializer.startTag(NAMESPACE_NCX, NCXTags.text);
 		// write the first title
-		serializer.text(StringUtils.defaultString(book.getTitle()));
+		serializer.text(StringUtil.defaultIfNull(book.getTitle()));
 		serializer.endTag(NAMESPACE_NCX, NCXTags.text);
 		serializer.endTag(NAMESPACE_NCX, NCXTags.docTitle);
 		

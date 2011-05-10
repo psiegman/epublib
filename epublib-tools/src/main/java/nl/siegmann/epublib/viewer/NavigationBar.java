@@ -21,7 +21,7 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.search.SearchIndex;
 import nl.siegmann.epublib.search.SearchResult;
 import nl.siegmann.epublib.search.SearchResults;
-import nl.siegmann.epublib.util.ResourceUtil;
+import nl.siegmann.epublib.util.ToolsResourceUtil;
 
 /**
  * A toolbar that contains the history back and forward buttons and the page title.
@@ -171,7 +171,7 @@ public class NavigationBar extends JToolBar implements NavigationEventListener {
 			initBook(navigationEvent.getCurrentBook());
 		}
 		if (navigationEvent.getCurrentResource() != null) {
-			String title = ResourceUtil.getTitle(navigationEvent.getCurrentResource());
+			String title = ToolsResourceUtil.getTitle(navigationEvent.getCurrentResource());
 			titleField.setText(title);
 		}
 	}
