@@ -1,20 +1,20 @@
 # epublib
 Epublib is a java library for reading/writing/manipulating epub files.
 
-It can create epub files from a collection of html files, change existing epub files or create new epub files programmatically.
+I consists of 2 parts: a core that reads/writes epub and a collection of tools.
+The tools contain an epub cleanup tool, a tool to create epubs from html files, a tool to create an epub from an uncompress html file.
+It also contains a swing-based epub viewer.
+![Epublib viewer](http://www.siegmann.nl/wp-content/uploads/Alice%E2%80%99s-Adventures-in-Wonderland_2011-01-30_18-17-30.png)
 
-Writing epubs works well, reading them has recently started to work.
-
-Right now it's useful in 2 cases:
-Creating an epub programmatically or converting a bunch of html's to an epub from the command-line.
+The core runs both on android and a standard java environment. The tools run only on a standard java environment.
 
 ## Command line examples
 
 Set the author of an existing epub
-	java -jar epublib-1.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --author Tester,Joe
+	java -jar epublib-3.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --author Tester,Joe
 
 Set the cover image of an existing epub
-	java -jar epublib-1.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --cover-image my_cover.jpg
+	java -jar epublib-3.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --cover-image my_cover.jpg
 
 ## Creating an epub programmatically
 
