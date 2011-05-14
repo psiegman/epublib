@@ -9,7 +9,7 @@ import org.w3c.dom.Document;
 public class PackageDocumentMetadataReaderTest extends TestCase {
 	
 	public void test1() {
-		EpubProcessor epubProcessor = new EpubProcessor();
+		EpubProcessorSupport epubProcessor = new EpubProcessorSupport();
 		try {
 			Document document = epubProcessor.createDocumentBuilder().parse(PackageDocumentMetadataReader.class.getResourceAsStream("/opf/test2.opf"));
 			Resources resources = new Resources();

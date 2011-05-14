@@ -20,14 +20,24 @@ import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
-public class EpubProcessor {
+/**
+ * Various low-level support methods for reading/writing epubs.
+ * 
+ * @author paul.siegmann
+ *
+ */
+public class EpubProcessorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(EpubProcessor.class);
+	private static final Logger log = LoggerFactory.getLogger(EpubProcessorSupport.class);
 	
-	protected DocumentBuilderFactory documentBuilderFactory;
-	protected XPathFactory xPathFactory;
+	protected static DocumentBuilderFactory documentBuilderFactory;
+	protected static XPathFactory xPathFactory;
 	
-	private EntityResolver entityResolver = new EntityResolver() {
+	static {
+		init();
+	}
+	
+	private static EntityResolver entityResolver = new EntityResolver() {
 		
 		private String previousLocation;
 		
@@ -47,20 +57,20 @@ public class EpubProcessor {
 				throw new RuntimeException("remote resource is not cached : [" + systemId + "] cannot continue");
 			}
 
-			InputStream in = EpubProcessor.class.getClassLoader().getResourceAsStream(resourcePath);
+			InputStream in = EpubProcessorSupport.class.getClassLoader().getResourceAsStream(resourcePath);
 			return new InputSource(in);
 		}
 	};
 	
 	
-	public EpubProcessor() {
-		this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
+	private static void init() {
+		EpubProcessorSupport.documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		documentBuilderFactory.setValidating(false);
-		this.xPathFactory = XPathFactory.newInstance();
+		EpubProcessorSupport.xPathFactory = XPathFactory.newInstance();
 	}
 	
-	XmlSerializer createXmlSerializer(OutputStream out) {
+	public static XmlSerializer createXmlSerializer(OutputStream out) {
 		XmlSerializer result = null;
 		try {
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -83,7 +93,7 @@ public class EpubProcessor {
 	 * 
 	 * @return
 	 */
-	public DocumentBuilder createDocumentBuilder() {
+	public static DocumentBuilder createDocumentBuilder() {
 		DocumentBuilder result = null;
 		try {
 			result = documentBuilderFactory.newDocumentBuilder();
@@ -94,7 +104,7 @@ public class EpubProcessor {
 		return result;
 	}
 
-	public XPathFactory getXPathFactory() {
+	public static XPathFactory getXPathFactory() {
 		return xPathFactory;
 	}
 

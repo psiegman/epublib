@@ -27,7 +27,7 @@ import org.xmlpull.v1.XmlSerializer;
  * @author paul
  *
  */
-public class EpubWriter extends EpubProcessor {
+public class EpubWriter extends EpubProcessorSupport {
 	
 	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
 	
@@ -36,11 +36,18 @@ public class EpubWriter extends EpubProcessor {
 	
 	private HtmlProcessor htmlProcessor;
 	private MediatypeService mediatypeService = new MediatypeService();
-
+	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
+	
 	public EpubWriter() {
+		this(BookProcessor.IDENTITY_BOOKPROCESSOR);
 	}
 	
 	
+	public EpubWriter(BookProcessor bookProcessor) {
+		this.bookProcessor = bookProcessor;
+	}
+
+
 	public void write(Book book, OutputStream out) throws IOException, XMLStreamException, FactoryConfigurationError {
 		book = processBook(book);
 		ZipOutputStream resultStream = new ZipOutputStream(out);
@@ -53,6 +60,9 @@ public class EpubWriter extends EpubProcessor {
 	}
 
 	private Book processBook(Book book) {
+		if (bookProcessor != null) {
+			book = bookProcessor.processBook(book);
+		}
 		return book;
 	}
 

@@ -7,7 +7,6 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.service.MediatypeService;
 
 public class HtmlCleanerBookProcessorTest extends TestCase {
@@ -19,9 +18,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		try {
 			Resource resource = new Resource(testInput.getBytes(Constants.ENCODING), "test.html");
 			book.getResources().add(resource);
-			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
-			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, Constants.ENCODING);
 			String actualResult = new String(processedHtml, Constants.ENCODING);
 			assertEquals(expectedResult, actualResult);
 		} catch (IOException e) {
@@ -36,9 +34,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		try {
 			Resource resource = new Resource(testInput.getBytes(Constants.ENCODING), "test.html");
 			book.getResources().add(resource);
-			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
-			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, Constants.ENCODING);
 			String actualResult = new String(processedHtml, Constants.ENCODING);
 			assertEquals(expectedResult, actualResult);
 		} catch (IOException e) {
@@ -52,9 +49,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		try {
 			Resource resource = new Resource(testInput.getBytes(Constants.ENCODING), "test.html");
 			book.getResources().add(resource);
-			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
-			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, Constants.ENCODING);
 			String result = new String(processedHtml, Constants.ENCODING);
 			assertEquals(testInput, result);
 		} catch (IOException e) {
@@ -68,9 +64,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		try {
 			Resource resource = new Resource(null, testInput.getBytes(Constants.ENCODING), "test.html", MediatypeService.XHTML, Constants.ENCODING);
 			book.getResources().add(resource);
-			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
-			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, Constants.ENCODING);
 			String result = new String(processedHtml, Constants.ENCODING);
 			assertEquals(testInput, result);
 		} catch (IOException e) {
@@ -84,9 +79,8 @@ public class HtmlCleanerBookProcessorTest extends TestCase {
 		try {
 			Resource resource = new Resource(null, testInput.getBytes(Constants.ENCODING), "test.html", MediatypeService.XHTML, Constants.ENCODING);
 			book.getResources().add(resource);
-			EpubWriter epubWriter = new EpubWriter();
 			HtmlCleanerBookProcessor htmlCleanerBookProcessor = new HtmlCleanerBookProcessor();
-			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, epubWriter, Constants.ENCODING);
+			byte[] processedHtml = htmlCleanerBookProcessor.processHtml(resource, book, Constants.ENCODING);
 			String result = new String(processedHtml, Constants.ENCODING);
 			assertEquals(testInput, result);
 		} catch (IOException e) {

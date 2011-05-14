@@ -6,7 +6,7 @@ import java.io.IOException;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.BookProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.slf4j.Logger;
@@ -27,10 +27,10 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 	}
 
 	@Override
-	public Book processBook(Book book, EpubProcessor epubProcessor) {
+	public Book processBook(Book book) {
 		for(Resource resource: book.getResources().getAll()) {
 			try {
-				cleanupResource(resource, book, epubProcessor);
+				cleanupResource(resource, book);
 			} catch (IOException e) {
 				log.error(e.getMessage(), e);
 			}
@@ -38,13 +38,13 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 		return book;
 	}
 
-	private void cleanupResource(Resource resource, Book book, EpubProcessor epubProcessor) throws IOException {
+	private void cleanupResource(Resource resource, Book book) throws IOException {
 		if(resource.getMediaType() == MediatypeService.XHTML) {
-			byte[] cleanedHtml = processHtml(resource, book, epubProcessor, Constants.ENCODING);
+			byte[] cleanedHtml = processHtml(resource, book, Constants.ENCODING);
 			resource.setData(cleanedHtml);
 			resource.setInputEncoding(Constants.ENCODING);
 		}
 	}
 
-	protected abstract byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, String encoding) throws IOException;
+	protected abstract byte[] processHtml(Resource resource, Book book, String encoding) throws IOException;
 }

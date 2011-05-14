@@ -47,7 +47,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	
 	
 	public static void read(Resource packageResource, EpubReader epubReader, Book book, Map<String, Resource> resourcesByHref) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
-		Document packageDocument = ResourceUtil.getAsDocument(packageResource, epubReader);
+		Document packageDocument = ResourceUtil.getAsDocument(packageResource);
 		String packageHref = packageResource.getHref();
 		resourcesByHref = fixHrefs(packageHref, resourcesByHref);
 		readGuide(packageDocument, epubReader, book, resourcesByHref);

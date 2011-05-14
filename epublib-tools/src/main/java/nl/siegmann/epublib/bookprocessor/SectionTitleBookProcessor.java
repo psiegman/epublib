@@ -10,7 +10,7 @@ import javax.xml.xpath.XPathFactory;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.BookProcessor;
 
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.InputSource;
@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 public class SectionTitleBookProcessor implements BookProcessor {
 
 	@Override
-	public Book processBook(Book book, EpubProcessor epubProcessor) {
+	public Book processBook(Book book) {
 		XPath xpath = createXPathExpression();
 		processSections(book.getTableOfContents().getTocReferences(), book, xpath);
 		return book;

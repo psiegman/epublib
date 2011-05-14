@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.siegmann.epublib.bookprocessor.CoverpageBookProcessor;
+import nl.siegmann.epublib.bookprocessor.DefaultBookProcessorPipeline;
 import nl.siegmann.epublib.bookprocessor.XslBookProcessor;
 import nl.siegmann.epublib.chm.ChmParser;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubCleaner;
+import nl.siegmann.epublib.epub.BookProcessorPipeline;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.fileset.FilesetBookCreator;
@@ -59,10 +60,10 @@ public class Fileset2Epub {
 		if(StringUtils.isBlank(inputLocation) || StringUtils.isBlank(outLocation)) {
 			usage();
 		}
-		EpubCleaner epubCleaner = new EpubCleaner();
-		EpubWriter epubWriter = new EpubWriter();
+		BookProcessorPipeline epubCleaner = new DefaultBookProcessorPipeline();
+		EpubWriter epubWriter = new EpubWriter(epubCleaner);
 		if(! StringUtils.isBlank(xslFile)) {
-			epubCleaner.getBookProcessingPipeline().add(new XslBookProcessor(xslFile));
+			epubCleaner.addBookProcessor(new XslBookProcessor(xslFile));
 		}
 		
 		if (StringUtils.isBlank(inputEncoding)) {
@@ -81,7 +82,7 @@ public class Fileset2Epub {
 		if(StringUtils.isNotBlank(coverImage)) {
 //			book.getResourceByHref(book.getCoverImage());
 			book.getMetadata().setCoverImage(new Resource(VFSUtil.resolveInputStream(coverImage), coverImage));
-			epubCleaner.getBookProcessingPipeline().add(new CoverpageBookProcessor());
+			epubCleaner.getBookProcessors().add(new CoverpageBookProcessor());
 		}
 		
 		if(StringUtils.isNotBlank(title)) {

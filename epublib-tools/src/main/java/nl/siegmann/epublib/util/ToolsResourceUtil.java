@@ -16,7 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.EpubProcessorSupport;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;

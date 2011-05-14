@@ -9,12 +9,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.bookprocessor.DefaultBookProcessorPipeline;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
+import nl.siegmann.epublib.epub.BookProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.VFSUtil;
@@ -38,6 +40,7 @@ public class FilesetBookCreator {
 		}
 	};
 	
+	private static final BookProcessor bookProcessor = new DefaultBookProcessorPipeline();
 	
 	public static Book createBookFromDirectory(File rootDirectory) throws IOException {
 		return createBookFromDirectory(rootDirectory, Constants.ENCODING);	
@@ -70,6 +73,9 @@ public class FilesetBookCreator {
 		TableOfContents tableOfContents = new TableOfContents(sections);
 		result.setTableOfContents(tableOfContents);
 		result.setSpine(new Spine(tableOfContents));
+		
+		result = bookProcessor.processBook(result);
+		
 		return result;
 	}
 

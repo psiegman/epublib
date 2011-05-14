@@ -12,7 +12,7 @@ public class PackageDocumentReaderTest extends TestCase {
 		EpubReader epubReader = new EpubReader();
 		Document packageDocument;
 		try {
-			packageDocument = epubReader.getDocumentBuilderFactory().newDocumentBuilder().parse(PackageDocumentReaderTest.class.getResourceAsStream("/opf/test1.opf"));
+			packageDocument = EpubProcessorSupport.createDocumentBuilder().parse(PackageDocumentReaderTest.class.getResourceAsStream("/opf/test1.opf"));
 			Collection<String> coverHrefs = PackageDocumentReader.findCoverHrefs(packageDocument);
 			assertEquals(1, coverHrefs.size());
 			assertEquals("cover.html", coverHrefs.iterator().next());

@@ -18,7 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.BookProcessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 	}
 
 	@Override
-	public byte[] processHtml(Resource resource, Book book, EpubProcessor epubProcessor, String encoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, String encoding) throws IOException {
 		Source htmlSource = new StreamSource(new InputStreamReader(resource.getInputStream(), resource.getInputEncoding()));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		Writer writer = new OutputStreamWriter(out,encoding);
