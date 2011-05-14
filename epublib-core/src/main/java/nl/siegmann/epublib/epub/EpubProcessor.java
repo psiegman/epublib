@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -65,31 +64,12 @@ public class EpubProcessor {
 		XmlSerializer result = null;
 		try {
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-//			factory.setNamespaceAware(true);
 			factory.setValidating(true);
 			result = factory.newSerializer();
-//			result.setProperty("SERIALIZER_INDENTATION", "\t");
 			result.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-			// indentation as 3 spaces
-//			result.setProperty(
-//			   "http://xmlpull.org/v1/doc/properties.html#serializer-indentation", "   ");
-//			// also set the line separator
-//			result.setProperty(
-//			   "http://xmlpull.org/v1/doc/properties.html#serializer-line-separator", "\n");
-
 			result.setOutput(out, Constants.ENCODING);
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return result;
 	}
@@ -98,6 +78,11 @@ public class EpubProcessor {
 		return documentBuilderFactory;
 	}
 
+	/**
+	 * Creates a DocumentBuilder that looks up dtd's and schema's from epublib's classpath.
+	 * 
+	 * @return
+	 */
 	public DocumentBuilder createDocumentBuilder() {
 		DocumentBuilder result = null;
 		try {
