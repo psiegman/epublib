@@ -8,7 +8,6 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.Constants;
@@ -27,7 +26,6 @@ public class EpubProcessor {
 	private static final Logger log = LoggerFactory.getLogger(EpubProcessor.class);
 	
 	protected DocumentBuilderFactory documentBuilderFactory;
-	protected XMLOutputFactory xmlOutputFactory;
 	protected XPathFactory xPathFactory;
 	
 	private EntityResolver entityResolver = new EntityResolver() {
@@ -60,7 +58,6 @@ public class EpubProcessor {
 		this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		documentBuilderFactory.setValidating(false);
-		this.xmlOutputFactory = XMLOutputFactory.newFactory();
 		this.xPathFactory = XPathFactory.newInstance();
 	}
 	
