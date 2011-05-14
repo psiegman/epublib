@@ -14,7 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.EpubProcessorSupport;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.slf4j.Logger;
@@ -90,8 +90,8 @@ public class ResourceUtil {
 	/**
 	 * Reads parses the xml therein and returns the result as a Document
 	 */
-	public static Document getAsDocument(Resource resource, EpubProcessor epubProcessor) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
-		return getAsDocument(resource, epubProcessor.createDocumentBuilder());
+	public static Document getAsDocument(Resource resource) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
+		return getAsDocument(resource, EpubProcessorSupport.createDocumentBuilder());
 	}
 	
 	

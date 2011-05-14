@@ -8,7 +8,7 @@ import java.util.List;
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.BookProcessor;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpublibXmlSerializer;
@@ -53,8 +53,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public byte[] processHtml(Resource resource, Book book,
-			EpubProcessor epubProcessor, String outputEncoding) throws IOException {
+	public byte[] processHtml(Resource resource, Book book, String outputEncoding) throws IOException {
 		TagNode node = htmlCleaner.clean(resource.getReader());
 		node.removeAttribute("xmlns:xml");
 		setCharsetMeta(node, outputEncoding);

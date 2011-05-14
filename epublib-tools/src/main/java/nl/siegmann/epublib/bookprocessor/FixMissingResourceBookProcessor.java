@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.TOCReference;
-import nl.siegmann.epublib.epub.EpubProcessor;
+import nl.siegmann.epublib.epub.BookProcessor;
 
 public class FixMissingResourceBookProcessor implements BookProcessor {
 
 	@Override
-	public Book processBook(Book book, EpubProcessor epubProcessor) {
+	public Book processBook(Book book) {
 		return book;
 	}
 

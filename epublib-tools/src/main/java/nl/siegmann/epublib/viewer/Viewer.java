@@ -25,11 +25,11 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import nl.siegmann.epublib.bookprocessor.BookProcessor;
 import nl.siegmann.epublib.browsersupport.NavigationHistory;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubCleaner;
+import nl.siegmann.epublib.epub.BookProcessor;
+import nl.siegmann.epublib.epub.BookProcessorPipeline;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 
@@ -50,7 +50,7 @@ public class Viewer {
 	private JSplitPane rightSplitPane;
 	private Navigator navigator = new Navigator();
 	NavigationHistory browserHistory;
-	private EpubCleaner epubCleaner = new EpubCleaner(Collections.<BookProcessor>emptyList());
+	private BookProcessorPipeline epubCleaner = new BookProcessorPipeline(Collections.<BookProcessor>emptyList());
 	
 	public Viewer(InputStream bookStream) {
 		mainWindow = createMainWindow();

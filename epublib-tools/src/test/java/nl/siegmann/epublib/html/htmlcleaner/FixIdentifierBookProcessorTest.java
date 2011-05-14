@@ -12,8 +12,7 @@ public class FixIdentifierBookProcessorTest extends TestCase {
 	public void test_empty_book() {
 		Book book = new Book();
 		FixIdentifierBookProcessor fixIdentifierBookProcessor = new FixIdentifierBookProcessor();
-		EpubWriter epubWriter = new EpubWriter();
-		Book resultBook = fixIdentifierBookProcessor.processBook(book, epubWriter);
+		Book resultBook = fixIdentifierBookProcessor.processBook(book);
 		assertEquals(1, resultBook.getMetadata().getIdentifiers().size());
 		Identifier identifier = CollectionUtil.first(resultBook.getMetadata().getIdentifiers());
 		assertEquals(Identifier.Scheme.UUID, identifier.getScheme());
@@ -24,8 +23,7 @@ public class FixIdentifierBookProcessorTest extends TestCase {
 		Identifier identifier = new Identifier(Identifier.Scheme.ISBN, "1234");
 		book.getMetadata().addIdentifier(identifier);
 		FixIdentifierBookProcessor fixIdentifierBookProcessor = new FixIdentifierBookProcessor();
-		EpubWriter epubWriter = new EpubWriter();
-		Book resultBook = fixIdentifierBookProcessor.processBook(book, epubWriter);
+		Book resultBook = fixIdentifierBookProcessor.processBook(book);
 		assertEquals(1, resultBook.getMetadata().getIdentifiers().size());
 		Identifier actualIdentifier = CollectionUtil.first(resultBook.getMetadata().getIdentifiers());
 		assertEquals(identifier, actualIdentifier);

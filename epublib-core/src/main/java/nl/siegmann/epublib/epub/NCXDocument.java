@@ -88,7 +88,7 @@ public class NCXDocument {
 			if(result == null) {
 				return result;
 			}
-			Document ncxDocument = ResourceUtil.getAsDocument(result, epubReader);
+			Document ncxDocument = ResourceUtil.getAsDocument(result);
 			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
 			book.setTableOfContents(tableOfContents);

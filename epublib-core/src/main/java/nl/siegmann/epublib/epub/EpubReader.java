@@ -29,9 +29,10 @@ import org.xml.sax.SAXException;
  * @author paul
  *
  */
-public class EpubReader extends EpubProcessor {
+public class EpubReader {
 
 	private static final Logger log = LoggerFactory.getLogger(EpubReader.class);
+	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
 	
 	public Book readEpub(InputStream in) throws IOException {
 		return readEpub(in, Constants.ENCODING);
@@ -63,7 +64,15 @@ public class EpubReader extends EpubProcessor {
 		result.setOpfResource(packageResource);
 		Resource ncxResource = processNcxResource(packageResource, result);
 		result.setNcxResource(ncxResource);
+		result = postProcessBook(result);
 		return result;
+	}
+
+	private Book postProcessBook(Book book) {
+		if (bookProcessor != null) {
+			book = bookProcessor.processBook(book);
+		}
+		return book;
 	}
 
 	private Resource processNcxResource(Resource packageResource, Book book) {
@@ -99,7 +108,7 @@ public class EpubReader extends EpubProcessor {
 			return result;
 		}
 		try {
-			Document document = ResourceUtil.getAsDocument(containerResource, this);
+			Document document = ResourceUtil.getAsDocument(containerResource);
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
 			result = rootFileElement.getAttribute("full-path");
 		} catch (Exception e) {
