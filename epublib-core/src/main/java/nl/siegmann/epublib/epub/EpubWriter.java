@@ -27,7 +27,7 @@ import org.xmlpull.v1.XmlSerializer;
  * @author paul
  *
  */
-public class EpubWriter extends EpubProcessorSupport {
+public class EpubWriter {
 	
 	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
 	
@@ -113,7 +113,7 @@ public class EpubWriter extends EpubProcessorSupport {
 
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
-		XmlSerializer xmlSerializer = createXmlSerializer(resultStream);
+		XmlSerializer xmlSerializer = EpubProcessorSupport.createXmlSerializer(resultStream);
 		PackageDocumentWriter.write(this, xmlSerializer, book);
 		xmlSerializer.flush();
 //		String resultAsString = result.toString();
