@@ -152,7 +152,7 @@ public class NCXDocument {
 	
 	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
 		resultStream.putNextEntry(new ZipEntry(book.getSpine().getTocResource().getHref()));
-		XmlSerializer out = epubWriter.createXmlSerializer(resultStream);
+		XmlSerializer out = EpubProcessorSupport.createXmlSerializer(resultStream);
 		write(out, book);
 		out.flush();
 	}
@@ -172,7 +172,7 @@ public class NCXDocument {
 	 */
 	public static Resource createNCXResource(EpubWriter epubWriter, Book book) throws IllegalArgumentException, IllegalStateException, IOException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		XmlSerializer out = epubWriter.createXmlSerializer(data);
+		XmlSerializer out = EpubProcessorSupport.createXmlSerializer(data);
 		write(out, book);
 		Resource resource = new Resource(NCX_ITEM_ID, data.toByteArray(), DEFAULT_NCX_HREF, MediatypeService.NCX);
 		return resource;
