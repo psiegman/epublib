@@ -4,9 +4,7 @@ import java.util.EventObject;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import nl.siegmann.epublib.util.StringUtil;
 
 /**
  * Used to tell NavigationEventListener just what kind of navigation action the user just did.
@@ -98,7 +96,7 @@ public class NavigationEvent extends EventObject {
 	}
 
 	public boolean isFragmentChanged() {
-		return StringUtils.equals(getOldFragmentId(), getCurrentFragmentId());
+		return StringUtil.equals(getOldFragmentId(), getCurrentFragmentId());
 	}
 
 	public Resource getOldResource() {
@@ -136,18 +134,18 @@ public class NavigationEvent extends EventObject {
 	}
 	
 	public String toString() {
-		return new ToStringBuilder(this).
-			append("oldSectionPos", oldSectionPos).
-			append("oldResource", oldResource).
-			append("oldBook", oldBook).
-			append("oldFragmentId", oldFragmentId).
-			append("oldSpinePos", oldSpinePos).
-			append("currentPagePos", getCurrentSectionPos()).
-			append("currentResource", getCurrentResource()).
-			append("currentBook", getCurrentBook()).
-			append("currentFragmentId", getCurrentFragmentId()).
-			append("currentSpinePos", getCurrentSpinePos()).
-		toString();
+		return StringUtil.toString(
+				"oldSectionPos", oldSectionPos,
+				"oldResource", oldResource,
+				"oldBook", oldBook,
+				"oldFragmentId", oldFragmentId,
+				"oldSpinePos", oldSpinePos,
+				"currentPagePos", getCurrentSectionPos(),
+				"currentResource", getCurrentResource(),
+				"currentBook", getCurrentBook(),
+				"currentFragmentId", getCurrentFragmentId(),
+				"currentSpinePos", getCurrentSpinePos()
+		);
 	}
 
 	public boolean isSectionPosChanged() {
