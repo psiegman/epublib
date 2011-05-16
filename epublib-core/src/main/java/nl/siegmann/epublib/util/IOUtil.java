@@ -8,9 +8,13 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+/**
+ * Most of the functions herein are re-implementations of the ones in apache io IOUtils.
+ * The reason for re-implementing this is that the functions are fairly simple and using my own implementation saves the inclusion of a 200Kb jar file.
+ */
 public class IOUtil {
 
-	public static final int IO_COPY_BUFFER_SIZE = 1024;
+	public static final int IO_COPY_BUFFER_SIZE = 1024 * 4;
 
 	/**
 	 * Gets the contents of the Reader as a byte[], with the given character encoding.
