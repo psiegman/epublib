@@ -4,18 +4,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -82,18 +77,6 @@ public class SearchIndex {
 		return searchIndex;
 	}
 	
-	private static void addToSearchIndex(Resource resource, List<ResourceSearchIndex> newIndexes, Collection<Resource> alreadyIndexed){
-		if (resource == null || alreadyIndexed.contains(resource)) {
-			return;
-		}
-		ResourceSearchIndex resourceSearchIndex;
-		resourceSearchIndex = createResourceSearchIndex(resource);
-		if (resourceSearchIndex != null) {
-			alreadyIndexed.add(resource);
-			newIndexes.add(resourceSearchIndex);
-		}
-	}
-
 	public void initBook(Book book) {
 		this.resourceSearchIndexes = createSearchIndex(book);
 	}
@@ -103,18 +86,11 @@ public class SearchIndex {
 		if (book == null) {
 			return result;
 		}
-		Set<Resource> alreadyIndexed = new HashSet<Resource>();
-		addToSearchIndex(book.getCoverPage(), result, alreadyIndexed);
-		for (SpineReference spineReference: book.getSpine().getSpineReferences()) {
-			addToSearchIndex(spineReference.getResource(), result, alreadyIndexed);
-		}
-
-		for (GuideReference guideReference: book.getGuide().getReferences()) {
-			addToSearchIndex(guideReference.getResource(), result, alreadyIndexed);
-		}
-
-		for (Resource resource: book.getResources().getAll()) {
-			addToSearchIndex(resource, result, alreadyIndexed);
+		for (Resource resource: book.getContents()) {
+			ResourceSearchIndex resourceSearchIndex = createResourceSearchIndex(resource);
+			if (resourceSearchIndex != null) {
+				result.add(resourceSearchIndex);
+			}
 		}
 		return result;
 	}
