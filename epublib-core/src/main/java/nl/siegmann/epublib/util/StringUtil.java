@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Various String utility functions.
+ * 
+ * Most of the functions herein are re-implementations of the ones in apache commons StringUtils.
+ * The reason for re-implementing this is that the functions are fairly simple and using my own implementation saves the inclusion of a 200Kb jar file.
+ * 
+ * @author paul.siegmann
+ *
+ */
 public class StringUtil {
 
 	/**
