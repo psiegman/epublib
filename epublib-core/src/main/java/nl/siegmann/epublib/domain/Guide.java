@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * The guide is a selection of special pages of the book.
- * Examples of these are the cover, list if illustrations, etc.
+ * Examples of these are the cover, list of illustrations, etc.
  * 
  * It is an optional part of an epub, and support for the various types of references varies by reader.
  * 
