@@ -1,13 +1,15 @@
 package nl.siegmann.epublib.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
-
 import nl.siegmann.epublib.util.StringUtil;
 
 /**
@@ -298,6 +300,49 @@ public class Resources implements Serializable {
 		}
 		return null;
 	}
+
+	/**
+	 * All resources that have the given MediaType.
+	 * 
+	 * @param mediaType
+	 * @return
+	 */
+	public List<Resource> getResourcesByMediaType(MediaType mediaType) {
+		List<Resource> result = new ArrayList<Resource>();
+		if (mediaType == null) {
+			return result;
+		}
+		for (Resource resource: getAll()) {
+			if (resource.getMediaType() == mediaType) {
+				result.add(resource);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * All Resources that match any of the given list of MediaTypes
+	 * 
+	 * @param mediaTypes
+	 * @return
+	 */
+	public List<Resource> getResourcesByMediaTypes(MediaType[] mediaTypes) {
+		List<Resource> result = new ArrayList<Resource>();
+		if (mediaTypes == null) {
+			return result;
+		}
+		
+		// this is the fastest way of doing this according to 
+		// http://stackoverflow.com/questions/1128723/in-java-how-can-i-test-if-an-array-contains-a-certain-value
+		List<MediaType> mediaTypesList = Arrays.asList(mediaTypes);
+		for (Resource resource: getAll()) {
+			if (mediaTypesList.contains(resource.getMediaType())) {
+				result.add(resource);
+			}
+		}
+		return result;
+	}
+
 
 	public Collection<String> getAllHrefs() {
 		return resources.keySet();
