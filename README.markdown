@@ -8,6 +8,8 @@ It also contains a swing-based epub viewer.
 
 The core runs both on android and a standard java environment. The tools run only on a standard java environment.
 
+This means that reading/writing epub files works on Android.
+
 ## Command line examples
 
 Set the author of an existing epub
