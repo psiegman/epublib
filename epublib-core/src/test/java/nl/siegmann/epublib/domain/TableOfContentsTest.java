@@ -26,7 +26,7 @@ public class TableOfContentsTest extends TestCase {
 	}
 	
 	public void testAddAtLocation1() {
-		Resource resource = new Resource("foo/bar");
+		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();
 		TOCReference tocReference = toc.addResourceAtLocation(resource, "apple/pear", "/");
 		assertNotNull(tocReference);
@@ -36,7 +36,7 @@ public class TableOfContentsTest extends TestCase {
 	}
 
 	public void testAddAtLocation2() {
-		Resource resource = new Resource("foo/bar");
+		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();
 		TOCReference tocReference = toc.addResourceAtLocation(resource, "apple/pear", "/");
 		assertNotNull(tocReference);
@@ -55,5 +55,17 @@ public class TableOfContentsTest extends TestCase {
 		assertNotNull(tocReference.getResource());
 		assertEquals(3, toc.size());
 		assertEquals("apple", tocReference3.getTitle());
+	}
+
+	public void testAddAtLocation3() {
+		Resource resource = new Resource("foo");
+		TableOfContents toc = new TableOfContents();
+		TOCReference tocReference = toc.addResourceAtLocation(resource, "apple/pear");
+		assertNotNull(tocReference);
+		assertNotNull(tocReference.getResource());
+		assertEquals(1, toc.getTocReferences().size());
+		assertEquals(1, toc.getTocReferences().get(0).getChildren().size());
+		assertEquals(2, toc.size());
+		assertEquals("pear", tocReference.getTitle());
 	}
 }

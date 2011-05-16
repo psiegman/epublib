@@ -9,8 +9,9 @@ import java.util.Set;
 
 /**
  * The table of contents of the book.
+ * The TableOfContents is a tree structure at the root it is a list of TOCReferences, each if which may have as children another list of TOCReferences.
  * 
- * The table of contents is used by epub as a quick index to chapters.
+ * The table of contents is used by epub as a quick index to chapters and sections within chapters.
  * It may contain duplicate entries, may decide to point not to certain chapters, etc.
  * 
  * See the spine for the complete list of sections in the order in which they should be read.
@@ -26,6 +27,7 @@ public class TableOfContents implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3147391239966275152L;
+	private static final String DEFAULT_PATH_SEPARATOR = "/";
 	private List<TOCReference> tocReferences;
 
 	public TableOfContents() {
@@ -44,11 +46,33 @@ public class TableOfContents implements Serializable {
 		this.tocReferences = tocReferences;
 	}
 	
-	public TOCReference addResourceAtLocation(Resource resource, String path, String pathSeparator) {
-		String[] pathElements = path.split(pathSeparator);
-		return addTOCReferenceAtLocation(resource, pathElements, 0, tocReferences);
+	/**
+	 * Calls addTOCReferenceAtLocation after splitting the path using the DEFAULT_PATH_SEPARATOR.
+	 */
+	public TOCReference addResourceAtLocation(Resource resource, String path) {
+		return addResourceAtLocation(resource, path, DEFAULT_PATH_SEPARATOR);
 	}
 	
+	/**
+	 * Calls addTOCReferenceAtLocation after splitting the path using the given pathSeparator.
+	 * 
+	 * @param resource
+	 * @param path
+	 * @param pathSeparator
+	 * @return
+	 */
+	public TOCReference addResourceAtLocation(Resource resource, String path, String pathSeparator) {
+		String[] pathElements = path.split(pathSeparator);
+		return addTOCReferenceAtLocation(resource, pathElements);
+	}
+	
+	/**
+	 * Finds the first TOCReference in the given list that has the same title as the given Title.
+	 * 
+	 * @param title
+	 * @param tocReferences
+	 * @return null if not found.
+	 */
 	private static TOCReference findTocReferenceByTitle(String title, List<TOCReference> tocReferences) {
 		for (TOCReference tocReference: tocReferences) {
 			if (title.equals(tocReference.getTitle())) {
@@ -57,25 +81,42 @@ public class TableOfContents implements Serializable {
 		}
 		return null;
 	}
-	
-	public static TOCReference addTOCReferenceAtLocation(Resource resource, String[] pathElements, int pathPos, List<TOCReference> tocReferences) {
-		String currentTitle = pathElements[pathPos];
-		TOCReference currentTocReference = findTocReferenceByTitle(currentTitle, tocReferences);
-		if (currentTocReference == null) {
-			currentTocReference = new TOCReference(currentTitle, null);
-			tocReferences.add(currentTocReference);
+
+	/**
+	 * Adds the given Resources to the TableOfContents at the location specified by the pathElements.
+	 * 
+	 * Example:
+	 * Calling this method with a Resource and new String[] {"chapter1", "paragraph1"} will result in the following:
+	 * <ul>
+	 * <li>a TOCReference with title "chapter1" at the root level.<br/>
+	 * If this TOCReference did not yet exist it will have been created and does not point to any resource</li>
+	 * <li>A TOCReference that has the title "paragraph1". This TOCReference will be the child of TOCReference "chapter1" and
+	 * will point to the given Resource</li>
+	 * </ul>
+	 *    
+	 * @param resource
+	 * @param pathElements
+	 * @return
+	 */
+	public TOCReference addTOCReferenceAtLocation(Resource resource, String[] pathElements) {
+		if (pathElements == null || pathElements.length == 0) {
+			return null;
 		}
-		TOCReference result;
-		if (pathPos >= (pathElements.length - 1)) {
-			currentTocReference.setResource(resource);
-			result = currentTocReference;
-		} else {
-			result = addTOCReferenceAtLocation(resource, pathElements, pathPos + 1, currentTocReference.getChildren());
+		TOCReference result = null;
+		List<TOCReference> currentTocReferences = this.tocReferences;
+		for (int i = 0; i < pathElements.length; i++) {
+			String currentTitle = pathElements[i];
+			result = findTocReferenceByTitle(currentTitle, currentTocReferences);
+			if (result == null) {
+				result = new TOCReference(currentTitle, null);
+				currentTocReferences.add(result);
+			}
+			currentTocReferences = result.getChildren();
 		}
+		result.setResource(resource);
 		return result;
 	}
-	
-	
+		
 	public TOCReference addTOCReference(TOCReference tocReference) {
 		if (tocReferences == null) {
 			tocReferences = new ArrayList<TOCReference>();
