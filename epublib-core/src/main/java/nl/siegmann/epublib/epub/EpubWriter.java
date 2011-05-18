@@ -34,10 +34,8 @@ public class EpubWriter {
 	// package
 	static final String EMPTY_NAMESPACE_PREFIX = "";
 	
-	private HtmlProcessor htmlProcessor;
-	private MediatypeService mediatypeService = new MediatypeService();
 	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
-	
+
 	public EpubWriter() {
 		this(BookProcessor.IDENTITY_BOOKPROCESSOR);
 	}
@@ -69,7 +67,7 @@ public class EpubWriter {
 	private void initTOCResource(Book book) throws XMLStreamException, FactoryConfigurationError {
 		Resource tocResource;
 		try {
-			tocResource = NCXDocument.createNCXResource(this, book);
+			tocResource = NCXDocument.createNCXResource(book);
 			Resource currentTocResource = book.getSpine().getTocResource();
 			if (currentTocResource != null) {
 				book.getResources().remove(currentTocResource.getHref());
@@ -172,18 +170,13 @@ public class EpubWriter {
 		return "application/x-dtbncx+xml";
 	}
 
-	public HtmlProcessor getHtmlProcessor() {
-		return htmlProcessor;
+	public BookProcessor getBookProcessor() {
+		return bookProcessor;
 	}
-
-
-	public void setHtmlProcessor(HtmlProcessor htmlProcessor) {
-		this.htmlProcessor = htmlProcessor;
+	
+	
+	public void setBookProcessor(BookProcessor bookProcessor) {
+		this.bookProcessor = bookProcessor;
 	}
-
-
-
-	public MediatypeService getMediatypeService() {
-		return mediatypeService;
-	}
+	
 }
