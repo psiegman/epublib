@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
@@ -39,6 +40,9 @@ public class EpubWriterTest extends TestCase {
 			assertEquals(Identifier.Scheme.ISBN, CollectionUtil.first(readBook.getMetadata().getIdentifiers()).getScheme());
 			assertEquals(CollectionUtil.first(book.getMetadata().getIdentifiers()).getValue(), CollectionUtil.first(readBook.getMetadata().getIdentifiers()).getValue());
 			assertEquals(CollectionUtil.first(book.getMetadata().getAuthors()), CollectionUtil.first(readBook.getMetadata().getAuthors()));
+			assertEquals(1, readBook.getGuide().getGuideReferencesByType(GuideReference.COVER).size());
+			assertNotNull(book.getCoverPage());
+			assertNotNull(book.getCoverImage());
 			assertEquals(4, readBook.getTableOfContents().size());
 			
 		} catch (IOException e) {
