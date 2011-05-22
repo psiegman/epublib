@@ -9,7 +9,7 @@ public class BookTest extends TestCase {
 		Book book = new Book();
 		Resource resource1 = new Resource("id1", "Hello, world !".getBytes(), "chapter1.html", MediatypeService.XHTML);
 		book.getSpine().addResource(resource1);
-		book.getTableOfContents().addResourceAtLocation(resource1, "My first chapter");
+		book.getTableOfContents().addSection(resource1, "My first chapter");
 		assertEquals(1, book.getContents().size());
 	}
 
@@ -18,7 +18,7 @@ public class BookTest extends TestCase {
 		Resource resource1 = new Resource("id1", "Hello, world !".getBytes(), "chapter1.html", MediatypeService.XHTML);
 		book.getSpine().addResource(resource1);
 		Resource resource2 = new Resource("id1", "Hello, world !".getBytes(), "chapter2.html", MediatypeService.XHTML);
-		book.getTableOfContents().addResourceAtLocation(resource2, "My first chapter");
+		book.getTableOfContents().addSection(resource2, "My first chapter");
 		assertEquals(2, book.getContents().size());
 	}
 
@@ -27,7 +27,7 @@ public class BookTest extends TestCase {
 		Resource resource1 = new Resource("id1", "Hello, world !".getBytes(), "chapter1.html", MediatypeService.XHTML);
 		book.getSpine().addResource(resource1);
 		Resource resource2 = new Resource("id1", "Hello, world !".getBytes(), "chapter2.html", MediatypeService.XHTML);
-		book.getTableOfContents().addResourceAtLocation(resource2, "My first chapter");
+		book.getTableOfContents().addSection(resource2, "My first chapter");
 		book.getGuide().addReference(new GuideReference(resource2, GuideReference.FOREWORD, "The Foreword"));
 		assertEquals(2, book.getContents().size());
 	}
@@ -39,7 +39,7 @@ public class BookTest extends TestCase {
 		book.getSpine().addResource(resource1);
 		
 		Resource resource2 = new Resource("id1", "Hello, world !".getBytes(), "chapter2.html", MediatypeService.XHTML);
-		book.getTableOfContents().addResourceAtLocation(resource2, "My first chapter");
+		book.getTableOfContents().addSection(resource2, "My first chapter");
 
 		Resource resource3 = new Resource("id1", "Hello, world !".getBytes(), "foreword.html", MediatypeService.XHTML);
 		book.getGuide().addReference(new GuideReference(resource3, GuideReference.FOREWORD, "The Foreword"));
