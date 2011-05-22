@@ -3,6 +3,9 @@ package nl.siegmann.epublib.epub;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,7 +40,7 @@ public class EpubProcessorSupport {
 		init();
 	}
 	
-	private static EntityResolver entityResolver = new EntityResolver() {
+	public static EntityResolver entityResolver = new EntityResolver() {
 		
 		private String previousLocation;
 		
@@ -70,14 +73,18 @@ public class EpubProcessorSupport {
 		EpubProcessorSupport.xPathFactory = XPathFactory.newInstance();
 	}
 	
-	public static XmlSerializer createXmlSerializer(OutputStream out) {
+	public static XmlSerializer createXmlSerializer(OutputStream out) throws UnsupportedEncodingException {
+		return createXmlSerializer(new OutputStreamWriter(out, Constants.ENCODING));
+	}
+	
+	public static XmlSerializer createXmlSerializer(Writer out) {
 		XmlSerializer result = null;
 		try {
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 			factory.setValidating(true);
 			result = factory.newSerializer();
 			result.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-			result.setOutput(out, Constants.ENCODING);
+			result.setOutput(out);
 		} catch (Exception e) {
 			log.error("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
 		}
