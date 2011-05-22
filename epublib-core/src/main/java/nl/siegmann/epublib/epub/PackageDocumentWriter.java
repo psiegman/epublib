@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Guide;
 import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Spine;
@@ -168,12 +169,25 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	private static void writeGuide(Book book, EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
 		serializer.startTag(NAMESPACE_OPF, OPFTags.guide);
+		ensureCoverPageGuideReferenceWritten(book.getGuide(), epubWriter, serializer);
 		for (GuideReference reference: book.getGuide().getReferences()) {
 			writeGuideReference(reference, serializer);
 		}
 		serializer.endTag(NAMESPACE_OPF, OPFTags.guide);
 	}
 	
+	private static void ensureCoverPageGuideReferenceWritten(Guide guide,
+			EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+		if (! (guide.getGuideReferencesByType(GuideReference.COVER).isEmpty())) {
+			return;
+		}
+		Resource coverPage = guide.getCoverPage();
+		if (coverPage != null) {
+			writeGuideReference(new GuideReference(guide.getCoverPage(), GuideReference.COVER, GuideReference.COVER), serializer);
+		}
+	}
+
+
 	private static void writeGuideReference(GuideReference reference, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
 		if (reference == null) {
 			return;

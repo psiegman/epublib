@@ -104,4 +104,20 @@ public class Guide implements Serializable {
 		uncheckCoverPage();
 		return reference;
 	}
+
+	/**
+	 * A list of all GuideReferences that have the given referenceTypeName (ignoring case).
+	 * 
+	 * @param referenceTypeName
+	 * @return
+	 */
+	public List<GuideReference> getGuideReferencesByType(String referenceTypeName) {
+		List<GuideReference> result = new ArrayList<GuideReference>();
+		for (GuideReference guideReference: references) {
+			if (referenceTypeName.equalsIgnoreCase(guideReference.getType())) {
+				result.add(guideReference);
+			}
+		}
+		return result;
+	}
 }
