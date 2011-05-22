@@ -27,7 +27,9 @@ public class TableOfContents implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3147391239966275152L;
-	private static final String DEFAULT_PATH_SEPARATOR = "/";
+	
+	public static final String DEFAULT_PATH_SEPARATOR = "/";
+	
 	private List<TOCReference> tocReferences;
 
 	public TableOfContents() {
@@ -49,8 +51,8 @@ public class TableOfContents implements Serializable {
 	/**
 	 * Calls addTOCReferenceAtLocation after splitting the path using the DEFAULT_PATH_SEPARATOR.
 	 */
-	public TOCReference addResourceAtLocation(Resource resource, String path) {
-		return addResourceAtLocation(resource, path, DEFAULT_PATH_SEPARATOR);
+	public TOCReference addSection(Resource resource, String path) {
+		return addSection(resource, path, DEFAULT_PATH_SEPARATOR);
 	}
 	
 	/**
@@ -61,9 +63,9 @@ public class TableOfContents implements Serializable {
 	 * @param pathSeparator
 	 * @return
 	 */
-	public TOCReference addResourceAtLocation(Resource resource, String path, String pathSeparator) {
+	public TOCReference addSection(Resource resource, String path, String pathSeparator) {
 		String[] pathElements = path.split(pathSeparator);
-		return addTOCReferenceAtLocation(resource, pathElements);
+		return addSection(resource, pathElements);
 	}
 	
 	/**
@@ -88,7 +90,7 @@ public class TableOfContents implements Serializable {
 	 * Example:
 	 * Calling this method with a Resource and new String[] {"chapter1", "paragraph1"} will result in the following:
 	 * <ul>
-	 * <li>a TOCReference with title "chapter1" at the root level.<br/>
+	 * <li>a TOCReference with the title "chapter1" at the root level.<br/>
 	 * If this TOCReference did not yet exist it will have been created and does not point to any resource</li>
 	 * <li>A TOCReference that has the title "paragraph1". This TOCReference will be the child of TOCReference "chapter1" and
 	 * will point to the given Resource</li>
@@ -98,7 +100,7 @@ public class TableOfContents implements Serializable {
 	 * @param pathElements
 	 * @return
 	 */
-	public TOCReference addTOCReferenceAtLocation(Resource resource, String[] pathElements) {
+	public TOCReference addSection(Resource resource, String[] pathElements) {
 		if (pathElements == null || pathElements.length == 0) {
 			return null;
 		}
@@ -117,6 +119,70 @@ public class TableOfContents implements Serializable {
 		return result;
 	}
 		
+	/**
+	 * Adds the given Resources to the TableOfContents at the location specified by the pathElements.
+	 * 
+	 * Example:
+	 * Calling this method with a Resource and new int[] {0, 0} will result in the following:
+	 * <ul>
+	 * <li>a TOCReference at the root level.<br/>
+	 * If this TOCReference did not yet exist it will have been created with a title of "" and does not point to any resource</li>
+	 * <li>A TOCReference that points to the given resource and is a child of the previously created TOCReference.<br/>
+	 * If this TOCReference didn't exist yet it will be created and have a title of ""</li>
+	 * </ul>
+	 *    
+	 * @param resource
+	 * @param pathElements
+	 * @return
+	 */
+	public TOCReference addSection(Resource resource, int[] pathElements, String sectionTitlePrefix, String sectionNumberSeparator) {
+		if (pathElements == null || pathElements.length == 0) {
+			return null;
+		}
+		TOCReference result = null;
+		List<TOCReference> currentTocReferences = this.tocReferences;
+		for (int i = 0; i < pathElements.length; i++) {
+			int currentIndex = pathElements[i];
+			if (currentIndex > 0 && currentIndex < (currentTocReferences.size() - 1)) {
+				result = currentTocReferences.get(currentIndex);
+			} else {
+				result = null;
+			}
+			if (result == null) {
+				paddTOCReferences(currentTocReferences, pathElements, i, sectionTitlePrefix, sectionNumberSeparator);
+				result = currentTocReferences.get(currentIndex);
+			}
+			currentTocReferences = result.getChildren();
+		}
+		result.setResource(resource);
+		return result;
+	}
+	
+	private void paddTOCReferences(List<TOCReference> currentTocReferences,
+			int[] pathElements, int pathPos, String sectionPrefix, String sectionNumberSeparator) {
+		for (int i = currentTocReferences.size(); i <= pathElements[pathPos]; i++) {
+			String sectionTitle = createSectionTitle(pathElements, pathPos, i, sectionPrefix,
+					sectionNumberSeparator);
+			currentTocReferences.add(new TOCReference(sectionTitle, null));
+		}
+	}
+
+	private String createSectionTitle(int[] pathElements, int pathPos, int lastPos,
+			String sectionPrefix, String sectionNumberSeparator) {
+		StringBuilder title = new StringBuilder(sectionPrefix);
+		for (int i = 0; i < pathPos; i++) {
+			if (i > 0) {
+				title.append(sectionNumberSeparator);
+			}
+			title.append(pathElements[i] + 1);
+		}
+		if (pathPos > 0) {
+			title.append(sectionNumberSeparator);
+		}
+		title.append(lastPos + 1);
+		return title.toString();
+	}
+
 	public TOCReference addTOCReference(TOCReference tocReference) {
 		if (tocReferences == null) {
 			tocReferences = new ArrayList<TOCReference>();
