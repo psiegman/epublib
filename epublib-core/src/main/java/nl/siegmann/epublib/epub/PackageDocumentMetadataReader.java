@@ -102,7 +102,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 			Element dateElement = (Element) elements.item(i);
 			Date date;
 			try {
-				date = new Date(DOMUtil.getTextChild(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
+				date = new Date(DOMUtil.getTextChildrenContent(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
 				result.add(date);
 			} catch(IllegalArgumentException e) {
 				log.error(e.getMessage());
@@ -113,7 +113,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 	}
 
 	private static Author createAuthor(Element authorElement) {
-		String authorString = DOMUtil.getTextChild(authorElement);
+		String authorString = DOMUtil.getTextChildrenContent(authorElement);
 		if (StringUtil.isBlank(authorString)) {
 			return null;
 		}
@@ -140,7 +140,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		for(int i = 0; i < identifierElements.getLength(); i++) {
 			Element identifierElement = (Element) identifierElements.item(i);
 			String schemeName = identifierElement.getAttributeNS(NAMESPACE_OPF, DCAttributes.scheme);
-			String identifierValue = DOMUtil.getTextChild(identifierElement);
+			String identifierValue = DOMUtil.getTextChildrenContent(identifierElement);
 			if (StringUtil.isBlank(identifierValue)) {
 				continue;
 			}

@@ -78,24 +78,24 @@ public class NCXDocument {
 	}
 	
 	public static Resource read(Book book, EpubReader epubReader) {
-		Resource result = null;
+		Resource ncxResource = null;
 		if(book.getSpine().getTocResource() == null) {
 			log.error("Book does not contain a table of contents file");
-			return result;
+			return ncxResource;
 		}
 		try {
-			result = book.getSpine().getTocResource();
-			if(result == null) {
-				return result;
+			ncxResource = book.getSpine().getTocResource();
+			if(ncxResource == null) {
+				return ncxResource;
 			}
-			Document ncxDocument = ResourceUtil.getAsDocument(result);
+			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource);
 			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
 			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
 			book.setTableOfContents(tableOfContents);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		return result;
+		return ncxResource;
 	}
 	
 	private static List<TOCReference> readTOCReferences(NodeList navpoints, Book book) {
@@ -146,7 +146,7 @@ public class NCXDocument {
 
 	private static String readNavLabel(Element navpointElement) {
 		Element navLabel = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.navLabel);
-		return DOMUtil.getTextChild(DOMUtil.getFirstElementByTagNameNS(navLabel, NAMESPACE_NCX, NCXTags.text));
+		return DOMUtil.getTextChildrenContent(DOMUtil.getFirstElementByTagNameNS(navLabel, NAMESPACE_NCX, NCXTags.text));
 	}
 
 	
