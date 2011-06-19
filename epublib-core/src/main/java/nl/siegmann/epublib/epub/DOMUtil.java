@@ -7,6 +7,7 @@ import nl.siegmann.epublib.util.StringUtil;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
@@ -48,7 +49,7 @@ class DOMUtil {
 		NodeList elements = parentElement.getElementsByTagNameNS(namespace, tagname);
 		List<String> result = new ArrayList<String>(elements.getLength());
 		for(int i = 0; i < elements.getLength(); i++) {
-			result.add(getTextChild((Element) elements.item(i)));
+			result.add(getTextChildrenContent((Element) elements.item(i)));
 		}
 		return result;
 	}
@@ -93,15 +94,32 @@ class DOMUtil {
 		return (Element) nodes.item(0);
 	}
 
-	public static String getTextChild(Element parentElement) {
+	/**
+	 * The contents of all Text nodes that are children of the given parentElement.
+	 * The result is trim()-ed.
+	 * 
+	 * The reason for this more complicated procedure instead of just returning the data of the firstChild is that
+	 * when the text is Chinese characters then on Android each Characater is represented in the DOM as
+	 * an individual Text node.
+	 * 
+	 * @param parentElement
+	 * @return
+	 */
+	public static String getTextChildrenContent(Element parentElement) {
 		if(parentElement == null) {
 			return null;
 		}
-		Text childContent = (Text) parentElement.getFirstChild();
-		if(childContent == null) {
-			return null;
+		StringBuilder result = new StringBuilder();
+		NodeList childNodes = parentElement.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			if ((node == null) ||
+					(node.getNodeType() != Node.TEXT_NODE)) {
+				continue;
+			}
+			result.append(((Text) node).getData());
 		}
-		return childContent.getData().trim();
+		return result.toString().trim();
 	}
 
 }
