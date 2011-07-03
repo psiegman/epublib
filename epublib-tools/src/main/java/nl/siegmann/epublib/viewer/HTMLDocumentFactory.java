@@ -13,6 +13,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLEditorKit.Parser;
 
 
+import nl.siegmann.epublib.browsersupport.NavigationEvent;
+import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author paul.siegmann
  *
  */
-public class HTMLDocumentFactory {
+public class HTMLDocumentFactory implements NavigationEventListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(HTMLDocumentFactory.class);
 	
@@ -50,6 +52,7 @@ public class HTMLDocumentFactory {
 		this.editorKit = new MyHtmlEditorKit((HTMLEditorKit) editorKit);
 		this.imageLoaderCache = new ImageLoaderCache(navigator);
 		init(navigator.getBook());
+		navigator.addNavigationEventListener(this);
 	}
 
 	public void init(Book book) {
@@ -77,7 +80,7 @@ public class HTMLDocumentFactory {
 	 * Get the HTMLDocument representation of the resource.
 	 * If the resource is not an XHTML resource then it returns null.
 	 * It first tries to get the document from the cache.
-	 * If the document is not in the cache it creates a document form
+	 * If the document is not in the cache it creates a document from
 	 * the resource and adds it to the cache.
 	 * 
 	 * @param resource
@@ -141,6 +144,14 @@ public class HTMLDocumentFactory {
 		return result.toString();
 	}
 
+	/**
+	 * Creates a swing HTMLDocument from the given resource.
+	 * 
+	 * If the resources is not of type XHTML then null is returned.
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	private HTMLDocument createDocument(Resource resource) {
 		HTMLDocument result = null;
 		if (resource.getMediaType() != MediatypeService.XHTML) {
@@ -199,6 +210,14 @@ public class HTMLDocumentFactory {
 			for (Resource resource: book.getResources().getAll()) {
 				getDocument(resource);
 			}
+		}
+	}
+
+
+	@Override
+	public void navigationPerformed(NavigationEvent navigationEvent) {
+		if (navigationEvent.isBookChanged() || navigationEvent.isResourceChanged()) {
+			imageLoaderCache.clear();
 		}
 	}
 }

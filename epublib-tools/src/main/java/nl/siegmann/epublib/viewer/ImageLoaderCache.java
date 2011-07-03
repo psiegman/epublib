@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.text.html.HTMLDocument;
@@ -14,6 +14,7 @@ import javax.swing.text.html.HTMLDocument;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * @author paul
  *
  */
-class ImageLoaderCache extends Dictionary {
+class ImageLoaderCache extends Dictionary<String, Image> {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";
 
 	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
 	
-	private Hashtable<String, Image> cache = new Hashtable<String, Image>();
+	private HashMap<String, Image> cache = new HashMap<String, Image>();
 	private Book book;
 	private String currentFolder = "";
 	private Navigator navigator;
@@ -86,6 +87,12 @@ class ImageLoaderCache extends Dictionary {
 		return resourceHref;
 	}
 	
+	/**
+	 * Create an Image from the data of the given resource.
+	 * 
+	 * @param imageResource
+	 * @return
+	 */
 	private Image createImage(Resource imageResource) {
 		Image result = null;
 		try {
@@ -96,7 +103,7 @@ class ImageLoaderCache extends Dictionary {
 		return result;
 	}
 	
-	public Object get(Object key) {
+	public Image get(Object key) {
 		if (book == null) {
 			return null;
 		}
@@ -135,22 +142,29 @@ class ImageLoaderCache extends Dictionary {
 		return cache.isEmpty();
 	}
 
-	public Enumeration keys() {
-		return cache.keys();
+	public Enumeration<String> keys() {
+		return CollectionUtil.createEnumerationFromIterator(cache.keySet().iterator());
 	}
 
-	public Enumeration elements() {
-		return cache.elements();
+	public Enumeration<Image> elements() {
+		return CollectionUtil.createEnumerationFromIterator(cache.values().iterator());
 	}
 
-	public Object put(Object key, Object value) {
+	public Image put(String key, Image value) {
 		return cache.put(key.toString(), (Image) value);
 	}
 
-	public Object remove(Object key) {
+	public Image remove(Object key) {
 		return cache.remove(key);
 	}
 
+	/**
+	 * Clears the image cache.
+	 */
+	public void clear() {
+		cache.clear();
+	}
+	
 	public String toString() {
 		return cache.toString();
 	}
