@@ -27,6 +27,7 @@ public class Resources implements Serializable {
 	private static final long serialVersionUID = 2450876953383871451L;
 	private static final String IMAGE_PREFIX = "image_";
 	private static final String ITEM_PREFIX = "item_";
+	private int lastId = 1;
 	
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
 	
@@ -91,17 +92,36 @@ public class Resources implements Serializable {
 		return result;
 	}
 	
-	
+	/**
+	 * Creates a new resource id that is guarenteed to be unique for this set of Resources
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	private String createUniqueResourceId(Resource resource) {
-		int counter = 1;
+		int counter = lastId;
+		if (counter == Integer.MAX_VALUE) {
+			if (resources.size() == Integer.MAX_VALUE) {
+				throw new IllegalArgumentException("Resources contains " + Integer.MAX_VALUE + " elements: no new elements can be added");
+			} else {
+				counter = 1;
+			}
+		}
 		String prefix = getResourceItemPrefix(resource);
 		String result = prefix + counter;
 		while (containsId(result)) {
 			result = prefix + (++ counter);
 		}
+		lastId = counter;
 		return result;
 	}
 
+	/**
+	 * Whether the map of resources already contains a resource with the given id.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public boolean containsId(String id) {
 		if (StringUtil.isBlank(id)) {
 			return false;
