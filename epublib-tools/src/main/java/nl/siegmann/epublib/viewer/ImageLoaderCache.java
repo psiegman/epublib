@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.text.html.HTMLDocument;
@@ -38,7 +39,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 
 	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
 	
-	private HashMap<String, Image> cache = new HashMap<String, Image>();
+	private Map<String, Image> cache = new HashMap<String, Image>();
 	private Book book;
 	private String currentFolder = "";
 	private Navigator navigator;
