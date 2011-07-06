@@ -11,7 +11,6 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathFactory;
 
 import nl.siegmann.epublib.Constants;
 
@@ -34,7 +33,6 @@ public class EpubProcessorSupport {
 	private static final Logger log = LoggerFactory.getLogger(EpubProcessorSupport.class);
 	
 	protected static DocumentBuilderFactory documentBuilderFactory;
-	protected static XPathFactory xPathFactory;
 	
 	static {
 		init();
@@ -70,7 +68,6 @@ public class EpubProcessorSupport {
 		EpubProcessorSupport.documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		documentBuilderFactory.setValidating(false);
-		EpubProcessorSupport.xPathFactory = XPathFactory.newInstance();
 	}
 	
 	public static XmlSerializer createXmlSerializer(OutputStream out) throws UnsupportedEncodingException {
@@ -110,9 +107,4 @@ public class EpubProcessorSupport {
 		}
 		return result;
 	}
-
-	public static XPathFactory getXPathFactory() {
-		return xPathFactory;
-	}
-
 }
