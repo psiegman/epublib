@@ -1,0 +1,3 @@
+include 'epublib-core', 'epublib-tools'
+
+rootProject.name = 'epublib'
