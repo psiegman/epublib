@@ -2,17 +2,14 @@ package nl.siegmann.epublib.epub;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
@@ -21,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 /**
  * Reads an epub file.
@@ -42,7 +38,6 @@ public class EpubReader {
 		return readEpub(in, Constants.ENCODING);
 	}
 	
-	
 	/**
 	 * Read epub from inputstream
 	 * 
@@ -57,9 +52,9 @@ public class EpubReader {
 	
 	public Book readEpub(ZipInputStream in, String encoding) throws IOException {
 		Book result = new Book();
-		Map<String, Resource> resources = readResources(in, encoding);
+		Resources resources = readResources(in, encoding);
 		handleMimeType(result, resources);
-		String packageResourceHref = getPackageResourceHref(result, resources);
+		String packageResourceHref = getPackageResourceHref(resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
 		result.setOpfResource(packageResource);
 		Resource ncxResource = processNcxResource(packageResource, result);
@@ -79,27 +74,17 @@ public class EpubReader {
 		return NCXDocument.read(book, this);
 	}
 
-	private Resource processPackageResource(String packageResourceHref, Book book, Map<String, Resource> resources) {
+	private Resource processPackageResource(String packageResourceHref, Book book, Resources resources) {
 		Resource packageResource = resources.remove(packageResourceHref);
 		try {
 			PackageDocumentReader.read(packageResource, this, book, resources);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 		return packageResource;
 	}
 
-	private String getPackageResourceHref(Book book, Map<String, Resource> resources) {
+	private String getPackageResourceHref(Resources resources) {
 		String defaultResult = "OEBPS/content.opf";
 		String result = defaultResult;
 
@@ -120,14 +105,13 @@ public class EpubReader {
 		return result;
 	}
 
-	private void handleMimeType(Book result, Map<String, Resource> resources) {
+	private void handleMimeType(Book result, Resources resources) {
 		resources.remove("mimetype");
 	}
 
-	private Map<String, Resource> readResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
-		Map<String, Resource> result = new HashMap<String, Resource>();
+	private Resources readResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
+		Resources result = new Resources();
 		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
-//			System.out.println(zipEntry.getName());
 			if(zipEntry.isDirectory()) {
 				continue;
 			}
@@ -135,7 +119,7 @@ public class EpubReader {
 			if(resource.getMediaType() == MediatypeService.XHTML) {
 				resource.setInputEncoding(defaultHtmlEncoding);
 			}
-			result.put(resource.getHref(), resource);
+			result.add(resource);
 		}
 		return result;
 	}
