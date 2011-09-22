@@ -1,6 +1,7 @@
 package nl.siegmann.epublib.epub;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import nl.siegmann.epublib.domain.Book;
@@ -52,6 +53,14 @@ public class BookProcessorPipeline implements BookProcessor {
 		}
 		this.bookProcessors.add(bookProcessor);
 	}
+
+	public void addBookProcessors(Collection<BookProcessor> bookProcessors) {
+		if (this.bookProcessors == null) {
+			this.bookProcessors = new ArrayList<BookProcessor>();
+		}
+		this.bookProcessors.addAll(bookProcessors);
+	}
+	
 	
 	public List<BookProcessor> getBookProcessors() {
 		return bookProcessors;
