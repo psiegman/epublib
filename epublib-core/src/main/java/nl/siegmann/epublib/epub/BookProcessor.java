@@ -22,5 +22,6 @@ public interface BookProcessor {
 			return book;
 		}
 	};
+	
 	Book processBook(Book book);
 }
