@@ -9,9 +9,6 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -46,7 +43,7 @@ public class EpubWriter {
 	}
 
 
-	public void write(Book book, OutputStream out) throws IOException, XMLStreamException, FactoryConfigurationError {
+	public void write(Book book, OutputStream out) throws IOException {
 		book = processBook(book);
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
@@ -64,7 +61,7 @@ public class EpubWriter {
 		return book;
 	}
 
-	private void initTOCResource(Book book) throws XMLStreamException, FactoryConfigurationError {
+	private void initTOCResource(Book book) {
 		Resource tocResource;
 		try {
 			tocResource = NCXDocument.createNCXResource(book);
@@ -109,7 +106,7 @@ public class EpubWriter {
 	}
 	
 
-	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws XMLStreamException, IOException {
+	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
 		XmlSerializer xmlSerializer = EpubProcessorSupport.createXmlSerializer(resultStream);
 		PackageDocumentWriter.write(this, xmlSerializer, book);
