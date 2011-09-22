@@ -4,9 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
@@ -41,17 +38,12 @@ public class EpubWriterTest extends TestCase {
 			assertEquals(CollectionUtil.first(book.getMetadata().getIdentifiers()).getValue(), CollectionUtil.first(readBook.getMetadata().getIdentifiers()).getValue());
 			assertEquals(CollectionUtil.first(book.getMetadata().getAuthors()), CollectionUtil.first(readBook.getMetadata().getAuthors()));
 			assertEquals(1, readBook.getGuide().getGuideReferencesByType(GuideReference.COVER).size());
+			assertEquals(5, readBook.getSpine().size());
 			assertNotNull(book.getCoverPage());
 			assertNotNull(book.getCoverImage());
 			assertEquals(4, readBook.getTableOfContents().size());
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FactoryConfigurationError e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -77,11 +69,62 @@ public class EpubWriterTest extends TestCase {
 	}
 	
 
-	private byte[] writeBookToByteArray(Book book) throws IOException, XMLStreamException, FactoryConfigurationError {
+	private byte[] writeBookToByteArray(Book book) throws IOException {
 		EpubWriter epubWriter = new EpubWriter();
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		epubWriter.write(book, out);
 		return out.toByteArray();
 	}
+//
+//	  public static void writeEpub(BookDTO dto) throws IOException{
+//	        Book book = new Book();
+//	       
+//	        Resource coverImg = new Resource(new FileInputStream(ResourceBundle.getBundle("info.pxdev.pfi.webclient.resources.Config").getString("COVER_DIR")+dto.getCoverFileName()),dto.getCoverFileName());
+//	               
+//	        book.getMetadata().addTitle(dto.getTitle());
+//	       
+//	        if(dto.getIdentifier().getType().getName().equals("ISBN"))
+//	            book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, dto.getIdentifier().getIdentifier()));
+//	        else
+//	            book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.UUID, dto.getIdentifier().getIdentifier()));
+//	       
+//	        book.getMetadata().addAuthor(new Author(dto.getCreator().getName(), dto.getCreator().getLastName()));
+//	        book.getMetadata().addPublisher(dto.getPublisher());
+//	        book.getMetadata().addDate(new Date(dto.getLastModified()));
+//	        book.getMetadata().addDescription(dto.getDescription());
+//	        book.getMetadata().addType("TEXT");
+//	        book.getMetadata().setLanguage(dto.getLanguage());
+//	        book.getMetadata().setCoverImage(coverImg);
+//	        book.getMetadata().setFormat(MediatypeService.EPUB.getName());
+//	       
+//	        for(BookSubCategoryDTO subject : dto.getSubjects()){
+//	            book.getMetadata().getSubjects().add(subject.getName());   
+//	        }
+//	        for(BookContributorDTO contrib : dto.getContributors()){
+//	            Author contributor = new Author(contrib.getName(), contrib.getLastName());
+//	            contributor.setRelator(Relator.byCode(contrib.getType().getShortName()));
+//	            book.getMetadata().addContributor(contributor);
+//	        }
+//	       
+//	       
+//	        book.setCoverImage(coverImg);
+//	        for(BookChapterDTO chapter : dto.getChapters()){
+//	            Resource aux = new Resource(HTMLGenerator.generateChapterHtmlStream(dto,chapter), "chapter"+chapter.getNumber()+".html");
+//	            book.addSection(chapter.getTitle(), aux );
+//	        }
+//	       
+//	        EpubWriter writer = new EpubWriter();
+//	        FileOutputStream output = new FileOutputStream(ResourceBundle.getBundle("info.pxdev.pfi.webclient.resources.Config").getString("HTML_CHAPTERS")+dto.getId_book()+"\\test.epub");
+//	       
+//	        try {
+//	            writer.write(book, output);
+//	        } catch (XMLStreamException e) {
+//	            // TODO Auto-generated catch block
+//	            e.printStackTrace();
+//	        } catch (FactoryConfigurationError e) {
+//	            // TODO Auto-generated catch block
+//	            e.printStackTrace();
+//	        }
+//	    }
 }

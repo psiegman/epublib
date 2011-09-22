@@ -10,7 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
@@ -150,7 +149,7 @@ public class NCXDocument {
 	}
 
 	
-	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException, XMLStreamException, FactoryConfigurationError {
+	public static void write(EpubWriter epubWriter, Book book, ZipOutputStream resultStream) throws IOException {
 		resultStream.putNextEntry(new ZipEntry(book.getSpine().getTocResource().getHref()));
 		XmlSerializer out = EpubProcessorSupport.createXmlSerializer(resultStream);
 		write(out, book);
