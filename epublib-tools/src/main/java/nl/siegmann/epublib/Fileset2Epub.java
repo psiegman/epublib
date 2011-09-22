@@ -13,6 +13,7 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.epub.BookProcessor;
 import nl.siegmann.epublib.epub.BookProcessorPipeline;
 import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
@@ -35,7 +36,8 @@ public class Fileset2Epub {
 		String type = "";
 		String isbn = "";
 		String inputEncoding = Constants.ENCODING;
-
+		List<String> bookProcessorClassNames = new ArrayList<String>();
+		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase("--in")) {
 				inputLocation = args[++i];
@@ -45,6 +47,8 @@ public class Fileset2Epub {
 				inputEncoding = args[++i];
 			} else if(args[i].equalsIgnoreCase("--xsl")) {
 				xslFile = args[++i];
+			} else if(args[i].equalsIgnoreCase("--book-processor-class")) {
+				bookProcessorClassNames.add(args[++i]);
 			} else if(args[i].equalsIgnoreCase("--cover-image")) {
 				coverImage = args[++i];
 			} else if(args[i].equalsIgnoreCase("--author")) {
@@ -61,6 +65,7 @@ public class Fileset2Epub {
 			usage();
 		}
 		BookProcessorPipeline epubCleaner = new DefaultBookProcessorPipeline();
+		epubCleaner.addBookProcessors(createBookProcessors(bookProcessorClassNames));
 		EpubWriter epubWriter = new EpubWriter(epubCleaner);
 		if(! StringUtils.isBlank(xslFile)) {
 			epubCleaner.addBookProcessor(new XslBookProcessor(xslFile));
@@ -124,6 +129,20 @@ public class Fileset2Epub {
 		book.getMetadata().setAuthors(authorObjects);
 	}
 
+
+	private static List<BookProcessor> createBookProcessors(List<String> bookProcessorNames) {
+		List<BookProcessor> result = new ArrayList<BookProcessor>(bookProcessorNames.size());
+		for (String bookProcessorName: bookProcessorNames) {
+			BookProcessor bookProcessor = null;
+			try {
+				bookProcessor = (BookProcessor) Class.forName(bookProcessorName).newInstance();
+				result.add(bookProcessor);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
 	
 	private static void usage() {
 		System.out.println("usage: " + Fileset2Epub.class.getName() 
