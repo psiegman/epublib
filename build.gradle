@@ -20,3 +20,8 @@ task newJavadoc(type: Javadoc) {
         project.sourceSets.main.compileClasspath
     })
 }
+
+repositories {
+    mavenCentral()
+	mavenRepo urls: 'http://repository.jboss.org/nexus/content/groups/public'
+}
