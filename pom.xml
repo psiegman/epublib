@@ -47,6 +47,17 @@
 		<url>http://github.com/psiegman/epublib/issues</url>
 	</issueManagement>
 
+	<distributionManagement>
+		<repository>
+			<id>repo</id>
+			<url>https://github.com/psiegman/mvn-repo/raw/master/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot-repo</id>
+			<url>https://github.com/psiegman/mvn-repo/raw/master/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<scm>
 		<url>http://github.com/psiegman/epublib</url>
 		<connection>scm:git:https://psiegman@github.com/psiegman/epublib.git</connection>
