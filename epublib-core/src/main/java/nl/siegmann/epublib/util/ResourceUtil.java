@@ -17,8 +17,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubProcessorSupport;
 import nl.siegmann.epublib.service.MediatypeService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -31,8 +29,6 @@ import org.xml.sax.SAXException;
  */
 public class ResourceUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(ResourceUtil.class);
-
 	public static Resource createResource(File file) throws IOException {
 		if (file == null) {
 			return null;
