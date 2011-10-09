@@ -108,7 +108,6 @@ public class ResourceUtil {
 			return null;
 		}
 		Document result = documentBuilder.parse(inputSource);
-		result.setXmlStandalone(true);
 		return result;
 	}
 }
