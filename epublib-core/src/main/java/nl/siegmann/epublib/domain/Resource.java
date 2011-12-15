@@ -1,10 +1,16 @@
 package nl.siegmann.epublib.domain;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -31,6 +37,11 @@ public class Resource implements Serializable {
 	private MediaType mediaType;
 	private String inputEncoding = Constants.ENCODING;
 	private byte[] data;
+		
+	private String fileName;
+	private long cachedSize;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Resource.class);
 	
 	/**
 	 * Creates an empty Resource with the given href.
@@ -104,6 +115,21 @@ public class Resource implements Serializable {
 	}
 	
 	/**
+	 * Creates a Lazy resource, by not actually loading the data for this entry.
+	 * 
+	 * The data will be loaded on the first call to getData()
+	 * 
+	 * @param fileName the fileName for the epub we're created from.
+	 * @param size the size of this resource.
+	 * @param href The resource's href within the epub.
+	 */
+	public Resource( String fileName, long size, String href) {
+		this( null, null, href, MediatypeService.determineMediaType(href));
+		this.fileName = fileName;
+		this.cachedSize = size;
+	}
+	
+	/**
 	 * Creates a resource with the given id, data, mediatype at the specified href.
 	 * Assumes that if the data is of a text type (html/css/etc) then the encoding will be UTF-8
 	 * 
@@ -142,7 +168,7 @@ public class Resource implements Serializable {
 	 * @throws IOException
 	 */
 	public InputStream getInputStream() throws IOException {
-		return new ByteArrayInputStream(data);
+		return new ByteArrayInputStream(getData());
 	}
 
 	/**
@@ -150,8 +176,39 @@ public class Resource implements Serializable {
 	 * 
 	 * @return The contents of the resource
 	 */
-	public byte[] getData() {
+	public byte[] getData() throws IOException {
+		
+		if ( data == null ) {
+			
+			LOG.info("Initializing lazy resource " + fileName + "#" + this.href );
+			
+			ZipInputStream in = new ZipInputStream(new FileInputStream(this.fileName));
+			
+			for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
+				if(zipEntry.isDirectory()) {
+					continue;
+				}
+				
+				if ( zipEntry.getName().endsWith(this.href)) {
+					this.data = IOUtil.toByteArray(in);
+				}				
+			}
+			
+			in.close();
+		}
+		
 		return data;
+	}
+	
+	/**
+	 * Tells this resource to release its cached data.
+	 * 
+	 * If this resource was not lazy-loaded, this is a no-op.
+	 */
+	public void close() {
+		if ( this.fileName != null ) {
+			this.data = null;
+		}
 	}
 
 	/**
@@ -163,7 +220,20 @@ public class Resource implements Serializable {
 	public void setData(byte[] data) {
 		this.data = data;
 	}
+	
+	
+	public boolean isInitialized() {
+		return data != null;
+	}
 
+	public long getSize() {
+		if ( data != null ) {
+			return data.length;
+		}
+		
+		return cachedSize;
+	}
+	
 	/**
 	 * If the title is found by scanning the underlying html document then it is cached here.
 	 * 
@@ -243,7 +313,7 @@ public class Resource implements Serializable {
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
-		return new XmlStreamReader(new ByteArrayInputStream(data), inputEncoding);
+		return new XmlStreamReader(new ByteArrayInputStream(getData()), inputEncoding);
 	}
 	
 	/**
