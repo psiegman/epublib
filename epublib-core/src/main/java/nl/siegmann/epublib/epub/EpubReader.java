@@ -3,6 +3,7 @@ package nl.siegmann.epublib.epub;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -60,9 +61,9 @@ public class EpubReader {
 	 * @return
 	 * @throws IOException
 	 */
-	public Book readEpubLazy( String fileName, String encoding, boolean imagesOnly ) throws IOException {
+	public Book readEpubLazy( String fileName, String encoding, List<MediaType> lazyLoadedTypes ) throws IOException {
 		Book result = new Book();
-		Resources resources = readLazyResources(fileName, encoding, imagesOnly);
+		Resources resources = readLazyResources(fileName, encoding, lazyLoadedTypes);
 		handleMimeType(result, resources);
 		String packageResourceHref = getPackageResourceHref(resources);
 		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
@@ -132,7 +133,8 @@ public class EpubReader {
 		resources.remove("mimetype");
 	}
 	
-	private Resources readLazyResources( String fileName, String defaultHtmlEncoding, boolean imagesOnly) throws IOException {		
+	private Resources readLazyResources( String fileName, String defaultHtmlEncoding,
+			List<MediaType> lazyLoadedTypes) throws IOException {		
 				
 		ZipInputStream in = new ZipInputStream(new FileInputStream(fileName));
 		
@@ -143,15 +145,14 @@ public class EpubReader {
 			}
 			
 			String href = zipEntry.getName();
-			MediaType mediaType = MediatypeService.determineMediaType(href);
-			
+			MediaType mediaType = MediatypeService.determineMediaType(href);			
 			
 			Resource resource;
 			
-			if ( imagesOnly && (! MediatypeService.isBitmapImage(mediaType) )) {
-				resource = new Resource( in, href );				
+			if ( lazyLoadedTypes.contains(mediaType) ) {
+				resource = new Resource(fileName, zipEntry.getSize(), href);								
 			} else {			
-				resource = new Resource(fileName, zipEntry.getSize(), href);
+				resource = new Resource( in, href );
 			}
 			
 			if(resource.getMediaType() == MediatypeService.XHTML) {
