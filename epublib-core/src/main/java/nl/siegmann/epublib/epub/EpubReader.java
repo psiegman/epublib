@@ -3,6 +3,7 @@ package nl.siegmann.epublib.epub;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -56,8 +57,8 @@ public class EpubReader {
 	 * Reads this EPUB without loading all resources into memory.
 	 * 
 	 * @param fileName the file to load
-	 * @param encoding the encoding for XHTML filed
-	 * @param imagesOnly if true only images will be lazy-loaded.
+	 * @param encoding the encoding for XHTML files
+	 * @param lazyLoadedTypes a list of the MediaType to load lazily
 	 * @return
 	 * @throws IOException
 	 */
@@ -72,6 +73,20 @@ public class EpubReader {
 		result.setNcxResource(ncxResource);
 		result = postProcessBook(result);
 		return result;
+	}
+	
+
+	/**
+	 * Reads this EPUB without loading any resources into memory.
+	 * 
+	 * @param fileName the file to load
+	 * @param encoding the encoding for XHTML files
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public Book readEpubLazy( String fileName, String encoding ) throws IOException {
+		return readEpubLazy(fileName, encoding, Arrays.asList(MediatypeService.mediatypes) );
 	}
 	
 	public Book readEpub(ZipInputStream in, String encoding) throws IOException {
