@@ -174,6 +174,10 @@ public class Resource implements Serializable {
 	/**
 	 * The contents of the resource as a byte[]
 	 * 
+	 * If this resource was lazy-loaded and the data was not yet loaded, 
+	 * it will be loaded into memory at this point.
+	 *  This included opening the zip file, so expect a first load to be slow.
+	 * 
 	 * @return The contents of the resource
 	 */
 	public byte[] getData() throws IOException {
@@ -221,11 +225,20 @@ public class Resource implements Serializable {
 		this.data = data;
 	}
 	
-	
+	/**
+	 * Returns if the data for this resource has been loaded into memory.
+	 * 
+	 * @return true if data was loaded.
+	 */
 	public boolean isInitialized() {
 		return data != null;
 	}
 
+	/**
+	 * Returns the size of this resource in bytes.
+	 * 
+	 * @return the size.
+	 */
 	public long getSize() {
 		if ( data != null ) {
 			return data.length;
