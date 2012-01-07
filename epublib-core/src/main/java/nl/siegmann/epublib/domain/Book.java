@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.siegmann.epublib.service.MediatypeService;
+
 
 
 
@@ -451,7 +453,29 @@ public class Book implements Serializable {
 	 * @return
 	 */
 	public Resource getCoverImage() {
-		return metadata.getCoverImage();
+		if ( metadata.getCoverImage() != null ) {
+			return metadata.getCoverImage();
+		} else {
+			
+			//If we can't determine it from the metadata, take a guess
+			//and return the biggest picture in the book.
+			
+			MediaType[] bitmapTypes = { MediatypeService.PNG, 
+					MediatypeService.GIF, MediatypeService.JPG };
+			
+			List<Resource> bitmapResources = 
+				this.resources.getResourcesByMediaTypes( bitmapTypes );
+			
+			Resource coverResource = null;
+			
+			for ( Resource res: bitmapResources ) {
+				if ( coverResource == null || res.getSize() > coverResource.getSize() ) {
+					coverResource = res;
+				}
+			}
+			
+			return coverResource;
+		}
 	}
 
 	public void setCoverImage(Resource coverImage) {
