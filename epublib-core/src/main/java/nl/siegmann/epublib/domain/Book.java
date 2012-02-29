@@ -304,7 +304,7 @@ public class Book implements Serializable {
 	private Guide guide = new Guide();
 	private Resource opfResource;
 	private Resource ncxResource;
-	
+	private Resource coverImage;
 	
 	/**
 	 * Adds the resource to the table of contents of the book as a child section of the given parentSection
@@ -451,7 +451,7 @@ public class Book implements Serializable {
 	 * @return
 	 */
 	public Resource getCoverImage() {
-		return metadata.getCoverImage();
+		return coverImage;
 	}
 
 	public void setCoverImage(Resource coverImage) {
@@ -461,7 +461,7 @@ public class Book implements Serializable {
 		if (! resources.containsByHref(coverImage.getHref())) {
 			resources.add(coverImage);
 		}
-		metadata.setCoverImage(coverImage);
+		this.coverImage = coverImage;
 	}
 	
 	/**

@@ -87,10 +87,10 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 		}
 
 		// write coverimage
-		if(book.getMetadata().getCoverImage() != null) { // write the cover image
+		if(book.getCoverImage() != null) { // write the cover image
 			serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.name, OPFValues.meta_cover);
-			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.content, book.getMetadata().getCoverImage().getId());
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.content, book.getCoverImage().getId());
 			serializer.endTag(NAMESPACE_OPF, OPFTags.meta);
 		}
 

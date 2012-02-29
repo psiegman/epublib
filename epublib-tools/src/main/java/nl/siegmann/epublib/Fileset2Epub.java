@@ -86,7 +86,7 @@ public class Fileset2Epub {
 		
 		if(StringUtils.isNotBlank(coverImage)) {
 //			book.getResourceByHref(book.getCoverImage());
-			book.getMetadata().setCoverImage(new Resource(VFSUtil.resolveInputStream(coverImage), coverImage));
+			book.setCoverImage(new Resource(VFSUtil.resolveInputStream(coverImage), coverImage));
 			epubCleaner.getBookProcessors().add(new CoverpageBookProcessor());
 		}
 		

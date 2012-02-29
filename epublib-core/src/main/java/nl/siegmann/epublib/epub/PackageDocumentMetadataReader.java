@@ -7,7 +7,6 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
-import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.util.StringUtil;
 
@@ -47,9 +46,6 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		result.setAuthors(readCreators(metadataElement));
 		result.setContributors(readContributors(metadataElement));
 		result.setDates(readDates(metadataElement));
-		if (result.getCoverImage() == null) {
-			result.setCoverImage(readCoverImage(metadataElement, resources));
-		}
 		return result;
 	}
 	
@@ -62,17 +58,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		String result = packageElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.uniqueIdentifier);
 		return result;
 	}
-	
-	private static Resource readCoverImage(Element metadataElement, Resources resources) {
-		String coverResourceId = DOMUtil.getFindAttributeValue(metadataElement.getOwnerDocument(), NAMESPACE_OPF, OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover, OPFAttributes.content);
-		if (StringUtil.isBlank(coverResourceId)) {
-			return null;
-		}
-		Resource coverResource = resources.getByIdOrHref(coverResourceId);
-		return coverResource;
-	}
-	
-	
+		
 	private static List<Author> readCreators(Element metadataElement) {
 		return readAuthors(DCTags.creator, metadataElement);
 	}
