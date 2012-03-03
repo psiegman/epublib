@@ -2,7 +2,9 @@ package nl.siegmann.epublib.epub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Author;
@@ -46,6 +48,28 @@ public class EpubWriterTest extends TestCase {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Test for a very old bug where epublib would throw a NullPointerException when writing a book with a cover that has no id.
+	 * 
+	 */
+	public void testWritingBookWithCoverWithNullId() {
+		try {
+			Book book = new Book();
+		    book.getMetadata().addTitle("Epub test book 1");
+		    book.getMetadata().addAuthor(new Author("Joe", "Tester"));
+		    InputStream is = this.getClass().getResourceAsStream("/book1/cover.png");
+		    book.setCoverImage(new Resource(is, "cover.png"));
+		    // Add Chapter 1
+		    InputStream is1 = this.getClass().getResourceAsStream("/book1/chapter1.html");
+		    book.addSection("Introduction", new Resource(is1, "chapter1.html"));
+		
+		    EpubWriter epubWriter = new EpubWriter();
+		    epubWriter.write(book, new FileOutputStream("test1_book1.epub"));
+		} catch (IOException e) {
+			fail(e.getMessage());
 		}
 	}
 	

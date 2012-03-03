@@ -207,16 +207,4 @@ public class Metadata implements Serializable {
 	public void setTypes(List<String> types) {
 		this.types = types;
 	}
-	
-	/**
-	 * The main image used by the cover page.
-	 * 
-	 * @return
-	 */
-	public Resource getCoverImage() {
-		return coverImage;
-	}
-	public void setCoverImage(Resource coverImage) {
-		this.coverImage = coverImage;
-	}
 }

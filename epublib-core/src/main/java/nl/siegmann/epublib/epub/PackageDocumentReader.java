@@ -67,6 +67,17 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		}
 	}
 	
+//	private static Resource readCoverImage(Element metadataElement, Resources resources) {
+//		String coverResourceId = DOMUtil.getFindAttributeValue(metadataElement.getOwnerDocument(), NAMESPACE_OPF, OPFTags.meta, OPFAttributes.name, OPFValues.meta_cover, OPFAttributes.content);
+//		if (StringUtil.isBlank(coverResourceId)) {
+//			return null;
+//		}
+//		Resource coverResource = resources.getByIdOrHref(coverResourceId);
+//		return coverResource;
+//	}
+	
+
+	
 	/**
 	 * Reads the manifest containing the resource ids, hrefs and mediatypes.
 	 *  
