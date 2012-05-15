@@ -1,17 +1,23 @@
 package nl.siegmann.epublib.domain;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
 import nl.siegmann.epublib.util.StringUtil;
 import nl.siegmann.epublib.util.commons.io.XmlStreamReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a resource that is part of the epub.
@@ -185,7 +191,20 @@ public class Resource implements Serializable {
 	 * @throws IOException
 	 */
 	public InputStream getInputStream() throws IOException {
-		return new ByteArrayInputStream(getData());
+		if (isInitialized()) {
+			return new ByteArrayInputStream(getData());
+		} else {
+			return getResourceStream();
+		}
+	}
+	
+	/**
+	 * Initializes the resource by loading its data into memory.
+	 * 
+	 * @throws IOException
+	 */
+	public void initialize() throws IOException {
+		getData();
 	}
 
 	/**
@@ -203,28 +222,34 @@ public class Resource implements Serializable {
 			
 			LOG.info("Initializing lazy resource " + fileName + "#" + this.href );
 			
-			ZipInputStream in = new ZipInputStream(new FileInputStream(this.fileName));
-			
-			for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
-				if(zipEntry.isDirectory()) {
-					continue;
-				}
-				
-				if ( zipEntry.getName().endsWith(this.href)) {
-					byte[] readData = IOUtil.toByteArray(in, (int) this.cachedSize);
-
-                    if ( readData == null ) {
-                        throw new IOException("Could not lazy-load data.");
-                    } else {
-                        this.data = readData;
-                    }
-				}				
+			ZipInputStream in = getResourceStream();
+			byte[] readData = IOUtil.toByteArray(in, (int) this.cachedSize);
+			if ( readData == null ) {
+			    throw new IOException("Could not lazy-load data.");
+			} else {
+			    this.data = readData;
 			}
 			
 			in.close();
 		}
 
 		return data;
+	}
+
+	private ZipInputStream getResourceStream() throws FileNotFoundException,
+			IOException {
+		ZipInputStream in = new ZipInputStream(new FileInputStream(this.fileName));
+		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
+			if(zipEntry.isDirectory()) {
+				continue;
+			}
+			
+			if ( zipEntry.getName().endsWith(this.href)) {
+				return in;
+			}				
+		}
+		
+		throw new IllegalStateException("Cannot find resources href in the epub file");
 	}
 	
 	/**
