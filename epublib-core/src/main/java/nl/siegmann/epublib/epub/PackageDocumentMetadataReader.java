@@ -1,7 +1,11 @@
 package nl.siegmann.epublib.epub;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Date;
@@ -14,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -46,9 +51,28 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		result.setAuthors(readCreators(metadataElement));
 		result.setContributors(readContributors(metadataElement));
 		result.setDates(readDates(metadataElement));
+		result.setOtherProperties(readOtherProperties(metadataElement));
 		return result;
 	}
 	
+
+	private static Map<QName, String> readOtherProperties(Element metadataElement) {
+		Map<QName, String> result = new HashMap<QName, String>();
+		
+		NodeList metaTags = metadataElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.meta);
+		for (int i = 0; i < metaTags.getLength(); i++) {
+			Node metaNode = metaTags.item(i);
+			Node property = metaNode.getAttributes().getNamedItem(OPFAttributes.property);
+			if (property != null) {
+				String name = property.getNodeValue();
+				String value = metaNode.getTextContent();
+				result.put(new QName(name), value);
+			}
+		}
+		
+		return result;
+	}
+
 
 	private static String getBookIdId(Document document) {
 		Element packageElement = DOMUtil.getFirstElementByTagNameNS(document.getDocumentElement(), NAMESPACE_OPF, OPFTags.packageTag);
