@@ -55,7 +55,12 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		return result;
 	}
 	
-
+	/**
+	 * consumes meta tags that have a property attribute as defined in the standard. For example:
+	 * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
+	 * @param metadataElement
+	 * @return
+	 */
 	private static Map<QName, String> readOtherProperties(Element metadataElement) {
 		Map<QName, String> result = new HashMap<QName, String>();
 		
