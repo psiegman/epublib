@@ -38,7 +38,7 @@ public class EpubProcessorSupport {
 		init();
 	}
 	
-	public static EntityResolver entityResolver = new EntityResolver() {
+	public final static EntityResolver entityResolver = new EntityResolver() {
 		
 		private String previousLocation;
 		
