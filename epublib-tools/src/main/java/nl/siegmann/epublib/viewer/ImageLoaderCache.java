@@ -16,7 +16,7 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.util.CollectionUtil;
-import nl.siegmann.epublib.util.StringUtil;
+import org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 	private String getResourceHref(String requestUrl) {
 		String resourceHref = requestUrl.toString().substring(IMAGE_URL_PREFIX.length());
 		resourceHref = currentFolder + resourceHref;
-		resourceHref = StringUtil.collapsePathDots(resourceHref);
+		resourceHref = FilenameUtils.normalize(resourceHref);
 		return resourceHref;
 	}
 	
