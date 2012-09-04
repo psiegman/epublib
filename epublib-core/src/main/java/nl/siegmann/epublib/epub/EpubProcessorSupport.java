@@ -37,9 +37,8 @@ public class EpubProcessorSupport {
 	static {
 		init();
 	}
-	
-	public static EntityResolver entityResolver = new EntityResolver() {
-		
+
+    static class EntityResolverImpl implements EntityResolver {
 		private String previousLocation;
 		
 		@Override
@@ -61,7 +60,7 @@ public class EpubProcessorSupport {
 			InputStream in = EpubProcessorSupport.class.getClassLoader().getResourceAsStream(resourcePath);
 			return new InputSource(in);
 		}
-	};
+	}
 	
 	
 	private static void init() {
@@ -101,7 +100,7 @@ public class EpubProcessorSupport {
 		DocumentBuilder result = null;
 		try {
 			result = documentBuilderFactory.newDocumentBuilder();
-			result.setEntityResolver(entityResolver);
+			result.setEntityResolver(new EntityResolverImpl());
 		} catch (ParserConfigurationException e) {
 			log.error(e.getMessage());
 		}
