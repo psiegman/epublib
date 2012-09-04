@@ -23,12 +23,12 @@ public class GuideReference extends TitledResourceReference implements Serializa
 	/**
 	 * the book cover(s), jacket information, etc.
 	 */
-	public static String COVER = "cover";
+	public final static String COVER = "cover";
 	
 	/**
 	 * human-readable page with title, author, publisher, and other metadata
 	 */
-	public static String TITLE_PAGE = "title-page";
+	public final static String TITLE_PAGE = "title-page";
 	
 	/**
 	 * Human-readable table of contents.
@@ -52,21 +52,21 @@ public class GuideReference extends TitledResourceReference implements Serializa
 	 *  an epigraph is a phrase, quotation, or poem that is set at the beginning of a document or component.
 	 *  source: http://en.wikipedia.org/wiki/Epigraph_%28literature%29
 	 */
-	public static String EPIGRAPH = "epigraph";
+	public final static String EPIGRAPH = "epigraph";
 	
-	public static String FOREWORD = "foreword";
+	public final static String FOREWORD = "foreword";
 	
 	/**
 	 * list of illustrations
 	 */
-	public static String LOI = "loi";
+	public final static String LOI = "loi";
 	
 	/**
 	 * list of tables
 	 */
-	public static String LOT = "lot"; 
-	public static String NOTES = "notes"; 	
-	public static String PREFACE = "preface";
+	public final static String LOT = "lot"; 
+	public final static String NOTES = "notes"; 	
+	public final static String PREFACE = "preface";
 	
 	/**
 	 * A page of content (e.g. "Chapter 1")

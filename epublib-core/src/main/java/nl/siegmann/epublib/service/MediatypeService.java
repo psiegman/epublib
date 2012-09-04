@@ -46,7 +46,7 @@ public class MediatypeService {
 		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT, OPENTYPE, WOFF, SMIL, PLS, JAVASCRIPT, MP3, MP4
 	};
 	
-	public static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();
+	public final static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();
 	static {
 		for(int i = 0; i < mediatypes.length; i++) {
 			mediaTypesByName.put(mediatypes[i].getName(), mediatypes[i]);
