@@ -1,6 +1,8 @@
 package nl.siegmann.epublib.util;
 
+import java.io.IOException;
 import junit.framework.TestCase;
+import org.apache.commons.io.FilenameUtils;
 
 public class StringUtilTest extends TestCase {
 
@@ -193,18 +195,23 @@ public class StringUtilTest extends TestCase {
 		assertEquals(3499691, StringUtil.hashCode("ISBN", "1234"));
 	}
 	
-	public void testCollapsePathDots() {
+	public void testReplacementForCollapsePathDots() throws IOException {
+        // This used to test StringUtil.collapsePathDots(String path).
+        // I have left it to confirm that the Apache commons FilenameUtils.normalize
+        // is a suitable replacement, but works where for "/a/b/../../c", which
+        // the old method did not.
 		String[] testData = new String[] {
 				"/foo/bar.html", "/foo/bar.html",
 				"/foo/../bar.html", "/bar.html",
+                "/foo/moo/../../bar.html", "/bar.html",
 				"/foo//bar.html", "/foo/bar.html",
 				"/foo/./bar.html", "/foo/bar.html",
 				"/foo/../sub/bar.html", "/sub/bar.html"
 		};
-		for (int i = 0; i < testData.length; i += 2) {
-			String actualResult = StringUtil.collapsePathDots(testData[i]);
-			assertEquals(testData[i + 1], actualResult);
-		}
+		for (int i = 0; i < testData.length; i += 2) {            
+            String actualResult = FilenameUtils.normalize(testData[i]);
+            assertEquals(testData[i + 1], actualResult);
+        }
 	}
 
 }
