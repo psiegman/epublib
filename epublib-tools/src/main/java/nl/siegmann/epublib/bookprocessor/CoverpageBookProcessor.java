@@ -18,7 +18,7 @@ import nl.siegmann.epublib.epub.BookProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
-import nl.siegmann.epublib.util.StringUtil;
+import org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -154,8 +154,8 @@ public class CoverpageBookProcessor implements BookProcessor {
 		if (relativeImageHref.startsWith("/")) {
 			return relativeImageHref;
 		}
-		String result = StringUtil.collapsePathDots(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
-		return result;
+        String result = FilenameUtils.normalize(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
+        return result;
 	}
 
 	private String createCoverpageHtml(String title, String imageHref) {
