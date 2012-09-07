@@ -51,7 +51,14 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		result.setAuthors(readCreators(metadataElement));
 		result.setContributors(readContributors(metadataElement));
 		result.setDates(readDates(metadataElement));
-		result.setOtherProperties(readOtherProperties(metadataElement));
+        result.setOtherProperties(readOtherProperties(metadataElement));
+
+        Element languageTag = DOMUtil.getFirstElementByTagNameNS(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.language);
+        if (languageTag != null) {
+            result.setLanguage(DOMUtil.getTextChildrenContent(languageTag));
+        }
+
+
 		return result;
 	}
 	
