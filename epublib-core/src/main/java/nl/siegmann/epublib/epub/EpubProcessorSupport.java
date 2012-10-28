@@ -86,6 +86,18 @@ public class EpubProcessorSupport {
 		}
 		return result;
 	}
+
+	/**
+	 * Gets an EntityResolver that loads dtd's and such from the epublib classpath.
+	 * In order to enable the loading of relative urls the given EntityResolver contains the previousLocation.
+	 * Because of a new EntityResolver is created every time this method is called.
+	 * Fortunately the EntityResolver created uses up very little memory per instance.
+	 * 
+	 * @return an EntityResolver that loads dtd's and such from the epublib classpath.
+	 */
+	public static EntityResolver getEntityResolver() {
+		return new EntityResolverImpl();
+	}
 	
 	public DocumentBuilderFactory getDocumentBuilderFactory() {
 		return documentBuilderFactory;
@@ -100,7 +112,7 @@ public class EpubProcessorSupport {
 		DocumentBuilder result = null;
 		try {
 			result = documentBuilderFactory.newDocumentBuilder();
-			result.setEntityResolver(new EntityResolverImpl());
+			result.setEntityResolver(getEntityResolver());
 		} catch (ParserConfigurationException e) {
 			log.error(e.getMessage());
 		}
