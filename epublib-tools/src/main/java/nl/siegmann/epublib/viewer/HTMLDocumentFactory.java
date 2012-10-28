@@ -167,9 +167,6 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 			Reader contentReader = new StringReader(pageContent);
 		    parser.parse(contentReader, parserCallback, true);
 		    parserCallback.flush();
-//		    for (String stylesheetHref: parserCallback.getStylesheetHrefs()) {
-//		    	System.out.println(this.getClass().getName() + ": stylesheet hef:" + stylesheetHref);
-//		    }
 		    result = document;
 		} catch (Exception e) {
 			log.error(e.getMessage());
