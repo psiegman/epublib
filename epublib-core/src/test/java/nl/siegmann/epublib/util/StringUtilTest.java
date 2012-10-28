@@ -209,7 +209,7 @@ public class StringUtilTest extends TestCase {
 				"/foo/../sub/bar.html", "/sub/bar.html"
 		};
 		for (int i = 0; i < testData.length; i += 2) {            
-            String actualResult = FilenameUtils.normalize(testData[i]);
+            String actualResult = FilenameUtils.normalize(testData[i], true);
             assertEquals(testData[i + 1], actualResult);
         }
 	}
