@@ -154,7 +154,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 		if (relativeImageHref.startsWith("/")) {
 			return relativeImageHref;
 		}
-        String result = FilenameUtils.normalize(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref);
+        String result = FilenameUtils.normalize(baseHref.substring(0, baseHref.lastIndexOf('/') + 1) + relativeImageHref, true);
         return result;
 	}
 
