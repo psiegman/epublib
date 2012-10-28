@@ -1,5 +1,3 @@
-package nl.siegmann.epublib.util.commons.io;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,12 +14,14 @@ package nl.siegmann.epublib.util.commons.io;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.siegmann.epublib.util.commons.io;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.ByteOrderMark;
 
 /**
  * This class is used to wrap a stream that includes an encoded
