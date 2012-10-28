@@ -9,7 +9,7 @@
 	<artifactId>epublib-parent</artifactId>
 	<name>epublib-parent</name>
 	<packaging>pom</packaging>
-	<version>3.0-SNAPSHOT</version>
+	<version>3.1</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
@@ -49,13 +49,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>repo</id>
-			<url>https://github.com/psiegman/mvn-repo/raw/master/releases</url>
+			<id>github.repo</id>
+			<url>file:///D:/private/project/git-maven-repo/mvn-repo</url>
 		</repository>
-		<snapshotRepository>
-			<id>snapshot-repo</id>
-			<url>https://github.com/psiegman/mvn-repo/raw/master/snapshots</url>
-		</snapshotRepository>
 	</distributionManagement>
 
 	<scm>
