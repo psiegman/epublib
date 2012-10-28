@@ -33,7 +33,7 @@ public class TextReplaceBookProcessor extends HtmlBookProcessor implements BookP
 	public byte[] processHtml(Resource resource, Book book, String outputEncoding) throws IOException {
 		Reader reader = resource.getReader();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		Writer writer = new OutputStreamWriter(out, Constants.ENCODING);
+		Writer writer = new OutputStreamWriter(out, Constants.CHARACTER_ENCODING);
 		for(String line: IOUtils.readLines(reader)) {
 			writer.write(processLine(line));
 			writer.flush();

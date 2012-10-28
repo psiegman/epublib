@@ -21,7 +21,7 @@ public class ChmParserTest extends TestCase {
 			FileObject dir = fsManager.resolveFile("ram://chm_test_dir");
 			dir.createFolder();
 			String chm1Dir = "/chm1";
-			Iterator<String> lineIter = IOUtils.lineIterator(ChmParserTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.ENCODING);
+			Iterator<String> lineIter = IOUtils.lineIterator(ChmParserTest.class.getResourceAsStream(chm1Dir + "/filelist.txt"), Constants.CHARACTER_ENCODING);
 			while(lineIter.hasNext()) {
 				String line = lineIter.next();
 				FileObject file = dir.resolveFile(line, NameScope.DESCENDENT);
@@ -30,7 +30,7 @@ public class ChmParserTest extends TestCase {
 				file.getContent().close();
 			}
 			
-			Book chmBook = ChmParser.parseChm(dir, Constants.ENCODING);
+			Book chmBook = ChmParser.parseChm(dir, Constants.CHARACTER_ENCODING);
 			assertEquals(45, chmBook.getResources().size());
 			assertEquals(18, chmBook.getSpine().size());
 			assertEquals(19, chmBook.getTableOfContents().size());

@@ -343,7 +343,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		String resourceHref = clickUrl.toString();
 		try {
 			resourceHref = URLDecoder.decode(resourceHref,
-					Constants.ENCODING);
+					Constants.CHARACTER_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}

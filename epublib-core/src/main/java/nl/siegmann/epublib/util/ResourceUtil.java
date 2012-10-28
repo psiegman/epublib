@@ -49,7 +49,7 @@ public class ResourceUtil {
 	 */
 	public static Resource createResource(String title, String href) {
 		String content = "<html><head><title>" + title + "</title></head><body><h1>" + title + "</h1></body></html>";
-		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.ENCODING);
+		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.CHARACTER_ENCODING);
 	}
 
 	/**

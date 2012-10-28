@@ -70,7 +70,7 @@ public class EpubProcessorSupport {
 	}
 	
 	public static XmlSerializer createXmlSerializer(OutputStream out) throws UnsupportedEncodingException {
-		return createXmlSerializer(new OutputStreamWriter(out, Constants.ENCODING));
+		return createXmlSerializer(new OutputStreamWriter(out, Constants.CHARACTER_ENCODING));
 	}
 	
 	public static XmlSerializer createXmlSerializer(Writer out) {

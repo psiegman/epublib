@@ -136,7 +136,7 @@ public class NCXDocument {
 		Element contentElement = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.content);
 		String result = DOMUtil.getAttribute(contentElement, NAMESPACE_NCX, NCXAttributes.src);
 		try {
-			result = URLDecoder.decode(result, Constants.ENCODING);
+			result = URLDecoder.decode(result, Constants.CHARACTER_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
@@ -185,7 +185,7 @@ public class NCXDocument {
 	}	
 	
 	public static void write(XmlSerializer serializer, List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException {
-		serializer.startDocument(Constants.ENCODING, false);
+		serializer.startDocument(Constants.CHARACTER_ENCODING, false);
 		serializer.setPrefix(EpubWriter.EMPTY_NAMESPACE_PREFIX, NAMESPACE_NCX);
 		serializer.startTag(NAMESPACE_NCX, NCXTags.ncx);
 //		serializer.writeNamespace("ncx", NAMESPACE_NCX);
