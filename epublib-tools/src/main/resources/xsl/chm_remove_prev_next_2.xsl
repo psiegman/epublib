@@ -11,10 +11,11 @@
 	</xhtml:body>
 </xsl:template>
 
+<!-- IdentityTransform -->
 <xsl:template match="@*|node()">
-  <xsl:copy>
-    <xsl:apply-templates select="@*|node()"/>
-  </xsl:copy>
+	<xsl:copy>
+		<xsl:apply-templates select="@*|node()"/>
+	</xsl:copy>
 </xsl:template>
 
 </xsl:stylesheet>
