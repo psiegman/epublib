@@ -326,7 +326,7 @@ public class Resource implements Serializable {
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
-		return new XmlStreamReader(new ByteArrayInputStream(getData()), inputEncoding);
+		return new XmlStreamReader(new ByteArrayInputStream(getData()), getInputEncoding());
 	}
 	
 	/**
