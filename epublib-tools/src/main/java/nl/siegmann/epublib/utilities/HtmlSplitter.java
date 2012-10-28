@@ -72,7 +72,6 @@ public class HtmlSplitter {
 		closeAllTags(currentXmlEvents);
 		currentXmlEvents.addAll(footerElements);
 		result.add(currentXmlEvents);
-//		System.out.println("created part " + docs.size());
 	}
 
 	private void startNewDocument() throws XMLStreamException {
