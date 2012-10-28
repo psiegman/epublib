@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.ByteOrderMark;
-
 /**
  * This class is used to wrap a stream that includes an encoded
  * {@link ByteOrderMark} as its first bytes.

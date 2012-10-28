@@ -33,7 +33,6 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.ByteOrderMark;
 
 /**
  * Character stream that handles all the necessary Voodo to figure out the
