@@ -14,12 +14,15 @@ import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.ResourceUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
+
+import com.sun.org.apache.bcel.internal.Constants;
 
 /**
  * Reads the files that are extracted from a windows help ('.chm') file and creates a epublib Book out of it.
@@ -36,7 +39,7 @@ public class ChmParser {
 		return parseChm(chmRootDir, DEFAULT_CHM_HTML_INPUT_ENCODING);
 	}
 
-	public static Book parseChm(FileObject chmRootDir, String htmlEncoding)
+	public static Book parseChm(FileObject chmRootDir, String inputHtmlEncoding)
 			throws IOException, ParserConfigurationException,
 			XPathExpressionException {
 		Book result = new Book();
@@ -45,10 +48,10 @@ public class ChmParser {
 		if(hhcFileObject == null) {
 			throw new IllegalArgumentException("No index file found in directory " + chmRootDir + ". (Looked for file ending with extension '.hhc'");
 		}
-		if(htmlEncoding == null) {
-			htmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
+		if(inputHtmlEncoding == null) {
+			inputHtmlEncoding = DEFAULT_CHM_HTML_INPUT_ENCODING;
 		}
-		Resources resources = findResources(chmRootDir, htmlEncoding);
+		Resources resources = findResources(chmRootDir, inputHtmlEncoding);
 		List<TOCReference> tocReferences = HHCParser.parseHhc(hhcFileObject.getContent().getInputStream(), resources);
 		result.setTableOfContents(new TableOfContents(tocReferences));
 		result.setResources(resources);
@@ -102,8 +105,7 @@ public class ChmParser {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
-	private static Resources findResources(FileObject rootDir, String defaultEncoding) throws IOException {
+	private static Resources findResources(FileObject rootDir, String inputEncoding) throws IOException {
 		Resources result = new Resources();
 		FileObject[] allFiles = rootDir.findFiles(new AllFileSelector());
 		for(int i = 0; i < allFiles.length; i++) {
@@ -116,10 +118,11 @@ public class ChmParser {
 				continue;
 			}
 			String href = file.getName().toString().substring(rootDir.getName().toString().length() + 1);
-			Resource fileResource = new Resource(null, IOUtils.toByteArray(file.getContent().getInputStream()), href, mediaType);
-			if(mediaType == MediatypeService.XHTML) {
-				fileResource.setInputEncoding(defaultEncoding);
+			byte[] resourceData = IOUtils.toByteArray(file.getContent().getInputStream());
+			if(mediaType == MediatypeService.XHTML && ! nl.siegmann.epublib.Constants.CHARACTER_ENCODING.equalsIgnoreCase(inputEncoding)) {
+				resourceData = ResourceUtil.recode(inputEncoding, nl.siegmann.epublib.Constants.CHARACTER_ENCODING, resourceData);
 			}
+			Resource fileResource = new Resource(null, resourceData, href, mediaType);
 			result.add(fileResource);
 		}
 		return result;

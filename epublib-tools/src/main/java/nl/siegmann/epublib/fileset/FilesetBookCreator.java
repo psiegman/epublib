@@ -43,7 +43,7 @@ public class FilesetBookCreator {
 	private static final BookProcessor bookProcessor = new DefaultBookProcessorPipeline();
 	
 	public static Book createBookFromDirectory(File rootDirectory) throws IOException {
-		return createBookFromDirectory(rootDirectory, Constants.ENCODING);	
+		return createBookFromDirectory(rootDirectory, Constants.CHARACTER_ENCODING);	
 	}
 	
 	
@@ -53,7 +53,7 @@ public class FilesetBookCreator {
 	}
 	
 	public static Book createBookFromDirectory(FileObject rootDirectory) throws IOException {
-		return createBookFromDirectory(rootDirectory, Constants.ENCODING);
+		return createBookFromDirectory(rootDirectory, Constants.CHARACTER_ENCODING);
 	}
 	
 	/**

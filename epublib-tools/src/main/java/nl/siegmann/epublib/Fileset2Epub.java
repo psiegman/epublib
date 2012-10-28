@@ -35,7 +35,7 @@ public class Fileset2Epub {
 		List<String> authorNames = new ArrayList<String>();
 		String type = "";
 		String isbn = "";
-		String inputEncoding = Constants.ENCODING;
+		String inputEncoding = Constants.CHARACTER_ENCODING;
 		List<String> bookProcessorClassNames = new ArrayList<String>();
 		
 		for(int i = 0; i < args.length; i++) {
@@ -72,7 +72,7 @@ public class Fileset2Epub {
 		}
 		
 		if (StringUtils.isBlank(inputEncoding)) {
-			inputEncoding = Constants.ENCODING;
+			inputEncoding = Constants.CHARACTER_ENCODING;
 		}
 		
 		Book book;
