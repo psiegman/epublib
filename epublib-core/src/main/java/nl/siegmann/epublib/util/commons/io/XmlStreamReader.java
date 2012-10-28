@@ -17,7 +17,6 @@ package nl.siegmann.epublib.util.commons.io;
  * limitations under the License.
  */
 
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +33,7 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.ByteOrderMark;
 
 /**
  * Character stream that handles all the necessary Voodo to figure out the
