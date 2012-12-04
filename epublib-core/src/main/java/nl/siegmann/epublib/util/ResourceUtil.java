@@ -49,7 +49,7 @@ public class ResourceUtil {
 	 */
 	public static Resource createResource(String title, String href) {
 		String content = "<html><head><title>" + title + "</title></head><body><h1>" + title + "</h1></body></html>";
-		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.ENCODING);
+		return new Resource(null, content.getBytes(), href, MediatypeService.XHTML, Constants.CHARACTER_ENCODING);
 	}
 
 	/**
@@ -65,6 +65,19 @@ public class ResourceUtil {
 
 	}
 		
+
+	/**
+	 * Converts a given string from given input character encoding to the requested output character encoding.
+	 * 
+	 * @param inputEncoding
+	 * @param outputEncoding
+	 * @param input
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	public static byte[] recode(String inputEncoding, String outputEncoding, byte[] input) throws UnsupportedEncodingException {
+		return new String(input, inputEncoding).getBytes(outputEncoding);
+	}
 	
 	/**
 	 * Gets the contents of the Resource as an InputSource in a null-safe manner.

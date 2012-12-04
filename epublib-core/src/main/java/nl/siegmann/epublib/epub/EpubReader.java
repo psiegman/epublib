@@ -34,11 +34,11 @@ public class EpubReader {
 	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
 	
 	public Book readEpub(InputStream in) throws IOException {
-		return readEpub(in, Constants.ENCODING);
+		return readEpub(in, Constants.CHARACTER_ENCODING);
 	}	
 	
 	public Book readEpub(ZipInputStream in) throws IOException {
-		return readEpub(in, Constants.ENCODING);
+		return readEpub(in, Constants.CHARACTER_ENCODING);
 	}
 	
 	/**

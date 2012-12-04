@@ -8,7 +8,7 @@
 	<groupId>nl.siegmann.epublib</groupId>
 	<artifactId>epublib-tools</artifactId>
 	<name>epublib-tools</name>
-	<version>3.0-SNAPSHOT</version>
+	<version>3.1</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
@@ -16,14 +16,14 @@
 	<parent>
     	<groupId>nl.siegmann.epublib</groupId>
 		<artifactId>epublib-parent</artifactId>
-		<version>3.0-SNAPSHOT</version>
+		<version>3.1</version>
   	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>nl.siegmann.epublib</groupId>
 			<artifactId>epublib-core</artifactId>
-			<version>3.0-SNAPSHOT</version>
+			<version>3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.htmlcleaner</groupId>
@@ -112,7 +112,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.dstovall</groupId>
+				<groupId>com.jolira</groupId>
 				<artifactId>onejar-maven-plugin</artifactId>
 				<version>1.4.4</version>
 				<executions>

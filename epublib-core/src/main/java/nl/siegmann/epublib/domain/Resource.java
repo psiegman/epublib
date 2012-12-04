@@ -35,7 +35,7 @@ public class Resource implements Serializable {
 	private String title;
 	private String href;
 	private MediaType mediaType;
-	private String inputEncoding = Constants.ENCODING;
+	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	private byte[] data;
 		
 	private String fileName;
@@ -79,7 +79,7 @@ public class Resource implements Serializable {
 	 * @param href The location of the resource within the epub. Example: "chapter1.html".
 	 */
 	public Resource(byte[] data, String href) {
-		this(null, data, href, MediatypeService.determineMediaType(href), Constants.ENCODING);
+		this(null, data, href, MediatypeService.determineMediaType(href), Constants.CHARACTER_ENCODING);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class Resource implements Serializable {
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
 	 */
 	public Resource(Reader in, String href) throws IOException {
-		this(null, IOUtil.toByteArray(in, Constants.ENCODING), href, MediatypeService.determineMediaType(href), Constants.ENCODING);
+		this(null, IOUtil.toByteArray(in, Constants.CHARACTER_ENCODING), href, MediatypeService.determineMediaType(href), Constants.CHARACTER_ENCODING);
 	}
 	
 	/**
@@ -139,7 +139,7 @@ public class Resource implements Serializable {
 	 * @param mediaType The resources MediaType
 	 */
 	public Resource(String id, byte[] data, String href, MediaType mediaType) {
-		this(id, data, href, mediaType, Constants.ENCODING);
+		this(id, data, href, mediaType, Constants.CHARACTER_ENCODING);
 	}
 	
 	/**
@@ -326,7 +326,7 @@ public class Resource implements Serializable {
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
-		return new XmlStreamReader(new ByteArrayInputStream(getData()), inputEncoding);
+		return new XmlStreamReader(new ByteArrayInputStream(getData()), getInputEncoding());
 	}
 	
 	/**

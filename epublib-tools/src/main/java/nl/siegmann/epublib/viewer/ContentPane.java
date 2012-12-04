@@ -29,6 +29,7 @@ import nl.siegmann.epublib.browsersupport.NavigationEventListener;
 import nl.siegmann.epublib.browsersupport.Navigator;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.util.DesktopUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -280,13 +281,22 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		if (event.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
 			return;
 		}
+        final URL url = event.getURL();
+        if (url.getProtocol().toLowerCase().startsWith("http") && !"".equals(url.getHost())) {
+            try {
+                DesktopUtil.launchBrowser(event.getURL());
+                return;
+            } catch (DesktopUtil.BrowserLaunchException ex) {
+                log.warn("Couldn't launch system web browser.", ex);
+            }
+        }
 		String resourceHref = calculateTargetHref(event.getURL());
 		if (resourceHref.startsWith("#")) {
 			scrollToNamedAnchor(resourceHref.substring(1));
 			return;
 		}
-		Resource resource = navigator.getBook().getResources()
-				.getByHref(resourceHref);
+
+		Resource resource = navigator.getBook().getResources().getByHref(resourceHref);
 		if (resource == null) {
 			log.error("Resource with url " + resourceHref + " not found");
 		} else {
@@ -333,7 +343,7 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 		String resourceHref = clickUrl.toString();
 		try {
 			resourceHref = URLDecoder.decode(resourceHref,
-					Constants.ENCODING);
+					Constants.CHARACTER_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error(e.getMessage());
 		}
@@ -371,4 +381,6 @@ public class ContentPane extends JPanel implements NavigationEventListener,
 			}
 		}
 	}
+
+
 }

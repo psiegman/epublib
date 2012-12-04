@@ -8,7 +8,7 @@
 	<groupId>nl.siegmann.epublib</groupId>
 	<artifactId>epublib-core</artifactId>
 	<name>epublib-core</name>
-	<version>3.0-SNAPSHOT</version>
+	<version>3.1</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
@@ -16,7 +16,7 @@
 	<parent>
     	<groupId>nl.siegmann.epublib</groupId>
 		<artifactId>epublib-parent</artifactId>
-		<version>3.0-SNAPSHOT</version>
+		<version>3.1</version>
   	</parent>
 
 	<dependencies>
@@ -46,6 +46,12 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>commons-io</groupId>
+	  <artifactId>commons-io</artifactId>
+	  <version>2.1</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 
 	<build>

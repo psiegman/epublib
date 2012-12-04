@@ -37,9 +37,8 @@ public class EpubProcessorSupport {
 	static {
 		init();
 	}
-	
-	public static EntityResolver entityResolver = new EntityResolver() {
-		
+
+    static class EntityResolverImpl implements EntityResolver {
 		private String previousLocation;
 		
 		@Override
@@ -61,7 +60,7 @@ public class EpubProcessorSupport {
 			InputStream in = EpubProcessorSupport.class.getClassLoader().getResourceAsStream(resourcePath);
 			return new InputSource(in);
 		}
-	};
+	}
 	
 	
 	private static void init() {
@@ -71,7 +70,7 @@ public class EpubProcessorSupport {
 	}
 	
 	public static XmlSerializer createXmlSerializer(OutputStream out) throws UnsupportedEncodingException {
-		return createXmlSerializer(new OutputStreamWriter(out, Constants.ENCODING));
+		return createXmlSerializer(new OutputStreamWriter(out, Constants.CHARACTER_ENCODING));
 	}
 	
 	public static XmlSerializer createXmlSerializer(Writer out) {
@@ -87,6 +86,18 @@ public class EpubProcessorSupport {
 		}
 		return result;
 	}
+
+	/**
+	 * Gets an EntityResolver that loads dtd's and such from the epublib classpath.
+	 * In order to enable the loading of relative urls the given EntityResolver contains the previousLocation.
+	 * Because of a new EntityResolver is created every time this method is called.
+	 * Fortunately the EntityResolver created uses up very little memory per instance.
+	 * 
+	 * @return an EntityResolver that loads dtd's and such from the epublib classpath.
+	 */
+	public static EntityResolver getEntityResolver() {
+		return new EntityResolverImpl();
+	}
 	
 	public DocumentBuilderFactory getDocumentBuilderFactory() {
 		return documentBuilderFactory;
@@ -101,7 +112,7 @@ public class EpubProcessorSupport {
 		DocumentBuilder result = null;
 		try {
 			result = documentBuilderFactory.newDocumentBuilder();
-			result.setEntityResolver(entityResolver);
+			result.setEntityResolver(getEntityResolver());
 		} catch (ParserConfigurationException e) {
 			log.error(e.getMessage());
 		}

@@ -17,7 +17,6 @@ package nl.siegmann.epublib.util.commons.io;
  * limitations under the License.
  */
 
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;

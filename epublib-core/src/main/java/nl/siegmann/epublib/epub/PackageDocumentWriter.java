@@ -35,7 +35,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	public static void write(EpubWriter epubWriter, XmlSerializer serializer, Book book) throws IOException {
 		try {
-			serializer.startDocument(Constants.ENCODING, false);
+			serializer.startDocument(Constants.CHARACTER_ENCODING, false);
 			serializer.setPrefix(PREFIX_OPF, NAMESPACE_OPF);
 			serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
 			serializer.startTag(NAMESPACE_OPF, OPFTags.packageTag);
