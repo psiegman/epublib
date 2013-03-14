@@ -1,14 +1,13 @@
 package nl.siegmann.epublib.domain;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
@@ -35,6 +34,7 @@ public class Resource implements Serializable {
 	private String id;
 	private String title;
 	private String href;
+	private String originalHref;
 	private MediaType mediaType;
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	private byte[] data;
@@ -178,6 +178,7 @@ public class Resource implements Serializable {
 	public Resource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding) {
 		this.id = id;
 		this.href = href;
+		this.originalHref = href;
 		this.mediaType = mediaType;
 		this.inputEncoding = inputEncoding;
 		this.data = data;
@@ -222,7 +223,7 @@ public class Resource implements Serializable {
 			
 			LOG.info("Initializing lazy resource " + fileName + "#" + this.href );
 			
-			ZipInputStream in = getResourceStream();
+			InputStream in = getResourceStream();
 			byte[] readData = IOUtil.toByteArray(in, (int) this.cachedSize);
 			if ( readData == null ) {
 			    throw new IOException("Could not lazy-load data.");
@@ -236,20 +237,15 @@ public class Resource implements Serializable {
 		return data;
 	}
 
-	private ZipInputStream getResourceStream() throws FileNotFoundException,
+	private InputStream getResourceStream() throws FileNotFoundException,
 			IOException {
-		ZipInputStream in = new ZipInputStream(new FileInputStream(this.fileName));
-		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
-			if(zipEntry.isDirectory()) {
-				continue;
-			}
-			
-			if ( zipEntry.getName().endsWith(this.href)) {
-				return in;
-			}				
+		ZipFile zipResource = new ZipFile(fileName);
+		ZipEntry zipEntry = zipResource.getEntry(originalHref);
+		if (zipEntry == null) {
+			zipResource.close();
+			throw new IllegalStateException("Cannot find resources href in the epub file");
 		}
-		
-		throw new IllegalStateException("Cannot find resources href in the epub file");
+		return new ResourceInputStream(zipResource.getInputStream(zipEntry), zipResource);
 	}
 	
 	/**
