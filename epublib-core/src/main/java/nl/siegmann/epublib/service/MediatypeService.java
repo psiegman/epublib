@@ -37,13 +37,14 @@ public class MediatypeService {
 	// audio
 	public static final MediaType MP3 = new MediaType("audio/mpeg", ".mp3");
 	public static final MediaType MP4 = new MediaType("audio/mp4", ".mp4");
+	public static final MediaType OGG = new MediaType("audio/ogg", ".ogg");	
 
 	public static final MediaType SMIL = new MediaType("application/smil+xml", ".smil");
 	public static final MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt");
 	public static final MediaType PLS = new MediaType("application/pls+xml", ".pls");
 	
 	public static MediaType[] mediatypes = new MediaType[] {
-		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT, OPENTYPE, WOFF, SMIL, PLS, JAVASCRIPT, MP3, MP4
+		XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT, OPENTYPE, WOFF, SMIL, PLS, JAVASCRIPT, MP3, MP4, OGG
 	};
 	
 	public static Map<String, MediaType> mediaTypesByName = new HashMap<String, MediaType>();
