@@ -1,10 +1,6 @@
 package nl.siegmann.epublib.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -64,7 +60,11 @@ public class ResourceUtil {
 		return new Resource(zipInputStream, zipEntry.getName());
 
 	}
-		
+
+    public static Resource createResource(ZipEntry zipEntry, InputStream zipInputStream) throws IOException {
+        return new Resource(zipInputStream, zipEntry.getName());
+
+    }
 
 	/**
 	 * Converts a given string from given input character encoding to the requested output character encoding.
