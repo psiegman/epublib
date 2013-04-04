@@ -12,6 +12,8 @@ import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.IOUtils;
+
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
@@ -111,7 +113,7 @@ public class Resource implements Serializable {
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
 	 */
 	public Resource(InputStream in, String href) throws IOException {
-		this(null, IOUtil.toByteArray(in), href, MediatypeService.determineMediaType(href));
+		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href));
 	}
 	
 	/**
@@ -194,7 +196,7 @@ public class Resource implements Serializable {
 				}
 				
 				if ( zipEntry.getName().endsWith(this.href)) {
-					this.data = IOUtil.toByteArray(in);
+					this.data = IOUtils.toByteArray(in);
 				}				
 			}
 			
