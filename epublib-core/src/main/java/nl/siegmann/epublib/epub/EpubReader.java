@@ -167,7 +167,7 @@ public class EpubReader {
 			if ( lazyLoadedTypes.contains(mediaType) ) {
 				resource = new Resource(fileName, zipEntry.getSize(), href);								
 			} else {			
-				resource = new Resource( in, href );
+				resource = new Resource( in, fileName, (int) zipEntry.getSize(), href );
 			}
 			
 			if(resource.getMediaType() == MediatypeService.XHTML) {

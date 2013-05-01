@@ -1,11 +1,6 @@
 package nl.siegmann.epublib.domain;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Serializable;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -111,9 +106,30 @@ public class Resource implements Serializable {
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
 	 */
 	public Resource(InputStream in, String href) throws IOException {
-		this(null, IOUtil.toByteArray(in), href, MediatypeService.determineMediaType(href));
+		this(null, IOUtil.toByteArray(in),  href, MediatypeService.determineMediaType(href));
 	}
-	
+
+    /**
+     * Creates a Resource that tries to load the data, but falls back to lazy loading.
+     *
+     * If the size of the resource is known ahead of time we can use that to allocate
+     * a matching byte[]. If this succeeds we can safely load the data.
+     *
+     * If it fails we leave the data null for now and it will be lazy-loaded when
+     * it is accessed.
+     *
+     * @param in
+     * @param fileName
+     * @param length
+     * @param href
+     * @throws IOException
+     */
+    public Resource(InputStream in, String fileName, int length, String href) throws IOException {
+        this(  null, IOUtil.toByteArray(in, length), href, MediatypeService.determineMediaType(href));
+        this.fileName = fileName;
+        this.cachedSize = length;
+    }
+
 	/**
 	 * Creates a Lazy resource, by not actually loading the data for this entry.
 	 * 
@@ -141,7 +157,8 @@ public class Resource implements Serializable {
 	public Resource(String id, byte[] data, String href, MediaType mediaType) {
 		this(id, data, href, mediaType, Constants.CHARACTER_ENCODING);
 	}
-	
+
+
 	/**
 	 * Creates a resource with the given id, data, mediatype at the specified href.
 	 * If the data is of a text type (html/css/etc) then it will use the given inputEncoding.
@@ -194,7 +211,7 @@ public class Resource implements Serializable {
 				}
 				
 				if ( zipEntry.getName().endsWith(this.href)) {
-					this.data = IOUtil.toByteArray(in);
+					this.data = IOUtil.toByteArray(in, (int) this.cachedSize);
 				}				
 			}
 			
