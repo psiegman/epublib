@@ -1,12 +1,6 @@
 package nl.siegmann.epublib.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * Most of the functions herein are re-implementations of the ones in apache io IOUtils.
@@ -45,7 +39,40 @@ public class IOUtil {
 		return result.toByteArray();
 	}
 
-	/**
+    /**
+     * Reads data from the InputStream, using the specified buffer size.
+     *
+     * This is meant for situations where memory is tight, since
+     * it prevents buffer expansion.
+     *
+     * @param stream the stream to read data from
+     * @param size the size of the array to create
+     * @return the array, or null
+     * @throws IOException
+     */
+    public static byte[] toByteArray( InputStream in, int size ) throws IOException {
+
+        try {
+            ByteArrayOutputStream result;
+
+            if ( size > 0 ) {
+                result = new ByteArrayOutputStream(size);
+            } else {
+                result = new ByteArrayOutputStream();
+            }
+
+            copy(in, result);
+            result.flush();
+            return result.toByteArray();
+        } catch ( OutOfMemoryError error ) {
+            //Return null so it gets loaded lazily.
+            return null;
+        }
+
+    }
+
+
+    /**
 	 * if totalNrRead < 0 then totalNrRead is returned, if (nrRead + totalNrRead) < Integer.MAX_VALUE then nrRead + totalNrRead is returned, -1 otherwise.
 	 * @param nrRead
 	 * @param totalNrNread
@@ -62,7 +89,7 @@ public class IOUtil {
 		}
 	}
 
-	/**
+    /**
 	 * Copies the contents of the InputStream to the OutputStream.
 	 * 
 	 * @param in
