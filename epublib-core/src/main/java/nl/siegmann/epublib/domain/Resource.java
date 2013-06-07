@@ -211,13 +211,19 @@ public class Resource implements Serializable {
 				}
 				
 				if ( zipEntry.getName().endsWith(this.href)) {
-					this.data = IOUtil.toByteArray(in, (int) this.cachedSize);
+					byte[] readData = IOUtil.toByteArray(in, (int) this.cachedSize);
+
+                    if ( readData == null ) {
+                        throw new IOException("Could not lazy-load data.");
+                    } else {
+                        this.data = readData;
+                    }
 				}				
 			}
 			
 			in.close();
 		}
-		
+
 		return data;
 	}
 	
