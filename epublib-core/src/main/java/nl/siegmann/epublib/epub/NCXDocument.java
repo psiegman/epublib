@@ -118,7 +118,13 @@ public class NCXDocument {
 
 	private static TOCReference readTOCReference(Element navpointElement, Book book) {
 		String label = readNavLabel(navpointElement);
-		String reference = StringUtil.substringBeforeLast(book.getSpine().getTocResource().getHref(), '/') + '/' + readNavReference(navpointElement);
+		String tocResourceRoot = StringUtil.substringBeforeLast(book.getSpine().getTocResource().getHref(), '/');
+		if (tocResourceRoot.length() == book.getSpine().getTocResource().getHref().length()) {
+			tocResourceRoot = "";
+		} else {
+			tocResourceRoot = tocResourceRoot + "/";
+		}
+		String reference = tocResourceRoot + readNavReference(navpointElement);
 		String href = StringUtil.substringBefore(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		String fragmentId = StringUtil.substringAfter(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource resource = book.getResources().getByHref(href);
@@ -130,7 +136,6 @@ public class NCXDocument {
 		result.setChildren(readTOCReferences(navpointElement.getChildNodes(), book));
 		return result;
 	}
-
 	
 	private static String readNavReference(Element navpointElement) {
 		Element contentElement = DOMUtil.getFirstElementByTagNameNS(navpointElement, NAMESPACE_NCX, NCXTags.content);
