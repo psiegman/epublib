@@ -58,7 +58,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		resources = readManifest(packageDocument, packageHref, epubReader, resources, idMapping);
 		book.setResources(resources);
 		readCover(packageDocument, book);
-		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument, book.getResources()));
+		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
 		book.setSpine(readSpine(packageDocument, epubReader, book.getResources(), idMapping));
 		
 		// if we did not find a cover page then we make the first page of the book the cover page
