@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import nl.siegmann.epublib.Constants;
@@ -40,7 +42,11 @@ public class EpubReader {
 	public Book readEpub(ZipInputStream in) throws IOException {
 		return readEpub(in, Constants.CHARACTER_ENCODING);
 	}
-	
+
+    public Book readEpub(ZipFile zipfile) throws IOException {
+        return readEpub(zipfile, Constants.CHARACTER_ENCODING);
+    }
+
 	/**
 	 * Read epub from inputstream
 	 * 
@@ -90,17 +96,24 @@ public class EpubReader {
 	}
 	
 	public Book readEpub(ZipInputStream in, String encoding) throws IOException {
-		Book result = new Book();
-		Resources resources = readResources(in, encoding);
-		handleMimeType(result, resources);
-		String packageResourceHref = getPackageResourceHref(resources);
-		Resource packageResource = processPackageResource(packageResourceHref, result, resources);
-		result.setOpfResource(packageResource);
-		Resource ncxResource = processNcxResource(packageResource, result);
-		result.setNcxResource(ncxResource);
-		result = postProcessBook(result);
-		return result;
+        return readEpubResources(readResources(in, encoding));
 	}
+
+    public Book readEpub(ZipFile in, String encoding) throws IOException {
+        return readEpubResources(readResources(in, encoding));
+    }
+
+    public Book readEpubResources(Resources resources) throws IOException{
+        Book result = new Book();
+        handleMimeType(result, resources);
+        String packageResourceHref = getPackageResourceHref(resources);
+        Resource packageResource = processPackageResource(packageResourceHref, result, resources);
+        result.setOpfResource(packageResource);
+        Resource ncxResource = processNcxResource(packageResource, result);
+        result.setNcxResource(ncxResource);
+        result = postProcessBook(result);
+        return result;
+    }
 
 	private Book postProcessBook(Book book) {
 		if (bookProcessor != null) {
@@ -167,7 +180,7 @@ public class EpubReader {
 			if ( lazyLoadedTypes.contains(mediaType) ) {
 				resource = new Resource(fileName, zipEntry.getSize(), href);								
 			} else {			
-				resource = new Resource( in, href );
+				resource = new Resource( in, fileName, (int) zipEntry.getSize(), href );
 			}
 			
 			if(resource.getMediaType() == MediatypeService.XHTML) {
@@ -193,4 +206,22 @@ public class EpubReader {
 		}
 		return result;
 	}
+
+    private Resources readResources(ZipFile zipFile, String defaultHtmlEncoding) throws IOException {
+        Resources result = new Resources();
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+        while(entries.hasMoreElements()){
+            ZipEntry zipEntry = entries.nextElement();
+            if(zipEntry != null && !zipEntry.isDirectory()){
+                Resource resource = ResourceUtil.createResource(zipEntry, zipFile.getInputStream(zipEntry));
+                if(resource.getMediaType() == MediatypeService.XHTML) {
+                    resource.setInputEncoding(defaultHtmlEncoding);
+                }
+                result.add(resource);
+            }
+        }
+
+        return result;
+    }
 }
