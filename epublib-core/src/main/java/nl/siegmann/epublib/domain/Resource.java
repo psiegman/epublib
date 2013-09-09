@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
+
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
@@ -112,7 +114,7 @@ public class Resource implements Serializable {
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
 	 */
 	public Resource(InputStream in, String href) throws IOException {
-		this(null, IOUtil.toByteArray(in),  href, MediatypeService.determineMediaType(href));
+		this(null, IOUtils.toByteArray(in), href, MediatypeService.determineMediaType(href));
 	}
 
     /**
@@ -136,6 +138,8 @@ public class Resource implements Serializable {
         this.cachedSize = length;
     }
 
+	/**
+	
 	/**
 	 * Creates a Lazy resource, by not actually loading the data for this entry.
 	 * 
@@ -229,6 +233,7 @@ public class Resource implements Serializable {
 			    throw new IOException("Could not lazy-load data.");
 			} else {
 			    this.data = readData;
+					this.data = IOUtils.toByteArray(in);
 			}
 			
 			in.close();
