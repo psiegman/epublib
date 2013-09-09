@@ -11,7 +11,6 @@ import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
-import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.util.StringUtil;
 
 import org.slf4j.Logger;
@@ -34,7 +33,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 
 	private static final Logger log = LoggerFactory.getLogger(PackageDocumentMetadataReader.class);
 
-	public static Metadata readMetadata(Document packageDocument, Resources resources) {
+	public static Metadata readMetadata(Document packageDocument) {
 		Metadata result = new Metadata();
 		Element metadataElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.metadata);
 		if(metadataElement == null) {
@@ -52,7 +51,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		result.setContributors(readContributors(metadataElement));
 		result.setDates(readDates(metadataElement));
         result.setOtherProperties(readOtherProperties(metadataElement));
-
+        result.setMetaAttributes(readMetaProperties(metadataElement));
         Element languageTag = DOMUtil.getFirstElementByTagNameNS(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.language);
         if (languageTag != null) {
             result.setLanguage(DOMUtil.getTextChildrenContent(languageTag));
@@ -85,6 +84,25 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		return result;
 	}
 
+	/**
+	 * consumes meta tags that have a property attribute as defined in the standard. For example:
+	 * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
+	 * @param metadataElement
+	 * @return
+	 */
+	private static Map<String, String> readMetaProperties(Element metadataElement) {
+		Map<String, String> result = new HashMap<String, String>();
+		
+		NodeList metaTags = metadataElement.getElementsByTagName(OPFTags.meta);
+		for (int i = 0; i < metaTags.getLength(); i++) {
+			Element metaElement = (Element) metaTags.item(i);
+			String name = metaElement.getAttribute(OPFAttributes.name);
+			String value = DOMUtil.getTextChildrenContent(metaElement);
+			result.put(name,  value);
+		}
+		
+		return result;
+	}
 
 	private static String getBookIdId(Document document) {
 		Element packageElement = DOMUtil.getFirstElementByTagNameNS(document.getDocumentElement(), NAMESPACE_OPF, OPFTags.packageTag);
