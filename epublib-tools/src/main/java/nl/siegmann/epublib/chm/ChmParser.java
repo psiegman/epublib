@@ -22,8 +22,6 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 
-import com.sun.org.apache.bcel.internal.Constants;
-
 /**
  * Reads the files that are extracted from a windows help ('.chm') file and creates a epublib Book out of it.
  * 
