@@ -1,20 +1,21 @@
 package nl.siegmann.epublib.epub;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.GuideReference;
 import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.service.MediatypeService;
-import org.apache.commons.io.FileUtils;
+import nl.siegmann.epublib.util.IOUtil;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class NCXDocumentTest {
 
@@ -33,13 +34,19 @@ public class NCXDocumentTest {
 
     @Before
     public void setUp() throws IOException {
-        ncxData = FileUtils.readFileToByteArray(new File("src/test/resources/toc.xml"));
+        ncxData = IOUtil.toByteArray(new FileInputStream(new File("src/test/resources/toc.xml")));
     }
 
     @After
     public void tearDown() {
     }
 
+    private void addResource(Book book, String filename) {
+        Resource chapterResource = new Resource("id1", "Hello, world !".getBytes(), filename, MediatypeService.XHTML);
+        book.addResource(chapterResource);
+        book.getSpine().addResource(chapterResource);
+    }
+    
     /**
      * Test of read method, of class NCXDocument.
      */
@@ -49,9 +56,10 @@ public class NCXDocumentTest {
         // If the tox.ncx file is not in the root, the hrefs it refers to need to preserve its path.
         Book book = new Book();
         Resource ncxResource = new Resource(ncxData, "xhtml/toc.ncx");
-        Resource chapterResource = new Resource("id1", "Hello, world !".getBytes(), "xhtml/chapter1.html", MediatypeService.XHTML);
-        book.addResource(chapterResource);
-        book.getSpine().addResource(chapterResource);
+        addResource(book, "xhtml/chapter1.html");
+        addResource(book, "xhtml/chapter2.html");
+        addResource(book, "xhtml/chapter2_1.html");
+        addResource(book, "xhtml/chapter3.html");
 
         book.setNcxResource(ncxResource);
         book.getSpine().setTocResource(ncxResource);

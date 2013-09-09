@@ -7,24 +7,62 @@ import java.util.List;
 /**
  * Various String utility functions.
  * 
- * Most of the functions herein are re-implementations of the ones in apache commons StringUtils.
- * The reason for re-implementing this is that the functions are fairly simple and using my own implementation saves the inclusion of a 200Kb jar file.
+ * Most of the functions herein are re-implementations of the ones in apache
+ * commons StringUtils. The reason for re-implementing this is that the
+ * functions are fairly simple and using my own implementation saves the
+ * inclusion of a 200Kb jar file.
  * 
  * @author paul.siegmann
- *
+ * 
  */
 public class StringUtil {
 
 	/**
-	 * Whether the String is not null, not zero-length and does not contain of only whitespace.
+	 * Changes a path containing '..', '.' and empty dirs into a path that
+	 * doesn't. X/foo/../Y is changed into 'X/Y', etc. Does not handle invalid
+	 * paths like "../".
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static String collapsePathDots(String path) {
+		String[] stringParts = path.split("/");
+		List<String> parts = new ArrayList<String>(Arrays.asList(stringParts));
+		for (int i = 0; i < parts.size() - 1; i++) {
+			String currentDir = parts.get(i);
+			if (currentDir.length() == 0 || currentDir.equals(".")) {
+				parts.remove(i);
+				i--;
+			} else if (currentDir.equals("..")) {
+				parts.remove(i - 1);
+				parts.remove(i - 1);
+				i -= 2;
+			}
+		}
+		StringBuilder result = new StringBuilder();
+		if (path.startsWith("/")) {
+			result.append('/');
+		}
+		for (int i = 0; i < parts.size(); i++) {
+			result.append(parts.get(i));
+			if (i < (parts.size() - 1)) {
+				result.append('/');
+			}
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Whether the String is not null, not zero-length and does not contain of
+	 * only whitespace.
 	 * 
 	 * @param text
 	 * @return
 	 */
 	public static boolean isNotBlank(String text) {
-		return ! isBlank(text);
+		return !isBlank(text);
 	}
-	
+
 	/**
 	 * Whether the String is null, zero-length and does contain only whitespace.
 	 */
@@ -33,13 +71,13 @@ public class StringUtil {
 			return true;
 		}
 		for (int i = 0; i < text.length(); i++) {
-			if (! Character.isWhitespace(text.charAt(i))) {
+			if (!Character.isWhitespace(text.charAt(i))) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Whether the given string is null or zero-length.
 	 * 
@@ -49,9 +87,10 @@ public class StringUtil {
 	public static boolean isEmpty(String text) {
 		return (text == null) || (text.length() == 0);
 	}
-	
+
 	/**
-	 * Whether the given source string ends with the given suffix, ignoring case.
+	 * Whether the given source string ends with the given suffix, ignoring
+	 * case.
 	 * 
 	 * @param source
 	 * @param suffix
@@ -67,10 +106,11 @@ public class StringUtil {
 		if (suffix.length() > source.length()) {
 			return false;
 		}
-		return source.substring(source.length() - suffix.length()).toLowerCase().endsWith(suffix.toLowerCase());
+		return source.substring(source.length() - suffix.length())
+				.toLowerCase().endsWith(suffix.toLowerCase());
 	}
-	
-		/**
+
+	/**
 	 * If the given text is null return "", the original text otherwise.
 	 * 
 	 * @param text
@@ -114,7 +154,7 @@ public class StringUtil {
 	 * @param keyValues
 	 * @return
 	 */
-	public static String toString(Object ... keyValues) {
+	public static String toString(Object... keyValues) {
 		StringBuilder result = new StringBuilder();
 		result.append('[');
 		for (int i = 0; i < keyValues.length; i += 2) {
@@ -139,7 +179,7 @@ public class StringUtil {
 		return result.toString();
 	}
 
-	public static int hashCode(String ... values) {
+	public static int hashCode(String... values) {
 		int result = 31;
 		for (int i = 0; i < values.length; i++) {
 			result ^= String.valueOf(values[i]).hashCode();
@@ -150,7 +190,8 @@ public class StringUtil {
 	/**
 	 * Gives the substring of the given text before the given separator.
 	 * 
-	 * If the text does not contain the given separator then the given text is returned.
+	 * If the text does not contain the given separator then the given text is
+	 * returned.
 	 * 
 	 * @param text
 	 * @param separator
@@ -168,9 +209,11 @@ public class StringUtil {
 	}
 
 	/**
-	 * Gives the substring of the given text before the last occurrence of the given separator.
+	 * Gives the substring of the given text before the last occurrence of the
+	 * given separator.
 	 * 
-	 * If the text does not contain the given separator then the given text is returned.
+	 * If the text does not contain the given separator then the given text is
+	 * returned.
 	 * 
 	 * @param text
 	 * @param separator
@@ -188,7 +231,8 @@ public class StringUtil {
 	}
 
 	/**
-	 * Gives the substring of the given text after the last occurrence of the given separator.
+	 * Gives the substring of the given text after the last occurrence of the
+	 * given separator.
 	 * 
 	 * If the text does not contain the given separator then "" is returned.
 	 * 

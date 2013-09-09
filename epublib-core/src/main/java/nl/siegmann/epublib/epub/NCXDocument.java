@@ -21,7 +21,6 @@ import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
-import org.apache.commons.io.FilenameUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +118,7 @@ public class NCXDocument {
 
 	private static TOCReference readTOCReference(Element navpointElement, Book book) {
 		String label = readNavLabel(navpointElement);
-		String reference = FilenameUtils.getPath(book.getSpine().getTocResource().getHref())+readNavReference(navpointElement);
+		String reference = StringUtil.substringBeforeLast(book.getSpine().getTocResource().getHref(), '/') + '/' + readNavReference(navpointElement);
 		String href = StringUtil.substringBefore(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		String fragmentId = StringUtil.substringAfter(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource resource = book.getResources().getByHref(href);
