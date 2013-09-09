@@ -87,5 +87,6 @@ public class PackageDocumentMetadataReaderTest extends TestCase {
     	Assert.assertEquals("zelda@mobileread.com:2010040720", identifier.getValue());
     	
     	Assert.assertEquals("8", metadata.getMetaAttribute("calibre:rating"));
+    	Assert.assertEquals("cover_pic", metadata.getMetaAttribute("cover"));
     }
 }
