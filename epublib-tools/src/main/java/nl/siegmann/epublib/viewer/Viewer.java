@@ -40,8 +40,6 @@ import org.slf4j.LoggerFactory;
 
 public class Viewer {
 	
-	private static final long serialVersionUID = 1610691708767665447L;
-	
 	static final Logger log = LoggerFactory.getLogger(Viewer.class);
 	private final JFrame mainWindow;
 	private BrowseBar browseBar;
@@ -49,7 +47,7 @@ public class Viewer {
 	private JSplitPane leftSplitPane;
 	private JSplitPane rightSplitPane;
 	private Navigator navigator = new Navigator();
-	NavigationHistory browserHistory;
+	private NavigationHistory browserHistory;
 	private BookProcessorPipeline epubCleaner = new BookProcessorPipeline(Collections.<BookProcessor>emptyList());
 	
 	public Viewer(InputStream bookStream) {

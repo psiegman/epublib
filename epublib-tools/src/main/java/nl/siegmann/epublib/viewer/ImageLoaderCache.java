@@ -85,6 +85,9 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 		String resourceHref = requestUrl.toString().substring(IMAGE_URL_PREFIX.length());
 		resourceHref = currentFolder + resourceHref;
 		resourceHref = FilenameUtils.normalize(resourceHref);
+		// normalize uses the SYSTEM_SEPARATOR, which on windows is a '\'
+		// replace with '/' to make it href '/'
+		resourceHref = resourceHref.replaceAll("\\\\", "/");
 		return resourceHref;
 	}
 	
