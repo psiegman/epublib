@@ -18,6 +18,4 @@ libraryDependencies +=  "org.slf4j" % "slf4j-simple" % "1.6.1"
 
 libraryDependencies +=  "junit" % "junit" % "4.10" 
 
-libraryDependencies +=  "commons-io" % "commons-io" % "2.1" 
-
 
