@@ -50,7 +50,7 @@
 	<distributionManagement>
 		<repository>
 			<id>github.repo</id>
-			<url>file:///D:/private/project/git-maven-repo/mvn-repo</url>
+			<url>file:///D:/private/project/git-maven-repo/mvn-repo/releases</url>
 		</repository>
 	</distributionManagement>
 
