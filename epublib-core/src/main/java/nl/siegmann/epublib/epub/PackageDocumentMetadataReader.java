@@ -97,7 +97,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 		for (int i = 0; i < metaTags.getLength(); i++) {
 			Element metaElement = (Element) metaTags.item(i);
 			String name = metaElement.getAttribute(OPFAttributes.name);
-			String value = DOMUtil.getTextChildrenContent(metaElement);
+			String value = metaElement.getAttribute(OPFAttributes.content);
 			result.put(name,  value);
 		}
 		
