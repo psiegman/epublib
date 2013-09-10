@@ -165,10 +165,9 @@ public class NCXDocument {
 	/**
 	 * Generates a resource containing an xml document containing the table of contents of the book in ncx format.
 	 * 
-	 * @param epubWriter
-	 * @param book
-	 * @return
-	 * @
+	 * @param xmlSerializer the serializer used
+	 * @param book the book to serialize
+	 * 
 	 * @throws FactoryConfigurationError
 	 * @throws IOException 
 	 * @throws IllegalStateException 

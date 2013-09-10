@@ -177,7 +177,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * 
 	 * @param packageHref
 	 * @param resourcesByHref
-	 * @return
+	 * @return The stipped package href
 	 */
 	private static Resources fixHrefs(String packageHref,
 			Resources resourcesByHref) {
@@ -203,7 +203,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param epubReader
 	 * @param book
 	 * @param resourcesById
-	 * @return
+	 * @return the document's spine, containing all sections in reading order.
 	 */
 	private static Spine readSpine(Document packageDocument, EpubReader epubReader, Resources resources, Map<String, String> idMapping) {
 		
@@ -248,7 +248,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * The generated spine consists of all XHTML pages in order of their href.
 	 * 
 	 * @param resources
-	 * @return
+	 * @return a spine created out of all resources in the resources.
 	 */
 	private static Spine generateSpineFromResources(Resources resources) {
 		Spine result = new Spine();
@@ -275,7 +275,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * 
 	 * @param spineElement
 	 * @param resourcesById
-	 * @return
+	 * @return the Resource containing the table of contents
 	 */
 	private static Resource findTableOfContentsResource(Element spineElement, Resources resources) {
 		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
@@ -314,7 +314,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * Search the meta tags and the guide references
 	 * 
 	 * @param packageDocument
-	 * @return
+	 * @return all resources that have something to do with the coverpage and the cover image.
 	 */
 	// package
 	static Set<String> findCoverHrefs(Document packageDocument) {
@@ -352,7 +352,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param packageDocument
 	 * @param book
 	 * @param resources
-	 * @return
 	 */
 	private static void readCover(Document packageDocument, Book book) {
 		

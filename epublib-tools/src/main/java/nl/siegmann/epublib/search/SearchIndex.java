@@ -142,7 +142,7 @@ public class SearchIndex {
 	 * Checks whether the given character is a java whitespace or a non-breaking-space (&amp;nbsp;).
 	 * 
 	 * @param c
-	 * @return
+	 * @return whether the given character is a java whitespace or a non-breaking-space (&amp;nbsp;).
 	 */
 	private static boolean isHtmlWhitespace(int c) {
 		return c == NBSP || Character.isWhitespace(c);
@@ -177,7 +177,7 @@ public class SearchIndex {
 	 * Replaces multiple whitespaces with a single space.<br/>
 	 * 
 	 * @param text
-	 * @return
+	 * @return html encoded text turned into plain text.
 	 */
 	public static String cleanText(String text) {
 		text = unicodeTrim(text);

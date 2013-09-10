@@ -137,7 +137,7 @@ public class Navigator implements Serializable {
 	 * 
 	 * @param newSpinePos
 	 * @param source
-	 * @return
+	 * @return The current position within the spine
 	 */
 	public int gotoSpineSection(int newSpinePos, int newPagePos, Object source) {
 		if (newSpinePos == currentSpinePos) {
@@ -203,7 +203,6 @@ public class Navigator implements Serializable {
 	 * 
 	 * If you want the eventListeners called use gotoSection(index);
 	 * 
-	 * @param currentSpinePos
 	 */
 	public int setCurrentResource(Resource currentResource) {
 		this.currentSpinePos = book.getSpine().getResourceIndex(currentResource);

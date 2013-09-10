@@ -50,7 +50,7 @@ public class Identifier implements Serializable {
 	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
 	 * 
 	 * @param identifiers
-	 * @return
+	 * @return The first identifier for which the bookId is true is made the bookId identifier.
 	 */
 	public static Identifier getBookIdIdentifier(List<Identifier> identifiers) {
 		if(identifiers == null || identifiers.isEmpty()) {
@@ -97,7 +97,7 @@ public class Identifier implements Serializable {
 	 * The Dublin Core metadata spec allows multiple identifiers for a Book.
 	 * The epub spec requires exactly one identifier to be marked as the book id.
 	 * 
-	 * @return
+	 * @return whether this is the unique book id.
 	 */
 	public boolean isBookId() {
 		return bookId;

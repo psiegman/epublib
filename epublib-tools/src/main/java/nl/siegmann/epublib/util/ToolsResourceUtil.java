@@ -56,11 +56,11 @@ public class ToolsResourceUtil {
 
 	
 	/**
-	 * Retrieves whatever it finds between <title>...</title> or <h1-7>...</h1-7>.
+	 * Retrieves whatever it finds between &lt;title&gt;...&lt;/title&gt; or &lt;h1-7&gt;...&lt;/h1-7&gt;.
 	 * The first match is returned, even if it is a blank string.
 	 * If it finds nothing null is returned.
 	 * @param resource
-	 * @return
+	 * @return whatever it finds in the resource between &lt;title&gt;...&lt;/title&gt; or &lt;h1-7&gt;...&lt;/h1-7&gt;.
 	 */
 	public static String findTitleFromXhtml(Resource resource) {
 		if (resource == null) {

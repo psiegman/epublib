@@ -83,7 +83,7 @@ public class Guide implements Serializable {
 	/**
 	 * The coverpage of the book.
 	 * 
-	 * @return
+	 * @return The coverpage of the book.
 	 */
 	public Resource getCoverPage() {
 		GuideReference guideReference = getCoverReference();
@@ -109,7 +109,7 @@ public class Guide implements Serializable {
 	 * A list of all GuideReferences that have the given referenceTypeName (ignoring case).
 	 * 
 	 * @param referenceTypeName
-	 * @return
+	 * @return A list of all GuideReferences that have the given referenceTypeName (ignoring case).
 	 */
 	public List<GuideReference> getGuideReferencesByType(String referenceTypeName) {
 		List<GuideReference> result = new ArrayList<GuideReference>();

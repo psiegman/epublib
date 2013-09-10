@@ -50,6 +50,7 @@ public class TableOfContents implements Serializable {
 	
 	/**
 	 * Calls addTOCReferenceAtLocation after splitting the path using the DEFAULT_PATH_SEPARATOR.
+	 * @return the new TOCReference
 	 */
 	public TOCReference addSection(Resource resource, String path) {
 		return addSection(resource, path, DEFAULT_PATH_SEPARATOR);
@@ -61,7 +62,7 @@ public class TableOfContents implements Serializable {
 	 * @param resource
 	 * @param path
 	 * @param pathSeparator
-	 * @return
+	 * @return the new TOCReference
 	 */
 	public TOCReference addSection(Resource resource, String path, String pathSeparator) {
 		String[] pathElements = path.split(pathSeparator);
@@ -98,7 +99,7 @@ public class TableOfContents implements Serializable {
 	 *    
 	 * @param resource
 	 * @param pathElements
-	 * @return
+	 * @return the new TOCReference
 	 */
 	public TOCReference addSection(Resource resource, String[] pathElements) {
 		if (pathElements == null || pathElements.length == 0) {
@@ -133,7 +134,7 @@ public class TableOfContents implements Serializable {
 	 *    
 	 * @param resource
 	 * @param pathElements
-	 * @return
+	 * @return the new TOCReference
 	 */
 	public TOCReference addSection(Resource resource, int[] pathElements, String sectionTitlePrefix, String sectionNumberSeparator) {
 		if (pathElements == null || pathElements.length == 0) {
@@ -194,7 +195,7 @@ public class TableOfContents implements Serializable {
 	/**
 	 * All unique references (unique by href) in the order in which they are referenced to in the table of contents.
 	 * 
-	 * @return
+	 * @return All unique references (unique by href) in the order in which they are referenced to in the table of contents.
 	 */
 	public List<Resource> getAllUniqueResources() {
 		Set<String> uniqueHrefs = new HashSet<String>();
@@ -218,7 +219,7 @@ public class TableOfContents implements Serializable {
 	/**
 	 * The total number of references in this table of contents.
 	 * 
-	 * @return
+	 * @return The total number of references in this table of contents.
 	 */
 	public int size() {
 		return getTotalSize(tocReferences);
@@ -232,6 +233,10 @@ public class TableOfContents implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * The maximum depth of the reference tree
+	 * @return The maximum depth of the reference tree
+	 */
 	public int calculateDepth() {
 		return calculateDepth(tocReferences, 0);
 	}

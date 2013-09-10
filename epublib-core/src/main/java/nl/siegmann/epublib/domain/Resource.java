@@ -75,7 +75,7 @@ public class Resource implements Serializable {
 	 * 
 	 * Assumes that if the data is of a text type (html/css/etc) then the encoding will be UTF-8
 	 * 
-	 * @see nl.siegmann.epublib.service.MediatypeService.determineMediaType(String)
+	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
 	 * 
 	 * @param data The Resource's contents
 	 * @param href The location of the resource within the epub. Example: "chapter1.html".
@@ -87,7 +87,8 @@ public class Resource implements Serializable {
 	/**
 	 * Creates a resource with the data from the given Reader at the specified href.
 	 * The MediaType will be determined based on the href extension.
-	 * @see nl.siegmann.epublib.service.MediatypeService.determineMediaType(String)
+	 *
+	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
 	 *  
 	 * @param in The Resource's contents
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
@@ -99,13 +100,13 @@ public class Resource implements Serializable {
 	/**
 	 * Creates a resource with the data from the given InputStream at the specified href.
 	 * The MediaType will be determined based on the href extension.
-	 * @see nl.siegmann.epublib.service.MediatypeService.determineMediaType(String)
+	 *
+	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
 	 * 
 	 * Assumes that if the data is of a text type (html/css/etc) then the encoding will be UTF-8
 	 * 
-	 * It is recommended to us the
-	 * @see nl.siegmann.epublib.domain.Resource.Resource(Reader, String)
-	 * method for creating textual (html/css/etc) resources to prevent encoding problems.
+	 * It is recommended to us the {@link #Resource(Reader, String)} method for creating textual
+	 * (html/css/etc) resources to prevent encoding problems.
 	 * Use this method only for binary Resources like images, fonts, etc.
 	 * 
 	 * 
@@ -298,7 +299,7 @@ public class Resource implements Serializable {
 	/**
 	 * If the title is found by scanning the underlying html document then it is cached here.
 	 * 
-	 * @return
+	 * @return the title
 	 */
 	public String getTitle() {
 		return title;
@@ -317,7 +318,7 @@ public class Resource implements Serializable {
 	 * The resources Id.
 	 * 
 	 * Must be both unique within all the resources of this book and a valid identifier.
-	 * @return
+	 * @return The resources Id.
 	 */
 	public String getId() {
 		return id;
@@ -330,7 +331,7 @@ public class Resource implements Serializable {
 	 * images/cover.jpg<br/>
 	 * content/chapter1.xhtml<br/>
 	 * 
-	 * @return
+	 * @return The location of the resource within the contents folder of the epub file.
 	 */
 	public String getHref() {
 		return href;
@@ -349,7 +350,7 @@ public class Resource implements Serializable {
 	 * The character encoding of the resource.
 	 * Is allowed to be null for non-text resources like images.
 	 * 
-	 * @return
+	 * @return The character encoding of the resource.
 	 */
 	public String getInputEncoding() {
 		return inputEncoding;
@@ -369,8 +370,7 @@ public class Resource implements Serializable {
 	 * 
 	 * Does all sorts of smart things (courtesy of apache commons io XMLStreamREader) to handle encodings, byte order markers, etc.
 	 * 
-	 * @param resource
-	 * @return
+	 * @return the contents of the Resource as Reader.
 	 * @throws IOException
 	 */
 	public Reader getReader() throws IOException {
@@ -388,6 +388,7 @@ public class Resource implements Serializable {
 	/**
 	 * Checks to see of the given resourceObject is a resource and whether its href is equal to this one.
 	 * 
+	 * @return whether the given resourceObject is a resource and whether its href is equal to this one.
 	 */
 	public boolean equals(Object resourceObject) {
 		if (! (resourceObject instanceof Resource)) {
@@ -399,7 +400,7 @@ public class Resource implements Serializable {
 	/**
 	 * This resource's mediaType.
 	 * 
-	 * @return
+	 * @return This resource's mediaType.
 	 */
 	public MediaType getMediaType() {
 		return mediaType;

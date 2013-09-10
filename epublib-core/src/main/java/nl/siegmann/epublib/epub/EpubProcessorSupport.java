@@ -106,7 +106,7 @@ public class EpubProcessorSupport {
 	/**
 	 * Creates a DocumentBuilder that looks up dtd's and schema's from epublib's classpath.
 	 * 
-	 * @return
+	 * @return a DocumentBuilder that looks up dtd's and schema's from epublib's classpath.
 	 */
 	public static DocumentBuilder createDocumentBuilder() {
 		DocumentBuilder result = null;

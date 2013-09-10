@@ -8,7 +8,7 @@ package nl.siegmann.epublib.domain;
  * 
  * This is contains the complete Library of Concress relator list.
  * 
- * @see http://www.loc.gov/marc/relators/relaterm.html
+ * @see <a href="http://www.loc.gov/marc/relators/relaterm.html">MARC Code List for Relators</a>
  * 
  * @author paul
  *

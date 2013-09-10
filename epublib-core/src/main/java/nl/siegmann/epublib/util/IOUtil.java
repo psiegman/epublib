@@ -15,7 +15,7 @@ public class IOUtil {
 	 * 
 	 * @param in
 	 * @param encoding
-	 * @return
+	 * @return the contents of the Reader as a byte[], with the given character encoding.
 	 * @throws IOException
 	 */
 	public static byte[] toByteArray(Reader in, String encoding) throws IOException {
@@ -29,7 +29,7 @@ public class IOUtil {
 	 * Returns the contents of the InputStream as a byte[]
 	 * 
 	 * @param in
-	 * @return
+	 * @return the contents of the InputStream as a byte[]
 	 * @throws IOException
 	 */
 	public static byte[] toByteArray(InputStream in) throws IOException {
@@ -45,7 +45,7 @@ public class IOUtil {
      * This is meant for situations where memory is tight, since
      * it prevents buffer expansion.
      *
-     * @param stream the stream to read data from
+     * @param in the stream to read data from
      * @param size the size of the array to create
      * @return the array, or null
      * @throws IOException
@@ -76,7 +76,7 @@ public class IOUtil {
 	 * if totalNrRead < 0 then totalNrRead is returned, if (nrRead + totalNrRead) < Integer.MAX_VALUE then nrRead + totalNrRead is returned, -1 otherwise.
 	 * @param nrRead
 	 * @param totalNrNread
-	 * @return
+	 * @return if totalNrRead < 0 then totalNrRead is returned, if (nrRead + totalNrRead) < Integer.MAX_VALUE then nrRead + totalNrRead is returned, -1 otherwise.
 	 */
 	protected static int calcNewNrReadSize(int nrRead, int totalNrNread) {
 		if (totalNrNread < 0) {
@@ -94,7 +94,7 @@ public class IOUtil {
 	 * 
 	 * @param in
 	 * @param out
-	 * @return the nr of bytes read, or -1 if the amount > Integer.MAX_VALUE
+	 * @return the nr of bytes read, or -1 if the amount &gt; Integer.MAX_VALUE
 	 * @throws IOException
 	 */
 	public static int copy(InputStream in, OutputStream out)
@@ -115,7 +115,7 @@ public class IOUtil {
 	 * 
 	 * @param in
 	 * @param out
-	 * @return the nr of characters read, or -1 if the amount > Integer.MAX_VALUE
+	 * @return the nr of characters read, or -1 if the amount &gt; Integer.MAX_VALUE
 	 * @throws IOException
 	 */
 	public static int copy(Reader in, Writer out) throws IOException {

@@ -12,7 +12,6 @@ import nl.siegmann.epublib.browsersupport.Navigator;
 /**
  * Creates a panel with the first,previous,next and last buttons.
  * 
- * @return
  */
 class ButtonBar extends JPanel {
 	private static final long serialVersionUID = 6431437924245035812L;

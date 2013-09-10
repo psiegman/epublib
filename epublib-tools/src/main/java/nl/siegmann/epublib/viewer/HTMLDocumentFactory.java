@@ -84,7 +84,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 	 * the resource and adds it to the cache.
 	 * 
 	 * @param resource
-	 * @return
+	 * @return the HTMLDocument representation of the resource.
 	 */
 	public HTMLDocument getDocument(Resource resource) {
 		HTMLDocument document = null;
@@ -122,7 +122,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 	 * these confuse the html viewer.
 	 * 
 	 * @param input
-	 * @return
+	 * @return the input stripped of control characters
 	 */
 	private static String removeControlTags(String input) {
 		StringBuilder result = new StringBuilder();
@@ -150,7 +150,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 	 * If the resources is not of type XHTML then null is returned.
 	 * 
 	 * @param resource
-	 * @return
+	 * @return a swing HTMLDocument created from the given resource.
 	 */
 	private HTMLDocument createDocument(Resource resource) {
 		HTMLDocument result = null;

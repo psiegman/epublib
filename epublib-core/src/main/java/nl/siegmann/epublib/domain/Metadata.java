@@ -55,7 +55,7 @@ public class Metadata implements Serializable {
 	/**
 	 * Metadata properties not hard-coded like the author, title, etc.
 	 * 
-	 * @return
+	 * @return Metadata properties not hard-coded like the author, title, etc.
 	 */
 	public Map<QName, String> getOtherProperties() {
 		return otherProperties;
@@ -124,7 +124,7 @@ public class Metadata implements Serializable {
 	 * Gets the first non-blank title of the book.
 	 * Will return "" if no title found.
 	 * 
-	 * @return
+	 * @return the first non-blank title of the book.
 	 */
 	public String getFirstTitle() {
 		if (titles == null || titles.isEmpty()) {

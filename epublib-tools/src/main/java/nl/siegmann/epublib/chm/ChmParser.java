@@ -59,11 +59,11 @@ public class ChmParser {
 	
 	
 	/**
-	 * Finds in the '#SYSTEM' file the 3rd set of characters that have ascii value >= 32 and <= 126 and is more than 3 characters long.
+	 * Finds in the '#SYSTEM' file the 3rd set of characters that have ascii value &gt;= 32 and &gt;= 126 and is more than 3 characters long.
 	 * Assumes that that is then the title of the book.
 	 * 
 	 * @param chmRootDir
-	 * @return
+	 * @return Finds in the '#SYSTEM' file the 3rd set of characters that have ascii value &gt;= 32 and &gt;= 126 and is more than 3 characters long.
 	 * @throws IOException
 	 */
 	protected static String findTitle(FileObject chmRootDir) throws IOException {

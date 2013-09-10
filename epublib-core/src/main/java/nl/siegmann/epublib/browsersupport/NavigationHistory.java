@@ -76,7 +76,7 @@ public class NavigationHistory implements NavigationEventListener {
 	 * If the time between a navigation event is less than the historyWaitTime then the new location is not added to the history. 
 	 * When a user is rapidly viewing many pages using the slider we do not want all of them to be added to the history.
 	 * 
-	 * @return
+	 * @return the time we wait before adding the page to the history
 	 */
 	public long getHistoryWaitTime() {
 		return historyWaitTime;
@@ -101,7 +101,6 @@ public class NavigationHistory implements NavigationEventListener {
 	 * If this nr of locations becomes larger then the historySize then the first item(s) will be removed.
 	 * 
 	 * @param location
-	 * @return
 	 */
 	public void addLocation(Location location) {
 		// do nothing if the new location matches the current location
