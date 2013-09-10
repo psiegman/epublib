@@ -13,7 +13,7 @@ public class DesktopUtil {
     /**
      * Open a URL in the default web browser.
      * 
-     * @param a URL to open in a web browser.
+     * @param url a URL to open in a web browser.
      * @return true if a browser has been launched.
      */
     public static boolean launchBrowser(URL url) throws BrowserLaunchException {

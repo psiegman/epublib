@@ -61,7 +61,7 @@ public class FilesetBookCreator {
 	 * 
 	 * @see nl.siegmann.epublib.domain.MediaTypeService
 	 * @param rootDirectory
-	 * @return
+	 * @return the newly created Book
 	 * @throws IOException
 	 */
 	public static Book createBookFromDirectory(FileObject rootDirectory, String encoding) throws IOException {

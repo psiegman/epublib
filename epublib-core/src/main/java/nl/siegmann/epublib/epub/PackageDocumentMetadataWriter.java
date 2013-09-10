@@ -26,7 +26,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 	 * @throws IOException 
 	 * @throws IllegalStateException 
 	 * @throws IllegalArgumentException 
-	 * @
 	 */
 	public static void writeMetaData(Book book, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
 		serializer.startTag(NAMESPACE_OPF, OPFTags.metadata);

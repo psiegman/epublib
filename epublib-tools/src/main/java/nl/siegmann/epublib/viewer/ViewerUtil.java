@@ -19,7 +19,7 @@ public class ViewerUtil {
 	 * 
 	 * @param iconName
 	 * @param backupLabel
-	 * @return
+	 * @return a button with the given icon.
 	 */
 	// package
 	static JButton createButton(String iconName, String backupLabel) {

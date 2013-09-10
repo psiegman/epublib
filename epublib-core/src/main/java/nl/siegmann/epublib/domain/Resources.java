@@ -37,7 +37,7 @@ public class Resources implements Serializable {
 	 * Fixes the resources id and href if necessary.
 	 * 
 	 * @param resource
-	 * @return
+	 * @return the newly added resource
 	 */
 	public Resource add(Resource resource) {
 		fixResourceHref(resource);
@@ -73,7 +73,7 @@ public class Resources implements Serializable {
 	 * Check if the id is a valid identifier. if not: prepend with valid identifier
 	 * 
 	 * @param resource
-	 * @return
+	 * @return a valid id
 	 */
 	private String makeValidId(String resourceId, Resource resource) {
 		if (StringUtil.isNotBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
@@ -96,7 +96,7 @@ public class Resources implements Serializable {
 	 * Creates a new resource id that is guarenteed to be unique for this set of Resources
 	 * 
 	 * @param resource
-	 * @return
+	 * @return a new resource id that is guarenteed to be unique for this set of Resources
 	 */
 	private String createUniqueResourceId(Resource resource) {
 		int counter = lastId;
@@ -120,7 +120,7 @@ public class Resources implements Serializable {
 	 * Whether the map of resources already contains a resource with the given id.
 	 * 
 	 * @param id
-	 * @return
+	 * @return Whether the map of resources already contains a resource with the given id.
 	 */
 	public boolean containsId(String id) {
 		if (StringUtil.isBlank(id)) {
@@ -195,7 +195,7 @@ public class Resources implements Serializable {
 	
 	/**
 	 * The number of resources
-	 * @return
+	 * @return The number of resources
 	 */
 	public int size() {
 		return resources.size();
@@ -205,7 +205,7 @@ public class Resources implements Serializable {
 	 * The resources that make up this book.
 	 * Resources can be xhtml pages, images, xml documents, etc.
 	 * 
-	 * @return
+	 * @return The resources that make up this book.
 	 */
 	public Map<String, Resource> getResourceMap() {
 		return resources;
@@ -219,7 +219,7 @@ public class Resources implements Serializable {
 	/**
 	 * Whether there exists a resource with the given href
 	 * @param href
-	 * @return
+	 * @return Whether there exists a resource with the given href
 	 */
 	public boolean containsByHref(String href) {
 		if (StringUtil.isBlank(href)) {
@@ -265,7 +265,7 @@ public class Resources implements Serializable {
 	 * fails it tries to find one with the idOrHref as href.
 	 * 
 	 * @param idOrHref
-	 * @return
+	 * @return the found Resource
 	 */
 	public Resource getByIdOrHref(String idOrHref) {
 		Resource resource = getById(idOrHref);
@@ -298,7 +298,7 @@ public class Resources implements Serializable {
 	 * Useful for looking up the table of contents as it's supposed to be the only resource with NCX mediatype.
 	 * 
 	 * @param mediaType
-	 * @return
+	 * @return the first resource (random order) with the give mediatype.
 	 */
 	public Resource findFirstResourceByMediaType(MediaType mediaType) {
 		return findFirstResourceByMediaType(resources.values(), mediaType);
@@ -310,7 +310,7 @@ public class Resources implements Serializable {
 	 * Useful for looking up the table of contents as it's supposed to be the only resource with NCX mediatype.
 	 * 
 	 * @param mediaType
-	 * @return
+	 * @return the first resource (random order) with the give mediatype.
 	 */
 	public static Resource findFirstResourceByMediaType(Collection<Resource> resources, MediaType mediaType) {
 		for (Resource resource: resources) {
@@ -325,7 +325,7 @@ public class Resources implements Serializable {
 	 * All resources that have the given MediaType.
 	 * 
 	 * @param mediaType
-	 * @return
+	 * @return All resources that have the given MediaType.
 	 */
 	public List<Resource> getResourcesByMediaType(MediaType mediaType) {
 		List<Resource> result = new ArrayList<Resource>();
@@ -344,7 +344,7 @@ public class Resources implements Serializable {
 	 * All Resources that match any of the given list of MediaTypes
 	 * 
 	 * @param mediaTypes
-	 * @return
+	 * @return All Resources that match any of the given list of MediaTypes
 	 */
 	public List<Resource> getResourcesByMediaTypes(MediaType[] mediaTypes) {
 		List<Resource> result = new ArrayList<Resource>();
@@ -364,6 +364,11 @@ public class Resources implements Serializable {
 	}
 
 
+	/**
+	 * All resource hrefs
+	 *
+	 * @return all resource hrefs
+	 */
 	public Collection<String> getAllHrefs() {
 		return resources.keySet();
 	}

@@ -48,7 +48,7 @@ public class TitledResourceReference extends ResourceReference implements Serial
 	/**
 	 * If the fragmentId is blank it returns the resource href, otherwise it returns the resource href + '#' + the fragmentId.
 	 * 
-	 * @return
+	 * @return If the fragmentId is blank it returns the resource href, otherwise it returns the resource href + '#' + the fragmentId.
 	 */
 	public String getCompleteHref() {
 		if (StringUtil.isBlank(fragmentId)) {

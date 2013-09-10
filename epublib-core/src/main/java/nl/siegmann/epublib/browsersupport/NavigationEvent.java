@@ -40,7 +40,7 @@ public class NavigationEvent extends EventObject {
 	/**
 	 * The previous position within the section.
 	 * 
-	 * @return
+	 * @return The previous position within the section.
 	 */
 	public int getOldSectionPos() {
 		return oldSectionPos;

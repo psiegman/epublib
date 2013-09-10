@@ -34,7 +34,7 @@ public class ResourceReference implements Serializable {
 	 * 
 	 * null of the reference is null or has a null id itself.
 	 * 
-	 * @return
+	 * @return The id of the reference referred to.
 	 */
 	public String getResourceId() {
 		if (resource != null) {

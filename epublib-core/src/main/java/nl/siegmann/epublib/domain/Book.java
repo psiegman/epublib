@@ -312,7 +312,7 @@ public class Book implements Serializable {
 	 * @param parentSection
 	 * @param sectionTitle
 	 * @param resource
-	 * @return
+	 * @return The table of contents
 	 */
 	public TOCReference addSection(TOCReference parentSection, String sectionTitle,
 			Resource resource) {
@@ -337,7 +337,7 @@ public class Book implements Serializable {
 	 * 
 	 * @param title
 	 * @param resource
-	 * @return
+	 * @return The table of contents
 	 */
 	public TOCReference addSection(String title, Resource resource) {
 		getResources().add(resource);
@@ -352,7 +352,7 @@ public class Book implements Serializable {
 	/**
 	 * The Book's metadata (titles, authors, etc)
 	 * 
-	 * @return
+	 * @return The Book's metadata (titles, authors, etc)
 	 */
 	public Metadata getMetadata() {
 		return metadata;
@@ -374,7 +374,7 @@ public class Book implements Serializable {
 	/**
 	 * The collection of all images, chapters, sections, xhtml files, stylesheets, etc that make up the book.
 	 * 
-	 * @return
+	 * @return The collection of all images, chapters, sections, xhtml files, stylesheets, etc that make up the book.
 	 */
 	public Resources getResources() {
 		return resources;
@@ -384,7 +384,7 @@ public class Book implements Serializable {
 	/**
 	 * The sections of the book that should be shown if a user reads the book from start to finish.
 	 * 
-	 * @return
+	 * @return The Spine
 	 */
 	public Spine getSpine() {
 		return spine;
@@ -399,7 +399,7 @@ public class Book implements Serializable {
 	/**
 	 * The Table of Contents of the book.
 	 * 
-	 * @return
+	 * @return The Table of Contents of the book.
 	 */
 	public TableOfContents getTableOfContents() {
 		return tableOfContents;
@@ -411,10 +411,10 @@ public class Book implements Serializable {
 	}
 	
 	/**
-	 * The book's cover page.
+	 * The book's cover page as a Resource.
 	 * An XHTML document containing a link to the cover image.
 	 * 
-	 * @return
+	 * @return The book's cover page as a Resource
 	 */
 	public Resource getCoverPage() {
 		Resource coverPage = guide.getCoverPage();
@@ -438,7 +438,7 @@ public class Book implements Serializable {
 	/**
 	 * Gets the first non-blank title from the book's metadata.
 	 * 
-	 * @return
+	 * @return the first non-blank title from the book's metadata.
 	 */
 	public String getTitle() {
 		return getMetadata().getFirstTitle();
@@ -448,7 +448,7 @@ public class Book implements Serializable {
 	/**
 	 * The book's cover image.
 	 * 
-	 * @return
+	 * @return The book's cover image.
 	 */
 	public Resource getCoverImage() {
 		return coverImage;
@@ -467,7 +467,7 @@ public class Book implements Serializable {
 	/**
 	 * The guide; contains references to special sections of the book like colophon, glossary, etc.
 	 * 
-	 * @return
+	 * @return The guide; contains references to special sections of the book like colophon, glossary, etc.
 	 */
 	public Guide getGuide() {
 		return guide;
@@ -483,9 +483,8 @@ public class Book implements Serializable {
 	 * <li>The resources of the Table of Contents that are not already in the result</li>
 	 * <li>The resources of the Guide that are not already in the result</li>
 	 * </ul>
-	 * To get all html files that make up the epub file use 
-	 * @see getResources().getAll()
-	 * @return
+	 * To get all html files that make up the epub file use {@link #getResources()}
+	 * @return All Resources of the Book that can be reached via the Spine, the TableOfContents or the Guide.
 	 */
 	public List<Resource> getContents() {
 		Map<String, Resource> result = new LinkedHashMap<String, Resource>();

@@ -63,7 +63,7 @@ public class Spine implements Serializable {
 	 * Null if not found.
 	 * 
 	 * @param index
-	 * @return
+	 * @return the resource at the given index.
 	 */
 	public Resource getResource(int index) {
 		if (index < 0 || index >= spineReferences.size()) {
@@ -78,7 +78,7 @@ public class Spine implements Serializable {
 	 * Null if not found.
 	 * 
 	 * @param resourceId
-	 * @return
+	 * @return the first resource that has the given resourceId.
 	 */
 	public int findFirstResourceById(String resourceId) {
 		if (StringUtil.isBlank(resourceId)) {
@@ -98,7 +98,7 @@ public class Spine implements Serializable {
 	 * Adds the given spineReference to the spine references and returns it.
 	 * 
 	 * @param spineReference
-	 * @return
+	 * @return the given spineReference
 	 */
 	public SpineReference addSpineReference(SpineReference spineReference) {
 		if (spineReferences == null) {
@@ -111,8 +111,7 @@ public class Spine implements Serializable {
 	/**
 	 * Adds the given resource to the spine references and returns it.
 	 * 
-	 * @param spineReference
-	 * @return
+	 * @return the given spineReference
 	 */
 	public SpineReference addResource(Resource resource) {
 		return addSpineReference(new SpineReference(resource));
@@ -121,7 +120,7 @@ public class Spine implements Serializable {
 	/**
 	 * The number of elements in the spine.
 	 * 
-	 * @return
+	 * @return The number of elements in the spine.
 	 */
 	public int size() {
 		return spineReferences.size();
@@ -142,7 +141,7 @@ public class Spine implements Serializable {
 	 * The resource containing the XML for the tableOfContents.
 	 * When saving an epub file this resource needs to be in this place.
 	 * 
-	 * @return
+	 * @return The resource containing the XML for the tableOfContents.
 	 */
 	public Resource getTocResource() {
 		return tocResource;
@@ -182,6 +181,10 @@ public class Spine implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Whether the spine has any references
+	 * @return Whether the spine has any references
+	 */
 	public boolean isEmpty() {
 		return spineReferences.isEmpty();
 	}

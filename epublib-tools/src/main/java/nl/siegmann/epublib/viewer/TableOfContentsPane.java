@@ -46,7 +46,6 @@ public class TableOfContentsPane extends JPanel implements NavigationEventListen
 	 * Also sets up a selectionListener that updates the SectionWalker when an item in the tree is selected.
 	 * 
 	 * @param navigator
-	 * @return
 	 */
 	public TableOfContentsPane(Navigator navigator) {
 		super(new GridLayout(1, 0));

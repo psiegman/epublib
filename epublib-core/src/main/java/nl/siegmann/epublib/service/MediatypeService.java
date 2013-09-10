@@ -63,7 +63,7 @@ public class MediatypeService {
 	 * Null of no matching extension found.
 	 * 
 	 * @param filename
-	 * @return
+	 * @return the MediaType based on the file extension.
 	 */
 	public static MediaType determineMediaType(String filename) {
 		for(int i = 0; i < mediatypes.length; i++) {

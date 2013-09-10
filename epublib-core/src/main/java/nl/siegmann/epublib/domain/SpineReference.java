@@ -41,9 +41,9 @@ public class SpineReference extends ResourceReference implements Serializable {
 	 * a popup window apart from the main window which presents the primary
 	 * content. (For an example of the types of content that may be considered
 	 * auxiliary, refer to the example below and the subsequent discussion.)</blockquote>
-	 * @see http://www.idpf.org/2007/opf/OPF_2.0_final_spec.html#TOC2.4
+	 * @see <a href="http://www.idpf.org/epub/20/spec/OPF_2.0.1_draft.htm#Section2.4">OPF Spine specification</a>
 	 * 
-	 * @return
+	 * @return whether the section is Primary or Auxiliary.
 	 */
 	public boolean isLinear() {
 		return linear;

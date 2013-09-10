@@ -52,7 +52,7 @@ public class EpubReader {
 	 * 
 	 * @param in the inputstream from which to read the epub
 	 * @param encoding the encoding to use for the html files within the epub
-	 * @return
+	 * @return the Book as read from the inputstream
 	 * @throws IOException
 	 */
 	public Book readEpub(InputStream in, String encoding) throws IOException {
@@ -65,7 +65,7 @@ public class EpubReader {
 	 * @param fileName the file to load
 	 * @param encoding the encoding for XHTML files
 	 * @param lazyLoadedTypes a list of the MediaType to load lazily
-	 * @return
+	 * @return this Book without loading all resources into memory.
 	 * @throws IOException
 	 */
 	public Book readEpubLazy( String fileName, String encoding, List<MediaType> lazyLoadedTypes ) throws IOException {
@@ -88,7 +88,7 @@ public class EpubReader {
 	 * @param fileName the file to load
 	 * @param encoding the encoding for XHTML files
 	 * 
-	 * @return
+	 * @return this Book without loading all resources into memory.
 	 * @throws IOException
 	 */
 	public Book readEpubLazy( String fileName, String encoding ) throws IOException {

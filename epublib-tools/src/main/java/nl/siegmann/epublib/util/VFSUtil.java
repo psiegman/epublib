@@ -46,7 +46,7 @@ public class VFSUtil {
 	/**
 	 * First tries to load the inputLocation via VFS; if that doesn't work it tries to load it as a local File
 	 * @param inputLocation
-	 * @return
+	 * @return the FileObject referred to by the inputLocation
 	 * @throws FileSystemException
 	 */
 	public static FileObject resolveFileObject(String inputLocation) throws FileSystemException {
@@ -69,7 +69,7 @@ public class VFSUtil {
 	 * First tries to load the inputLocation via VFS; if that doesn't work it tries to load it as a local File
 	 * 
 	 * @param inputLocation
-	 * @return
+	 * @return the InputStream referred to by the inputLocation
 	 * @throws FileSystemException
 	 */
 	public static InputStream resolveInputStream(String inputLocation) throws FileSystemException {
