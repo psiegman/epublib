@@ -164,10 +164,14 @@ public class EpubReader {
 	private Resources readLazyResources( String fileName, String defaultHtmlEncoding,
 			List<MediaType> lazyLoadedTypes) throws IOException {		
 				
-		ZipInputStream in = new ZipInputStream(new FileInputStream(fileName));
-		
+		ZipFile zipFile = new ZipFile(fileName);
+
 		Resources result = new Resources();
-		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+        while( entries.hasMoreElements() ) {
+            ZipEntry zipEntry = entries.nextElement();
+
 			if(zipEntry.isDirectory()) {
 				continue;
 			}
@@ -180,7 +184,7 @@ public class EpubReader {
 			if ( lazyLoadedTypes.contains(mediaType) ) {
 				resource = new Resource(fileName, zipEntry.getSize(), href);								
 			} else {			
-				resource = new Resource( in, fileName, (int) zipEntry.getSize(), href );
+				resource = new Resource( zipFile.getInputStream(zipEntry), fileName, (int) zipEntry.getSize(), href );
 			}
 			
 			if(resource.getMediaType() == MediatypeService.XHTML) {
