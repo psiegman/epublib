@@ -93,10 +93,10 @@ public class Resources implements Serializable {
 	}
 	
 	/**
-	 * Creates a new resource id that is guarenteed to be unique for this set of Resources
+	 * Creates a new resource id that is guaranteed to be unique for this set of Resources
 	 * 
 	 * @param resource
-	 * @return a new resource id that is guarenteed to be unique for this set of Resources
+	 * @return a new resource id that is guaranteed to be unique for this set of Resources
 	 */
 	private String createUniqueResourceId(Resource resource) {
 		int counter = lastId;
