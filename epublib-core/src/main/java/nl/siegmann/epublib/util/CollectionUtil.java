@@ -1,5 +1,6 @@
 package nl.siegmann.epublib.util;
 
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -53,5 +54,15 @@ public class CollectionUtil {
 			return null;
 		}
 		return list.get(0);
+	}
+	
+	/**
+	 * Whether the given collection is null or has no elements.
+	 * 
+	 * @param collection
+	 * @return Whether the given collection is null or has no elements.
+	 */
+	public static boolean isEmpty(Collection<?> collection) {
+		return collection == null || collection.isEmpty();
 	}
 }
