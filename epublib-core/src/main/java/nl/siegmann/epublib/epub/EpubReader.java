@@ -89,24 +89,29 @@ public class EpubReader {
 	 * @throws IOException
 	 */
 	public Book readEpubLazy(ZipFile zipFile, String encoding, List<MediaType> lazyLoadedTypes ) throws IOException {
-		Book result = new Book();
 		Resources resources = ResourcesLoader.loadResources(zipFile, encoding, lazyLoadedTypes);
-		readEpub(resources);
-		return result;
+		return readEpub(resources);
 	}
 	
     public Book readEpub(Resources resources) throws IOException{
-        Book result = new Book();
-        handleMimeType(result, resources);
-        String packageResourceHref = getPackageResourceHref(resources);
-        Resource packageResource = processPackageResource(packageResourceHref, result, resources);
-        result.setOpfResource(packageResource);
-        Resource ncxResource = processNcxResource(packageResource, result);
-        result.setNcxResource(ncxResource);
-        result = postProcessBook(result);
-        return result;
+        return readEpub(resources, new Book());
     }
-
+    
+    public Book readEpub(Resources resources, Book result) throws IOException{
+    	if (result == null) {
+    		result = new Book();
+    	}
+    	handleMimeType(result, resources);
+    	String packageResourceHref = getPackageResourceHref(resources);
+    	Resource packageResource = processPackageResource(packageResourceHref, result, resources);
+    	result.setOpfResource(packageResource);
+    	Resource ncxResource = processNcxResource(packageResource, result);
+    	result.setNcxResource(ncxResource);
+    	result = postProcessBook(result);
+    	return result;
+    }
+    
+    
 	private Book postProcessBook(Book book) {
 		if (bookProcessor != null) {
 			book = bookProcessor.processBook(book);
