@@ -37,7 +37,7 @@ public class ResourcesLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	static Resources loadResources(ZipFile zipFile, String defaultHtmlEncoding,
+	public static Resources loadResources(ZipFile zipFile, String defaultHtmlEncoding,
 			List<MediaType> lazyLoadedTypes) throws IOException {		
 				
 		Resources result = new Resources();
@@ -85,7 +85,7 @@ public class ResourcesLoader {
 	}
 
 
-	static Resources loadResources(InputStream in, String defaultHtmlEncoding) throws IOException {
+	public static Resources loadResources(InputStream in, String defaultHtmlEncoding) throws IOException {
 		return loadResources(new ZipInputStream(in), defaultHtmlEncoding);
 	}
 	
@@ -101,7 +101,7 @@ public class ResourcesLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	static Resources loadResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
+	public static Resources loadResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
 		Resources result = new Resources();
 		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
 			if(zipEntry == null || zipEntry.isDirectory()) {
@@ -128,7 +128,7 @@ public class ResourcesLoader {
 	 * @return
 	 * @throws IOException
 	 */
-    static Resources loadResources(ZipFile zipFile, String defaultHtmlEncoding) throws IOException {
+    public static Resources loadResources(ZipFile zipFile, String defaultHtmlEncoding) throws IOException {
     	return loadResources(zipFile, defaultHtmlEncoding, Collections.<MediaType>emptyList());
     }
 
