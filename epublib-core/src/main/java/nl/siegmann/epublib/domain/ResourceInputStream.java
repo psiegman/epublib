@@ -14,24 +14,24 @@ import java.util.zip.ZipFile;
  */
 public class ResourceInputStream extends FilterInputStream {
 
-	private ZipFile zipResource;
+	private final ZipFile zipFile;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param in
 	 *            The InputStream object.
-	 * @param f
+	 * @param zipFile
 	 *            The ZipFile object.
 	 */
-	public ResourceInputStream(InputStream in, ZipFile f) {
+	public ResourceInputStream(InputStream in, ZipFile zipFile) {
 		super(in);
-		zipResource = f;
+		this.zipFile = zipFile;
 	}
 	
 	@Override
 	public void close() throws IOException {
 		super.close();
-		zipResource.close();
+		zipFile.close();
 	}
 }
