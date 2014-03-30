@@ -1,19 +1,17 @@
 package nl.siegmann.epublib.epub;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.util.StringUtil;
-
 import org.xmlpull.v1.XmlSerializer;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 
@@ -75,7 +73,18 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 			serializer.endTag(NAMESPACE_DUBLIN_CORE, "language");
 		}
 
-		// write other properties
+
+        // write meta attributes
+        if(book.getMetadata().getMetaAttributes() != null) {
+            for(Map.Entry<String, String> mapEntry: book.getMetadata().getMetaAttributes().entrySet()) {
+                serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
+                serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.name,  mapEntry.getKey());
+                serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.content,  mapEntry.getValue());
+                serializer.endTag(NAMESPACE_OPF, OPFTags.meta);
+            }
+        }
+
+        // write other properties
 		if(book.getMetadata().getOtherProperties() != null) {
 			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
 				serializer.startTag(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
