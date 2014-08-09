@@ -1,15 +1,16 @@
 package nl.siegmann.epublib.browsersupport;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.TestCase;
-
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 
-public class NavigationHistoryTest extends TestCase {
+import org.junit.Test;
+
+public class NavigationHistoryTest {
 
 	private static final Resource mockResource = new Resource("mockResource.html");
 	
@@ -85,7 +86,8 @@ public class NavigationHistoryTest extends TestCase {
 			return mockResource;
 		}
 	}
-	
+
+	@Test
 	public void test1() {
 		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
 		NavigationHistory browserHistory = new NavigationHistory(navigator);
@@ -135,7 +137,7 @@ public class NavigationHistoryTest extends TestCase {
 		assertEquals(2, browserHistory.getCurrentSize());
 	}
 	
-	
+	@Test
 	public void test2() {
 		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
 		NavigationHistory browserHistory = new NavigationHistory(navigator);
@@ -173,6 +175,7 @@ public class NavigationHistoryTest extends TestCase {
 
 	}
 	
+	@Test
 	public void test3() {
 		MockSectionWalker navigator = new MockSectionWalker(new MockBook()); 
 		NavigationHistory browserHistory = new NavigationHistory(navigator);
