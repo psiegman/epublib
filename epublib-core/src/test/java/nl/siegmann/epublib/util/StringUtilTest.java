@@ -1,11 +1,14 @@
 package nl.siegmann.epublib.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class StringUtilTest extends TestCase {
+public class StringUtilTest  {
 
+	@Test
 	public void testDefaultIfNull() {
 		Object[] testData = new Object[] { null, "", "", "", " ", " ", "foo",
 				"foo" };
@@ -18,6 +21,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testDefaultIfNull_with_default() {
 		Object[] testData = new Object[] { null, null, null, "", null, "",
 				null, "", "", "foo", "", "foo", "", "foo", "", " ", " ", " ",
@@ -32,6 +36,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testIsEmpty() {
 		Object[] testData = new Object[] { null, true, "", true, " ", false,
 				"asdfasfd", false };
@@ -42,6 +47,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testIsBlank() {
 		Object[] testData = new Object[] { null, true, "", true, " ", true,
 				"\t\t \n\n", true, "asdfasfd", false };
@@ -52,6 +58,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testIsNotBlank() {
 		Object[] testData = new Object[] { null, !true, "", !true, " ", !true,
 				"\t\t \n\n", !true, "asdfasfd", !false };
@@ -63,6 +70,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testEquals() {
 		Object[] testData = new Object[] { null, null, true, "", "", true,
 				null, "", false, "", null, false, null, "foo", false, "foo",
@@ -78,6 +86,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testEndWithIgnoreCase() {
 		Object[] testData = new Object[] { null, null, true, "", "", true, "",
 				"foo", false, "foo", "foo", true, "foo.bar", "bar", true,
@@ -93,6 +102,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testSubstringBefore() {
 		Object[] testData = new Object[] { "", ' ', "", "", 'X', "", "fox",
 				'x', "fo", "foo.bar", 'b', "foo.", "aXbXc", 'X', "a", };
@@ -106,6 +116,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testSubstringBeforeLast() {
 		Object[] testData = new Object[] { "", ' ', "", "", 'X', "", "fox",
 				'x', "fo", "foo.bar", 'b', "foo.", "aXbXc", 'X', "aXb", };
@@ -119,6 +130,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testSubstringAfter() {
 		Object[] testData = new Object[] { "", ' ', "", "", 'X', "", "fox",
 				'f', "ox", "foo.bar", 'b', "ar", "aXbXc", 'X', "bXc", };
@@ -132,6 +144,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testSubstringAfterLast() {
 		Object[] testData = new Object[] { "", ' ', "", "", 'X', "", "fox",
 				'f', "ox", "foo.bar", 'b', "ar", "aXbXc", 'X', "c", };
@@ -145,6 +158,7 @@ public class StringUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testToString() {
 		assertEquals("[name: 'paul']", StringUtil.toString("name", "paul"));
 		assertEquals("[name: 'paul', address: 'a street']",
@@ -154,11 +168,13 @@ public class StringUtilTest extends TestCase {
 				StringUtil.toString("name", "paul", "address"));
 	}
 
+	@Test
 	public void testHashCode() {
 		assertEquals(2522795, StringUtil.hashCode("isbn", "1234"));
 		assertEquals(3499691, StringUtil.hashCode("ISBN", "1234"));
 	}
 
+	@Test
 	public void testReplacementForCollapsePathDots() throws IOException {
 		// This used to test StringUtil.collapsePathDots(String path).
 		// I have left it to confirm that the Apache commons

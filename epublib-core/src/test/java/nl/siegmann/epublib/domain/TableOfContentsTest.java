@@ -1,20 +1,26 @@
 package nl.siegmann.epublib.domain;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class TableOfContentsTest extends TestCase {
+import org.junit.Test;
+
+public class TableOfContentsTest{
 	
+	@Test
 	public void testCalculateDepth_simple1() {
 		TableOfContents tableOfContents = new TableOfContents();
 		assertEquals(0, tableOfContents.calculateDepth());
 	}
 	
+	@Test
 	public void testCalculateDepth_simple2() {
 		TableOfContents tableOfContents = new TableOfContents();
 		tableOfContents.addTOCReference(new TOCReference());
 		assertEquals(1, tableOfContents.calculateDepth());
 	}
 
+	@Test
 	public void testCalculateDepth_simple3() {
 		TableOfContents tableOfContents = new TableOfContents();
 		tableOfContents.addTOCReference(new TOCReference());
@@ -25,6 +31,7 @@ public class TableOfContentsTest extends TestCase {
 		assertEquals(2, tableOfContents.calculateDepth());
 	}
 	
+	@Test
 	public void testAddResource1() {
 		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();
@@ -35,6 +42,7 @@ public class TableOfContentsTest extends TestCase {
 		assertEquals("pear", tocReference.getTitle());
 	}
 
+	@Test
 	public void testAddResource2() {
 		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();
@@ -57,6 +65,7 @@ public class TableOfContentsTest extends TestCase {
 		assertEquals("apple", tocReference3.getTitle());
 	}
 
+	@Test
 	public void testAddResource3() {
 		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();
@@ -69,6 +78,7 @@ public class TableOfContentsTest extends TestCase {
 		assertEquals("pear", tocReference.getTitle());
 	}
 
+	@Test
 	public void testAddResourceWithIndexes() {
 		Resource resource = new Resource("foo");
 		TableOfContents toc = new TableOfContents();

@@ -1,19 +1,23 @@
 package nl.siegmann.epublib.epub;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.StringReader;
 
-import junit.framework.TestCase;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
 
 import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class PackageDocumentMetadataReaderTest extends TestCase {
+public class PackageDocumentMetadataReaderTest {
 	
+	@Test	
 	public void test1() {
 		try {
 			Document document = EpubProcessorSupport.createDocumentBuilder().parse(PackageDocumentMetadataReader.class.getResourceAsStream("/opf/test2.opf"));
@@ -25,11 +29,13 @@ public class PackageDocumentMetadataReaderTest extends TestCase {
 		}
 	}
 
+	@Test	
     public void testReadsLanguage() {
         Metadata metadata = getMetadata("/opf/test_language.opf");
         assertEquals("fi", metadata.getLanguage());
     }
 
+	@Test	
     public void testDefaultsToEnglish() {
         Metadata metadata = getMetadata("/opf/test_default_language.opf");
         assertEquals("en", metadata.getLanguage());
@@ -48,6 +54,7 @@ public class PackageDocumentMetadataReaderTest extends TestCase {
         }
     }
     
+	@Test	
     public void test2() throws SAXException, IOException {
     	// given
     	String input = "<package version=\"2.0\" xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"BookId\">"

@@ -1,13 +1,16 @@
 package nl.siegmann.epublib.epub;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class PackageDocumentReaderTest extends TestCase {
+public class PackageDocumentReaderTest {
 	
+	@Test
 	public void testFindCoverHref_content1() {
 		EpubReader epubReader = new EpubReader();
 		Document packageDocument;

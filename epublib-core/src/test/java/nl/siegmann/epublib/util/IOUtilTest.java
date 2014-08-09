@@ -1,15 +1,19 @@
 package nl.siegmann.epublib.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class IOUtilTest extends TestCase {
+public class IOUtilTest {
 
+	@Test
 	public void testToByteArray1() {
 		byte[] testArray = new byte[Byte.MAX_VALUE - Byte.MIN_VALUE];
 		for (int i = Byte.MIN_VALUE; i < Byte.MAX_VALUE; i++) {
@@ -24,6 +28,7 @@ public class IOUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testToByteArray2() {
 		byte[] testArray = new byte[IOUtil.IO_COPY_BUFFER_SIZE + 1];
 		Random random = new Random();
@@ -37,6 +42,7 @@ public class IOUtilTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testCopyInputStream1() {
 		byte[] testArray = new byte[(IOUtil.IO_COPY_BUFFER_SIZE * 3) + 10];
 		Random random = new Random();
@@ -52,6 +58,7 @@ public class IOUtilTest extends TestCase {
 		}
 	}
 	
+	@Test
 	public void testCalcNrRead() {
 		Integer[] testData = new Integer[] {
 			// nrRead, totalNrRead, reault
