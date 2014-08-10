@@ -6,10 +6,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
+import net.sf.jazzlib.ZipEntry;
+import net.sf.jazzlib.ZipException;
+import net.sf.jazzlib.ZipFile;
+import net.sf.jazzlib.ZipInputStream;
 import nl.siegmann.epublib.domain.LazyResource;
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Resource;
@@ -18,6 +19,9 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Loads Resources from inputStreams, ZipFiles, etc
  * 
@@ -25,6 +29,9 @@ import nl.siegmann.epublib.util.ResourceUtil;
  *
  */
 public class ResourcesLoader {
+	private static final Logger LOG = LoggerFactory.getLogger(ResourcesLoader.class);
+	private static final ZipEntry ERROR_ZIP_ENTRY = new ZipEntry("<error>");
+	
 	/**
 	 * Loads the entries of the zipFile as resources.
 	 * 
@@ -96,26 +103,43 @@ public class ResourcesLoader {
 	 * Loads the contents of all ZipEntries into memory.
 	 * Is fast, but may lead to memory problems when reading large books on devices with small amounts of memory.
 	 * 
-	 * @param in
+	 * @param zipInputStream
 	 * @param defaultHtmlEncoding
 	 * @return
 	 * @throws IOException
 	 */
-	public static Resources loadResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
+	public static Resources loadResources(ZipInputStream zipInputStream, String defaultHtmlEncoding) throws IOException {
 		Resources result = new Resources();
-		for(ZipEntry zipEntry = in.getNextEntry(); zipEntry != null; zipEntry = in.getNextEntry()) {
-			if(zipEntry == null || zipEntry.isDirectory()) {
+		ZipEntry zipEntry;
+		do {
+			// get next valid zipEntry
+			zipEntry = getNextZipEntry(zipInputStream);
+			if((zipEntry == null) || (zipEntry == ERROR_ZIP_ENTRY) || zipEntry.isDirectory()) {
 				continue;
 			}
-			Resource resource = ResourceUtil.createResource(zipEntry, in);
+			
+			// store resource
+			Resource resource = ResourceUtil.createResource(zipEntry, zipInputStream);
 			if(resource.getMediaType() == MediatypeService.XHTML) {
 				resource.setInputEncoding(defaultHtmlEncoding);
 			}
 			result.add(resource);
-		}
+		} while(zipEntry != null);
+
 		return result;
 	}
 
+	
+	private static ZipEntry getNextZipEntry(ZipInputStream zipInputStream) throws IOException {
+		ZipEntry result = ERROR_ZIP_ENTRY;
+		try {
+			result = zipInputStream.getNextEntry();
+		} catch(ZipException e) {
+			LOG.error(e.getMessage());
+			zipInputStream.closeEntry();
+		}
+		return result;
+	}
 
 	/**
 	 * Loads all entries from the ZipInputStream as Resources.

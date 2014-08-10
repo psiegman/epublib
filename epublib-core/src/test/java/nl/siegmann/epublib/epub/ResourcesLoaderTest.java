@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
+import net.sf.jazzlib.ZipFile;
+import net.sf.jazzlib.ZipInputStream;
 import nl.siegmann.epublib.domain.LazyResource;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
