@@ -689,7 +689,7 @@ public class XmlStreamReader extends Reader {
                 is.reset();
                 BufferedReader bReader = new BufferedReader(new StringReader(
                         xmlProlog.substring(0, firstGT + 1)));
-                StringBuffer prolog = new StringBuffer();
+                StringBuilder prolog = new StringBuilder();
                 String line = bReader.readLine();
                 while (line != null) {
                     prolog.append(line);
