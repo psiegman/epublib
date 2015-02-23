@@ -124,7 +124,7 @@ public class NCXDocument {
 		} else {
 			tocResourceRoot = tocResourceRoot + "/";
 		}
-		String reference = tocResourceRoot + readNavReference(navpointElement);
+		String reference = StringUtil.collapsePathDots(tocResourceRoot + readNavReference(navpointElement));
 		String href = StringUtil.substringBefore(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		String fragmentId = StringUtil.substringAfter(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource resource = book.getResources().getByHref(href);
