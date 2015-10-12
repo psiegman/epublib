@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 public class PackageDocumentReader extends PackageDocumentBase {
 	
 	private static final Logger log = LoggerFactory.getLogger(PackageDocumentReader.class);
-	private static final String[] POSSIBLE_NCX_ITEM_IDS = new String[] {"toc", "ncx"};
+	private static final String[] POSSIBLE_NCX_ITEM_IDS = new String[] {"toc", "ncx", "ncxtoc"};
 	
 	
 	public static void read(Resource packageResource, EpubReader epubReader, Book book, Resources resources) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {
@@ -288,19 +288,21 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			return tocResource;
 		}
 		
-		for (int i = 0; i < POSSIBLE_NCX_ITEM_IDS.length; i++) {
-			tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i]);
-			if (tocResource != null) {
-				return tocResource;
-			}
-			tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i].toUpperCase());
-			if (tocResource != null) {
-				return tocResource;
-			}
-		}
-		
 		// get the first resource with the NCX mediatype
 		tocResource = resources.findFirstResourceByMediaType(MediatypeService.NCX);
+
+		if (tocResource == null) {
+			for (int i = 0; i < POSSIBLE_NCX_ITEM_IDS.length; i++) {
+				tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i]);
+				if (tocResource != null) {
+					break;
+				}
+				tocResource = resources.getByIdOrHref(POSSIBLE_NCX_ITEM_IDS[i].toUpperCase());
+				if (tocResource != null) {
+					break;
+				}
+			}
+		}
 
 		if (tocResource == null) {
 			log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + "', " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
