@@ -9,14 +9,14 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlSerializer;
+
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlSerializer;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -164,7 +164,7 @@ public class EpubWriter {
 	}
 
 	String getNcxMediaType() {
-		return "application/x-dtbncx+xml";
+		return MediatypeService.NCX.getName();
 	}
 
 	public BookProcessor getBookProcessor() {
