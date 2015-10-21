@@ -1,4 +1,6 @@
-scalaVersion := "2.10.1"
+autoScalaLibrary := false
+
+crossPaths := false
 
 name := "epublib-core"
 
@@ -7,6 +9,8 @@ organization := "nl.siegmann.epublib"
 version := "3.1"
 
 publishMavenStyle := true
+
+javacOptions in doc += "-Xdoclint:none"
 
 libraryDependencies +=  "net.sf.kxml" % "kxml2" % "2.3.0" 
 
