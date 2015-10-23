@@ -59,7 +59,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		book.setResources(resources);
 		readCover(packageDocument, book);
 		book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
-		book.setSpine(readSpine(packageDocument, epubReader, book.getResources(), idMapping));
+		book.setSpine(readSpine(packageDocument, book.getResources(), idMapping));
 		
 		// if we did not find a cover page then we make the first page of the book the cover page
 		if (book.getCoverPage() == null && book.getSpine().size() > 0) {
@@ -205,7 +205,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesById
 	 * @return the document's spine, containing all sections in reading order.
 	 */
-	private static Spine readSpine(Document packageDocument, EpubReader epubReader, Resources resources, Map<String, String> idMapping) {
+	private static Spine readSpine(Document packageDocument, Resources resources, Map<String, String> idMapping) {
 		
 		Element spineElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.spine);
 		if (spineElement == null) {
@@ -213,7 +213,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			return generateSpineFromResources(resources);
 		}
 		Spine result = new Spine();
-		result.setTocResource(findTableOfContentsResource(spineElement, resources));
+		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
+		result.setTocResource(findTableOfContentsResource(tocResourceId, resources));
 		NodeList spineNodes = packageDocument.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.itemref);
 		List<SpineReference> spineReferences = new ArrayList<SpineReference>(spineNodes.getLength());
 		for(int i = 0; i < spineNodes.getLength(); i++) {
@@ -277,8 +278,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param resourcesById
 	 * @return the Resource containing the table of contents
 	 */
-	private static Resource findTableOfContentsResource(Element spineElement, Resources resources) {
-		String tocResourceId = DOMUtil.getAttribute(spineElement, NAMESPACE_OPF, OPFAttributes.toc);
+	static Resource findTableOfContentsResource(String tocResourceId, Resources resources) {
 		Resource tocResource = null;
 		if (StringUtil.isNotBlank(tocResourceId)) {
 			tocResource = resources.getByIdOrHref(tocResourceId);
