@@ -177,9 +177,9 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * 
 	 * @param packageHref
 	 * @param resourcesByHref
-	 * @return The stipped package href
+	 * @return The stripped package href
 	 */
-	private static Resources fixHrefs(String packageHref,
+	static Resources fixHrefs(String packageHref,
 			Resources resourcesByHref) {
 		int lastSlashPos = packageHref.lastIndexOf('/');
 		if(lastSlashPos < 0) {
@@ -188,7 +188,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 		Resources result = new Resources();
 		for(Resource resource: resourcesByHref.getAll()) {
 			if(StringUtil.isNotBlank(resource.getHref())
-					|| resource.getHref().length() > lastSlashPos) {
+					&& resource.getHref().length() > lastSlashPos) {
 				resource.setHref(resource.getHref().substring(lastSlashPos + 1));
 			}
 			result.add(resource);
