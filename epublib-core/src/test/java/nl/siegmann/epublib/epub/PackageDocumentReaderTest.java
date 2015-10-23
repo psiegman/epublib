@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
+import nl.siegmann.epublib.service.MediatypeService;
 
 public class PackageDocumentReaderTest {
 	
@@ -28,6 +29,91 @@ public class PackageDocumentReaderTest {
 		assertEquals("cover.html", coverHrefs.iterator().next());
 	}
 	
+	@Test
+	public void testFindTableOfContentsResource_simple_correct_toc_id() {
+		// given
+		String tocResourceId = "foo";
+		Resources resources = mock(Resources.class);
+		Resource resource = mock(Resource.class);
+		when(resources.getByIdOrHref(tocResourceId)).thenReturn(resource);
+		
+		// when
+		Resource actualResult = PackageDocumentReader.findTableOfContentsResource("foo", resources);
+		
+		// then
+		Assert.assertEquals(resource, actualResult);
+		Mockito.verify(resources).getByIdOrHref(tocResourceId);
+		Mockito.verifyNoMoreInteractions(resources);
+	}
+	
+	@Test
+	public void testFindTableOfContentsResource_NCX_media_resource() {
+		// given
+		String tocResourceId = "foo";
+		Resources resources = mock(Resources.class);
+		Resource resource = mock(Resource.class);
+		when(resources.getByIdOrHref(tocResourceId)).thenReturn(null);
+		when(resources.findFirstResourceByMediaType(MediatypeService.NCX)).thenReturn(resource);
+
+		// when
+		Resource actualResult = PackageDocumentReader.findTableOfContentsResource("foo", resources);
+		
+		// then
+		Assert.assertEquals(resource, actualResult);
+		Mockito.verify(resources).getByIdOrHref(tocResourceId);
+		Mockito.verify(resources).findFirstResourceByMediaType(MediatypeService.NCX);
+		Mockito.verifyNoMoreInteractions(resources);
+	}
+
+	@Test
+	public void testFindTableOfContentsResource_by_possible_id() {
+		// given
+		String tocResourceId = "foo";
+		Resources resources = mock(Resources.class);
+		Resource resource = mock(Resource.class);
+		when(resources.getByIdOrHref(tocResourceId)).thenReturn(null);
+		when(resources.findFirstResourceByMediaType(MediatypeService.NCX)).thenReturn(null);
+		when(resources.getByIdOrHref("NCX")).thenReturn(resource);
+
+		// when
+		Resource actualResult = PackageDocumentReader.findTableOfContentsResource("foo", resources);
+		
+		// then
+		Assert.assertEquals(resource, actualResult);
+		Mockito.verify(resources).getByIdOrHref(tocResourceId);
+		Mockito.verify(resources).getByIdOrHref("toc");
+		Mockito.verify(resources).getByIdOrHref("TOC");
+		Mockito.verify(resources).getByIdOrHref("ncx");
+		Mockito.verify(resources).getByIdOrHref("NCX");
+		Mockito.verify(resources).findFirstResourceByMediaType(MediatypeService.NCX);
+		Mockito.verifyNoMoreInteractions(resources);
+	}
+
+	@Test
+	public void testFindTableOfContentsResource_nothing_found() {
+		// given
+		String tocResourceId = "foo";
+		Resources resources = mock(Resources.class);
+		Resource resource = mock(Resource.class);
+		when(resources.getByIdOrHref(Mockito.anyString())).thenReturn(null);
+		when(resources.findFirstResourceByMediaType(MediatypeService.NCX)).thenReturn(null);
+
+		// when
+		Resource actualResult = PackageDocumentReader.findTableOfContentsResource("foo", resources);
+		
+		// then
+		Assert.assertNull(actualResult);
+		Mockito.verify(resources).getByIdOrHref(tocResourceId);
+		Mockito.verify(resources).getByIdOrHref("toc");
+		Mockito.verify(resources).getByIdOrHref("TOC");
+		Mockito.verify(resources).getByIdOrHref("ncx");
+		Mockito.verify(resources).getByIdOrHref("NCX");
+		Mockito.verify(resources).getByIdOrHref("ncxtoc");
+		Mockito.verify(resources).getByIdOrHref("NCXTOC");
+		Mockito.verify(resources).findFirstResourceByMediaType(MediatypeService.NCX);
+		Mockito.verifyNoMoreInteractions(resources);
+	}
+
 	@Test
 	public void testFixHrefs_simple_correct() {
 		// given
