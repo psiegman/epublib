@@ -116,7 +116,7 @@ public class NCXDocument {
 		return result;
 	}
 
-	private static TOCReference readTOCReference(Element navpointElement, Book book) {
+	static TOCReference readTOCReference(Element navpointElement, Book book) {
 		String label = readNavLabel(navpointElement);
 		String tocResourceRoot = StringUtil.substringBeforeLast(book.getSpine().getTocResource().getHref(), '/');
 		if (tocResourceRoot.length() == book.getSpine().getTocResource().getHref().length()) {
@@ -132,8 +132,8 @@ public class NCXDocument {
 			log.error("Resource with href " + href + " in NCX document not found");
 		}
 		TOCReference result = new TOCReference(label, resource, fragmentId);
-		readTOCReferences(navpointElement.getChildNodes(), book);
-		result.setChildren(readTOCReferences(navpointElement.getChildNodes(), book));
+		List<TOCReference> childTOCReferences = readTOCReferences(navpointElement.getChildNodes(), book);
+		result.setChildren(childTOCReferences);
 		return result;
 	}
 	
