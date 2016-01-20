@@ -66,11 +66,10 @@ public class MediatypeService {
 	 * @return the MediaType based on the file extension.
 	 */
 	public static MediaType determineMediaType(String filename) {
-		for(int i = 0; i < mediatypes.length; i++) {
-			MediaType mediatype = mediatypes[i];
-			for(String extension: mediatype.getExtensions()) {
+		for (MediaType mediaType: mediaTypesByName.values()) {
+			for(String extension: mediaType.getExtensions()) {
 				if(StringUtil.endsWithIgnoreCase(filename, extension)) {
-					return mediatype;
+					return mediaType;
 				}
 			}
 		}
