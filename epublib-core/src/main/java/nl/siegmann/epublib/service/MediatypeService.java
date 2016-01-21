@@ -36,8 +36,10 @@ public class MediatypeService {
 	
 	// audio
 	public static final MediaType MP3 = new MediaType("audio/mpeg", ".mp3");
-	public static final MediaType MP4 = new MediaType("audio/mp4", ".mp4");
 	public static final MediaType OGG = new MediaType("audio/ogg", ".ogg");	
+
+	// video
+	public static final MediaType MP4 = new MediaType("video/mp4", ".mp4");
 
 	public static final MediaType SMIL = new MediaType("application/smil+xml", ".smil");
 	public static final MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt");
