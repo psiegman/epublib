@@ -1,15 +1,14 @@
 package nl.siegmann.epublib.domain;
 
+import nl.siegmann.epublib.service.MediatypeService;
+import nl.siegmann.epublib.util.StringUtil;
+
+import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.namespace.QName;
-
-import nl.siegmann.epublib.service.MediatypeService;
-import nl.siegmann.epublib.util.StringUtil;
 
 /**
  * A Book's collection of Metadata.
@@ -208,10 +207,11 @@ public class Metadata implements Serializable {
 		this.types = types;
 	}
 
+
 	public String getMetaAttribute(String name) {
 		return metaAttributes.get(name);
 	}
-
+    public Map<String, String> getMetaAttributes() {return this.metaAttributes;}
 	public void setMetaAttributes(Map<String, String> metaAttributes) {
 		this.metaAttributes = metaAttributes;
 	}

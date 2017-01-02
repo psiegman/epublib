@@ -1,24 +1,22 @@
 package nl.siegmann.epublib.epub;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Date;
 import nl.siegmann.epublib.domain.Identifier;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.util.StringUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Reads the package document metadata.
@@ -93,7 +91,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 	private static Map<String, String> readMetaProperties(Element metadataElement) {
 		Map<String, String> result = new HashMap<String, String>();
 		
-		NodeList metaTags = metadataElement.getElementsByTagName(OPFTags.meta);
+		NodeList metaTags = metadataElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.meta);
 		for (int i = 0; i < metaTags.getLength(); i++) {
 			Element metaElement = (Element) metaTags.item(i);
 			String name = metaElement.getAttribute(OPFAttributes.name);
