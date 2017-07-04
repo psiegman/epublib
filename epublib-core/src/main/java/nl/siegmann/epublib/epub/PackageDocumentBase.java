@@ -9,11 +9,14 @@ package nl.siegmann.epublib.epub;
  */
 public class PackageDocumentBase {
 	public static final String BOOK_ID_ID = "BookId";
+	public static final String EPUB2 = "2.0";
+	public static final String EPUB3 = "3.0";
 	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
 	public static final String NAMESPACE_DUBLIN_CORE = "http://purl.org/dc/elements/1.1/";
 	public static final String PREFIX_DUBLIN_CORE = "dc";
 	public static final String PREFIX_OPF = "opf";
 	public static final String dateFormat = "yyyy-MM-dd";
+	public static final String RENDITION_PREFIX = "rendition: http://www.idpf.org/vocab/rendition/#";
 	
 	protected interface DCTags {
 		String title = "title";
@@ -68,6 +71,8 @@ public class PackageDocumentBase {
 		String version = "version";
 		String scheme = "scheme";
 		String property = "property";
+		String prefix = "prefix";
+		String xmlns = "xmlns";
 	}
 	
 	protected interface OPFValues {
