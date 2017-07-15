@@ -16,7 +16,7 @@ public class PackageDocumentBase {
 	public static final String PREFIX_DUBLIN_CORE = "dc";
 	public static final String PREFIX_OPF = "opf";
 	public static final String dateFormat = "yyyy-MM-dd";
-	public static final String RENDITION_PREFIX = "rendition: http://www.idpf.org/vocab/rendition/#";
+	public static final String RENDITION_PREFIX = "rendition: http://www.idpf.org/vocab/rendition/# ibooks:http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/";
 	
 	protected interface DCTags {
 		String title = "title";

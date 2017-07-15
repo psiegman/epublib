@@ -39,6 +39,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 			serializer.setPrefix(PREFIX_OPF, NAMESPACE_OPF);
 			serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
 			serializer.startTag(NAMESPACE_OPF, OPFTags.packageTag);
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.xmlns, NAMESPACE_OPF);
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.version, "2.0");
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.uniqueIdentifier, BOOK_ID_ID);
 
