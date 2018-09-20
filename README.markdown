@@ -92,3 +92,22 @@ Set the cover image of an existing epub
 	    }
 	  }
 	}
+
+
+## Usage in Android
+
+Add the following lines to your `app` module's `build.gradle` file:
+
+        repositories {
+            maven {
+                url 'https://github.com/psiegman/mvn-repo/raw/master/releases'
+            }
+        }
+ 
+        dependencies {
+            implementation('nl.siegmann.epublib:epublib-core:3.1') {
+                exclude group: 'org.slf4j'
+                exclude group: 'xmlpull'
+            }
+            implementation 'org.slf4j:slf4j-android:1.7.25'
+        }
