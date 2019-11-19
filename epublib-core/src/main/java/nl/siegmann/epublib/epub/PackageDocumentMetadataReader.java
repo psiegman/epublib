@@ -70,7 +70,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 	private static Map<QName, String> readOtherProperties(Element metadataElement) {
 		Map<QName, String> result = new HashMap<QName, String>();
 		
-		NodeList metaTags = metadataElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.meta);
+		NodeList metaTags = metadataElement.getElementsByTagName(OPFTags.meta);
 		for (int i = 0; i < metaTags.getLength(); i++) {
 			Node metaNode = metaTags.item(i);
 			Node property = metaNode.getAttributes().getNamedItem(OPFAttributes.property);
