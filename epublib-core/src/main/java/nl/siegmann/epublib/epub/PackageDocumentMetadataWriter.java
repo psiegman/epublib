@@ -78,9 +78,10 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 		// write other properties
 		if(book.getMetadata().getOtherProperties() != null) {
 			for(Map.Entry<QName, String> mapEntry: book.getMetadata().getOtherProperties().entrySet()) {
-				serializer.startTag(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
+				serializer.startTag(mapEntry.getKey().getNamespaceURI(), OPFTags.meta);
+				serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.property, mapEntry.getKey().getLocalPart());
 				serializer.text(mapEntry.getValue());
-				serializer.endTag(mapEntry.getKey().getNamespaceURI(), mapEntry.getKey().getLocalPart());
+				serializer.endTag(mapEntry.getKey().getNamespaceURI(), OPFTags.meta);
 				
 			}
 		}
