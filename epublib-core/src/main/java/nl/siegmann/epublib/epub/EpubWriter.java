@@ -106,7 +106,7 @@ public class EpubWriter {
 	}
 	
 
-	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws IOException {
+	protected void writePackageDocument(Book book, ZipOutputStream resultStream) throws IOException {
 		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
 		XmlSerializer xmlSerializer = EpubProcessorSupport.createXmlSerializer(resultStream);
 		PackageDocumentWriter.write(this, xmlSerializer, book);
