@@ -5,7 +5,5 @@ script: mvn -f epublib-parent/pom.xml clean package
 dist: trusty
 
 jdk:
-  - oraclejdk7
-  - oraclejdk8
   - openjdk7
   - openjdk8
