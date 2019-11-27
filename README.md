@@ -10,6 +10,9 @@ The core runs both on android and a standard java environment. The tools run onl
 
 This means that reading/writing epub files works on Android.
 
+## Build status
+* Travis Build Status: [![Build Status](https://travis-ci.org/psiegman/epublib.svg?branch=master)](https://travis-ci.org/psiegman/epublib)
+
 ## Command line examples
 
 Set the author of an existing epub
