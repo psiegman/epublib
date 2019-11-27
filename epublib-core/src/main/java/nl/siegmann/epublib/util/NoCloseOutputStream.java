@@ -11,7 +11,8 @@ import java.io.OutputStream;
  * 
  * @author paul
  *
- */public class NoCloseOutputStream extends OutputStream {
+ */
+public class NoCloseOutputStream extends OutputStream {
 
 	private OutputStream outputStream;
 	
