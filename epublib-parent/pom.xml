@@ -9,12 +9,13 @@
 	<artifactId>epublib-parent</artifactId>
 	<name>epublib-parent</name>
 	<packaging>pom</packaging>
-	<version>3.1</version>
+	<version>4.0</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
 
 	<properties>
+        <epublib.version>4.0</epublib.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.6.1</slf4j.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
