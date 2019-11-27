@@ -1,5 +1,7 @@
 language: java
 
+script: mvn -f epublib-parent/pom.xml clean package
+
 jdk:
   - oraclejdk7
   - oraclejdk8
