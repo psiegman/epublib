@@ -15,7 +15,7 @@
 	<parent>
     	<groupId>nl.siegmann.epublib</groupId>
 		<artifactId>epublib-parent</artifactId>
-		<version>3.1</version>
+		<version>4.0</version>
 		<relativePath>../epublib-parent/pom.xml</relativePath>
   	</parent>
 

@@ -6,7 +6,7 @@ name := "epublib-core"
 
 organization := "nl.siegmann.epublib"
 
-version := "3.1"
+version := "4.0"
 
 publishMavenStyle := true
 

@@ -108,7 +108,7 @@ Add the following lines to your `app` module's `build.gradle` file:
         }
  
         dependencies {
-            implementation('nl.siegmann.epublib:epublib-core:3.1') {
+            implementation('nl.siegmann.epublib:epublib-core:4.0') {
                 exclude group: 'org.slf4j'
                 exclude group: 'xmlpull'
             }
