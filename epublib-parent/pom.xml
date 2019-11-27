@@ -165,6 +165,7 @@
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 					<!-- fix for https://bugs.openjdk.java.net/browse/JDK-8212233 -->
 					<source>8</source>
+					<doclint>none</doclint>
 				</configuration>
 				<executions>
 					<execution>
@@ -172,9 +173,6 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
-						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
