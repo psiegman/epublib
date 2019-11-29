@@ -7,3 +7,5 @@ epublib-tools/.classpath
 epublib-tools/.project
 epublib-core/.settings
 epublib-tools/.settings/
+.idea
+*.iml
