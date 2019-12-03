@@ -1,17 +1,6 @@
 package nl.siegmann.epublib.epub;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import net.sf.jazzlib.ZipException;
 import net.sf.jazzlib.ZipFile;
 import net.sf.jazzlib.ZipInputStream;
 import nl.siegmann.epublib.domain.LazyResource;
@@ -19,11 +8,16 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ResourcesLoaderTest {
 
@@ -32,45 +26,25 @@ public class ResourcesLoaderTest {
 
 	@BeforeClass
 	public static void setUpClass() throws IOException {
- 	   File testbook = File.createTempFile("testbook", ".epub"); 
- 	   OutputStream out = new FileOutputStream(testbook);
+ 	   File testBook = File.createTempFile("testBook", ".epub");
+ 	   OutputStream out = new FileOutputStream(testBook);
  	   IOUtil.copy(ResourcesLoaderTest.class.getResourceAsStream("/testbook1.epub"), out);
  	   out.close();
 
- 	   ResourcesLoaderTest.testBookFilename = testbook.getAbsolutePath();
+ 	   ResourcesLoaderTest.testBookFilename = testBook.getAbsolutePath();
 	}
 	
 	@AfterClass
 	public static void tearDownClass() {
+		//noinspection ResultOfMethodCallIgnored
 		new File(testBookFilename).delete();
 	}
 	
 	/**
-	 * Loads the Resource from an InputStream
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	@Test
-	public void testLoadResources_InputStream() throws FileNotFoundException, IOException {
-		// given
-		InputStream inputStream = new FileInputStream(new File(testBookFilename));
-		
-		// when
-		Resources resources = ResourcesLoader.loadResources(inputStream, encoding);
-		
-		// then
-		verifyResources(resources);
-	}
-	
-	/**
 	 * Loads the Resources from a ZipInputStream
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	@Test
-	public void testLoadResources_ZipInputStream() throws FileNotFoundException, IOException {
+	public void testLoadResources_ZipInputStream() throws IOException {
 		// given
 		ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(new File(testBookFilename)));
 		
@@ -82,13 +56,36 @@ public class ResourcesLoaderTest {
 	}
 
 	/**
+	 * Loads the Resources from a zero length file, using ZipInputStream<br/>
+	 * See <a href="https://github.com/psiegman/epublib/issues/122">Issue #122 Infinite loop</a>.
+	 */
+	@Test(expected = ZipException.class)
+	public void testLoadResources_ZipInputStream_WithZeroLengthFile() throws IOException {
+		// given
+		ZipInputStream zipInputStream = new ZipInputStream(this.getClass().getResourceAsStream("/zero_length_file.epub"));
+
+		// when
+		ResourcesLoader.loadResources(zipInputStream, encoding);
+	}
+
+	/**
+	 * Loads the Resources from a file that is not a valid zip, using ZipInputStream<br/>
+	 * See <a href="https://github.com/psiegman/epublib/issues/122">Issue #122 Infinite loop</a>.
+	 */
+	@Test(expected = ZipException.class)
+	public void testLoadResources_ZipInputStream_WithInvalidFile() throws IOException {
+		// given
+		ZipInputStream zipInputStream = new ZipInputStream(this.getClass().getResourceAsStream("/not_a_zip.epub"));
+
+		// when
+		ResourcesLoader.loadResources(zipInputStream, encoding);
+	}
+
+	/**
 	 * Loads the Resources from a ZipFile
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	@Test
-	public void testLoadResources_ZipFile() throws FileNotFoundException, IOException {
+	public void testLoadResources_ZipFile() throws IOException {
 		// given
 		ZipFile zipFile = new ZipFile(testBookFilename);
 		
@@ -101,12 +98,9 @@ public class ResourcesLoaderTest {
 
 	/**
 	 * Loads all Resources lazily from a ZipFile
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	@Test
-	public void testLoadResources_ZipFile_lazy_all() throws FileNotFoundException, IOException {
+	public void testLoadResources_ZipFile_lazy_all() throws IOException {
 		// given
 		ZipFile zipFile = new ZipFile(testBookFilename);
 		
@@ -121,17 +115,14 @@ public class ResourcesLoaderTest {
 
 	/**
 	 * Loads the Resources from a ZipFile, some of them lazily.
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	@Test
-	public void testLoadResources_ZipFile_partial_lazy() throws FileNotFoundException, IOException {
+	public void testLoadResources_ZipFile_partial_lazy() throws IOException {
 		// given
 		ZipFile zipFile = new ZipFile(testBookFilename);
 		
 		// when
-		Resources resources = ResourcesLoader.loadResources(zipFile, encoding, Arrays.asList(MediatypeService.CSS));
+		Resources resources = ResourcesLoader.loadResources(zipFile, encoding, Collections.singletonList(MediatypeService.CSS));
 		
 		// then
 		verifyResources(resources);
@@ -143,7 +134,7 @@ public class ResourcesLoaderTest {
 	private void verifyResources(Resources resources) throws IOException {
 		Assert.assertNotNull(resources);
 		Assert.assertEquals(12, resources.getAll().size());
-		List<String> allHrefs = new ArrayList<String>(resources.getAllHrefs());
+		List<String> allHrefs = new ArrayList<>(resources.getAllHrefs());
 		Collections.sort(allHrefs);
 		
 		Resource resource;
@@ -163,7 +154,7 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals(MediatypeService.CSS, resource.getMediaType());
 		Assert.assertEquals(65, resource.getData().length);
 		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/book1.css"));
-		Assert.assertTrue(Arrays.equals(expectedData, resource.getData()));
+		Assert.assertArrayEquals(expectedData, resource.getData());
 		
 		
 		// chapter1
@@ -173,6 +164,6 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals(MediatypeService.XHTML, resource.getMediaType());
 		Assert.assertEquals(247, resource.getData().length);
 		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/chapter1.html"));
-		Assert.assertTrue(Arrays.equals(expectedData, resource.getData()));
+		Assert.assertArrayEquals(expectedData, resource.getData());
 	}
 }
