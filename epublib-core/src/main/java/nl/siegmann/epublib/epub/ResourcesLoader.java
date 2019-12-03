@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourcesLoader {
 	private static final Logger LOG = LoggerFactory.getLogger(ResourcesLoader.class);
-	private static final ZipEntry ERROR_ZIP_ENTRY = new ZipEntry("<error>");
-	
+
 	/**
 	 * Loads the entries of the zipFile as resources.
 	 * 
@@ -91,12 +90,6 @@ public class ResourcesLoader {
 		return lazilyLoadedMediaTypes.contains(mediaType);
 	}
 
-
-	public static Resources loadResources(InputStream in, String defaultHtmlEncoding) throws IOException {
-		return loadResources(new ZipInputStream(in), defaultHtmlEncoding);
-	}
-	
-	
 	/**
 	 * Loads all entries from the ZipInputStream as Resources.
 	 * 
@@ -114,7 +107,7 @@ public class ResourcesLoader {
 		do {
 			// get next valid zipEntry
 			zipEntry = getNextZipEntry(zipInputStream);
-			if((zipEntry == null) || (zipEntry == ERROR_ZIP_ENTRY) || zipEntry.isDirectory()) {
+			if((zipEntry == null) || zipEntry.isDirectory()) {
 				continue;
 			}
 			
@@ -131,14 +124,16 @@ public class ResourcesLoader {
 
 	
 	private static ZipEntry getNextZipEntry(ZipInputStream zipInputStream) throws IOException {
-		ZipEntry result = ERROR_ZIP_ENTRY;
 		try {
-			result = zipInputStream.getNextEntry();
+			return zipInputStream.getNextEntry();
 		} catch(ZipException e) {
-			LOG.error(e.getMessage());
-			zipInputStream.closeEntry();
+			//see <a href="https://github.com/psiegman/epublib/issues/122">Issue #122 Infinite loop</a>.
+			//when reading a file that is not a real zip archive or a zero length file, zipInputStream.getNextEntry()
+			//throws an exception and does not advance, so loadResources enters an infinite loop
+			LOG.error("Invalid or damaged zip file.", e);
+			try { zipInputStream.closeEntry(); } catch (Exception ignored) {}
+			throw e;
 		}
-		return result;
 	}
 
 	/**
@@ -147,7 +142,7 @@ public class ResourcesLoader {
 	 * Loads the contents of all ZipEntries into memory.
 	 * Is fast, but may lead to memory problems when reading large books on devices with small amounts of memory.
 	 * 
-	 * @param in
+	 * @param zipFile
 	 * @param defaultHtmlEncoding
 	 * @return
 	 * @throws IOException
