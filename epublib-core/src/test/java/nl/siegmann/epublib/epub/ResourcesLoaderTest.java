@@ -134,21 +134,21 @@ public class ResourcesLoaderTest {
 	private void verifyResources(Resources resources) throws IOException {
 		Assert.assertNotNull(resources);
 		Assert.assertEquals(12, resources.getAll().size());
-		List<String> allHRefs = new ArrayList<>(resources.getAllHrefs());
-		Collections.sort(allHRefs);
+		List<String> allHrefs = new ArrayList<>(resources.getAllHrefs());
+		Collections.sort(allHrefs);
 		
 		Resource resource;
 		byte[] expectedData;
 		
 		// container
-		resource = resources.getByHref(allHRefs.get(0));
+		resource = resources.getByHref(allHrefs.get(0));
 		Assert.assertEquals("container", resource.getId());
 		Assert.assertEquals("META-INF/container.xml", resource.getHref());
 		Assert.assertNull(resource.getMediaType());
 		Assert.assertEquals(230, resource.getData().length);
 		
 		// book1.css
-		resource = resources.getByHref(allHRefs.get(1));
+		resource = resources.getByHref(allHrefs.get(1));
 		Assert.assertEquals("book1", resource.getId());
 		Assert.assertEquals("OEBPS/book1.css", resource.getHref());
 		Assert.assertEquals(MediatypeService.CSS, resource.getMediaType());
@@ -158,7 +158,7 @@ public class ResourcesLoaderTest {
 		
 		
 		// chapter1
-		resource = resources.getByHref(allHRefs.get(2));
+		resource = resources.getByHref(allHrefs.get(2));
 		Assert.assertEquals("chapter1", resource.getId());
 		Assert.assertEquals("OEBPS/chapter1.html", resource.getHref());
 		Assert.assertEquals(MediatypeService.XHTML, resource.getMediaType());
