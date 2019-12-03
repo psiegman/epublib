@@ -69,7 +69,7 @@ public class ResourcesLoaderTest {
 	}
 
 	/**
-	 * Loads the Resources from a zero length file, using ZipInputStream<br/>
+	 * Loads the Resources from a file that is not a valid zip, using ZipInputStream<br/>
 	 * See <a href="https://github.com/psiegman/epublib/issues/122">Issue #122 Infinite loop</a>.
 	 */
 	@Test(expected = ZipException.class)
