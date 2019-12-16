@@ -30,15 +30,25 @@ public class EpubWriter {
 	
 	// package
 	static final String EMPTY_NAMESPACE_PREFIX = "";
-	
-	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
+
+	private final EpubWriterConfiguration configuration;
+
+	private BookProcessor bookProcessor;
 
 	public EpubWriter() {
-		this(BookProcessor.IDENTITY_BOOKPROCESSOR);
+		this(new EpubWriterConfiguration(), BookProcessor.IDENTITY_BOOKPROCESSOR);
 	}
-	
-	
+
+	public EpubWriter(EpubWriterConfiguration configuration) {
+		this(configuration, BookProcessor.IDENTITY_BOOKPROCESSOR);
+	}
+
 	public EpubWriter(BookProcessor bookProcessor) {
+		this(new EpubWriterConfiguration(), bookProcessor);
+	}
+
+	public EpubWriter(EpubWriterConfiguration configuration, BookProcessor bookProcessor) {
+		this.configuration = configuration;
 		this.bookProcessor = bookProcessor;
 	}
 
@@ -96,7 +106,7 @@ public class EpubWriter {
 			return;
 		}
 		try {
-			resultStream.putNextEntry(new ZipEntry("OEBPS/" + resource.getHref()));
+			resultStream.putNextEntry(new ZipEntry(configuration.getContentDirectoryName() + "/" + resource.getHref()));
 			InputStream inputStream = resource.getInputStream();
 			IOUtil.copy(inputStream, resultStream);
 			inputStream.close();
@@ -107,7 +117,7 @@ public class EpubWriter {
 	
 
 	private void writePackageDocument(Book book, ZipOutputStream resultStream) throws IOException {
-		resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
+		resultStream.putNextEntry(new ZipEntry(configuration.getContentDirectoryName() + "/content.opf"));
 		XmlSerializer xmlSerializer = EpubProcessorSupport.createXmlSerializer(resultStream);
 		PackageDocumentWriter.write(this, xmlSerializer, book);
 		xmlSerializer.flush();
@@ -127,7 +137,7 @@ public class EpubWriter {
 		out.write("<?xml version=\"1.0\"?>\n");
 		out.write("<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n");
 		out.write("\t<rootfiles>\n");
-		out.write("\t\t<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n");
+		out.write("\t\t<rootfile full-path=\""+ configuration.getContentDirectoryName() + "/content.opf\" media-type=\"application/oebps-package+xml\"/>\n");
 		out.write("\t</rootfiles>\n");
 		out.write("</container>");
 		out.flush();
