@@ -61,7 +61,7 @@ public class EpubReader {
 	/**
 	 * Reads this EPUB without loading any resources into memory.
 	 * 
-	 * @param fileName the file to load
+	 * @param zipFile the file to load
 	 * @param encoding the encoding for XHTML files
 	 * 
 	 * @return this Book without loading all resources into memory.
@@ -82,7 +82,7 @@ public class EpubReader {
     /**
 	 * Reads this EPUB without loading all resources into memory.
 	 * 
-	 * @param fileName the file to load
+	 * @param zipFile the file to load
 	 * @param encoding the encoding for XHTML files
 	 * @param lazyLoadedTypes a list of the MediaType to load lazily
 	 * @return this Book without loading all resources into memory.

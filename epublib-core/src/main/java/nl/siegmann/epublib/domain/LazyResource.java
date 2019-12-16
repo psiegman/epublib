@@ -35,7 +35,7 @@ public class LazyResource extends Resource {
 	 * 
 	 * The data will be loaded on the first call to getData()
 	 * 
-	 * @param fileName the fileName for the epub we're created from.
+	 * @param filename the file name for the epub we're created from.
 	 * @param size the size of this resource.
 	 * @param href The resource's href within the epub.
 	 */
