@@ -84,8 +84,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * @param packageDocument
 	 * @param packageHref
 	 * @param epubReader
-	 * @param book
-	 * @param resourcesByHref
 	 * @return a Map with resources, with their id's as key.
 	 */
 	private static Resources readManifest(Document packageDocument, String packageHref,
@@ -117,6 +115,8 @@ public class PackageDocumentReader extends PackageDocumentBase {
 			if(mediaType != null) {
 				resource.setMediaType(mediaType);
 			}
+			String properties = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.properties);
+			resource.setProperties(properties);
 			result.add(resource);
 			idMapping.put(id, resource.getId());
 		}
@@ -200,9 +200,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * Reads the document's spine, containing all sections in reading order.
 	 * 
 	 * @param packageDocument
-	 * @param epubReader
-	 * @param book
-	 * @param resourcesById
 	 * @return the document's spine, containing all sections in reading order.
 	 */
 	private static Spine readSpine(Document packageDocument, Resources resources, Map<String, String> idMapping) {
@@ -273,9 +270,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * 
 	 * Here we try several ways of finding this table of contents resource.
 	 * We try the given attribute value, some often-used ones and finally look through all resources for the first resource with the table of contents mimetype.
-	 * 
-	 * @param spineElement
-	 * @param resourcesById
+	 *
 	 * @return the Resource containing the table of contents
 	 */
 	static Resource findTableOfContentsResource(String tocResourceId, Resources resources) {
@@ -353,7 +348,6 @@ public class PackageDocumentReader extends PackageDocumentBase {
 	 * Keeps the cover resource in the resources map
 	 * @param packageDocument
 	 * @param book
-	 * @param resources
 	 */
 	private static void readCover(Document packageDocument, Book book) {
 		

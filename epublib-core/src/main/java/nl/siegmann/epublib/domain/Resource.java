@@ -30,6 +30,7 @@ public class Resource implements Serializable {
 	private String href;
 	protected String originalHref;
 	private MediaType mediaType;
+	private String properties;
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
 	
@@ -299,6 +300,14 @@ public class Resource implements Serializable {
 		this.mediaType = mediaType;
 	}
 
+	public String getProperties() {
+		return properties;
+	}
+
+	public void setProperties(String properties) {
+		this.properties = properties;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -308,6 +317,7 @@ public class Resource implements Serializable {
 				"title", title,
 				"encoding", inputEncoding,
 				"mediaType", mediaType,
+				"properties", properties,
 				"href", href,
 				"size", (data == null ? 0 : data.length));
 	}

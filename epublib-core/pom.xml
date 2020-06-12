@@ -15,7 +15,7 @@
 	<parent>
     	<groupId>nl.siegmann.epublib</groupId>
 		<artifactId>epublib-parent</artifactId>
-		<version>4.0</version>
+		<version>4.1</version>
 		<relativePath>../epublib-parent/pom.xml</relativePath>
   	</parent>
 
@@ -78,15 +78,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>${maven-site-plugin.version}</version>
-			</plugin>
-		</plugins>
-	</reporting>
 	<repositories>
 		<repository>
 			<id>maven</id>
