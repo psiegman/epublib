@@ -30,9 +30,6 @@ class DOMUtil {
 	 * @return
 	 */
 	public static String getAttribute(Element element, String namespace, String attribute) {
-		if (element == null) {
-			return "";
-		}
 		String result = element.getAttributeNS(namespace, attribute);
 		if (StringUtil.isEmpty(result)) {
 			result = element.getAttribute(attribute);
