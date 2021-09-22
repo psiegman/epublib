@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>nl.siegmann.epublib</groupId>
+	<artifactId>epublib-core</artifactId>
+	<name>epublib-core</name>
+	<description>A java library for reading/writing/manipulating epub files</description>
+	<url>http://www.siegmann.nl/epublib</url>
+	<inceptionYear>2009</inceptionYear>
+	
+	<parent>
+    	<groupId>nl.siegmann.epublib</groupId>
+		<artifactId>epublib-parent</artifactId>
+		<version>4.0</version>
+		<relativePath>../epublib-parent/pom.xml</relativePath>
+  	</parent>
+
+	<dependencies>
+		<dependency>
+		    <groupId>net.sf.kxml</groupId>
+		    <artifactId>kxml2</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>xmlpull</groupId>
+		    <artifactId>xmlpull</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven-shade-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<shadedClassifierName>complete</shadedClassifierName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${source.version}</source>
+					<target>${target.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>${maven-site-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	<repositories>
+		<repository>
+			<id>maven</id>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/</url>
+		</repository>
+		<repository>
+			<id>net.java.repository</id>
+			<name>Java.net repository</name>
+			<url>http://download.java.net/maven/2/</url>
+		</repository>
+	</repositories>
+</project>

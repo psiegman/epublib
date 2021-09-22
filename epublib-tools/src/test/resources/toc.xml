@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:generator" content="EPUBLib version 0.1"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle>
+    <text>Epublib test book 1</text>
+  </docTitle>
+  <docAuthor>
+    <text>Tester, Joe</text>
+  </docAuthor>
+  <navMap>
+    <navPoint id="navPoint-1" playOrder="1" class="chapter">
+      <navLabel>
+        <text>Introduction</text>
+      </navLabel>
+      <content src="chapter1.html"/>
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2" class="chapter">
+      <navLabel>
+        <text>Second Chapter</text>
+      </navLabel>
+      <content src="chapter2.html"/>
+      <navPoint id="navPoint-3" playOrder="3" class="chapter">
+        <navLabel>
+          <text>Chapter 2, section 1</text>
+        </navLabel>
+        <content src="chapter2_1.html"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint-4" playOrder="4" class="chapter">
+      <navLabel>
+        <text>Conclusion</text>
+      </navLabel>
+      <content src="chapter3.html"/>
+    </navPoint>
+  </navMap>
+</ncx>
