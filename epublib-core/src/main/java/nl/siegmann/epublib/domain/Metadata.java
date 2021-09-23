@@ -34,7 +34,7 @@ public class Metadata implements Serializable {
 	private String language = DEFAULT_LANGUAGE;
 	private Map<QName, String> otherProperties = new HashMap<QName, String>();
 	private List<String> rights = new ArrayList<String>();
-	private List<String> titles = new ArrayList<String>();
+	private List<Title> titles = new ArrayList<>();
 	private List<Identifier> identifiers = new ArrayList<Identifier>();
 	private List<String> subjects = new ArrayList<String>();
 	private String format = MediatypeService.EPUB.getName();
@@ -126,27 +126,27 @@ public class Metadata implements Serializable {
 	 * 
 	 * @return the first non-blank title of the book.
 	 */
-	public String getFirstTitle() {
+	public Title getFirstTitle() {
 		if (titles == null || titles.isEmpty()) {
-			return "";
+			return Title.EMPTY;
 		}
-		for (String title: titles) {
-			if (StringUtil.isNotBlank(title)) {
+		for (Title title: titles) {
+			if (StringUtil.isNotBlank(title.value)) {
 				return title;
 			}
 		}
-		return "";
+		return Title.EMPTY;
 	}
 	
 	
-	public String addTitle(String title) {
+	public Title addTitle(Title title) {
 		this.titles.add(title);
 		return title;
 	}
-	public void setTitles(List<String> titles) {
+	public void setTitles(List<Title> titles) {
 		this.titles = titles;
 	}
-	public List<String> getTitles() {
+	public List<Title> getTitles() {
 		return titles;
 	}
 		

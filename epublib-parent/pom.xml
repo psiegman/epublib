@@ -9,7 +9,7 @@
 	<artifactId>epublib-parent</artifactId>
 	<name>epublib-parent</name>
 	<packaging>pom</packaging>
-	<version>4.0</version>
+	<version>4.0.1-EPUB3-SNAPSHOT</version>
 	<description>A java library for reading/writing/manipulating epub files</description>
 	<url>http://www.siegmann.nl/epublib</url>
 	<inceptionYear>2009</inceptionYear>
@@ -121,9 +121,13 @@
 	</dependencyManagement>
 
 	<distributionManagement>
+		<!--<repository>
+			<id>thirdparty</id>
+			<url>https://tools.pageplace.de/nexus/content/repositories/thirdparty</url>
+		</repository>-->
 		<repository>
-			<id>github.repo</id>
-			<url>file:///D:/private/project/git-maven-repo/mvn-repo/releases</url>
+			<id>snapshot_repo</id>
+			<url>https://tools.pageplace.de/nexus/content/repositories/snapshots/</url>
 		</repository>
 	</distributionManagement>
 
@@ -151,24 +155,6 @@
 				<executions>
 					<execution>
 						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven-javadoc-plugin.version}</version>
-				<configuration>
-					<!-- fix for https://bugs.openjdk.java.net/browse/JDK-8212233 -->
-					<source>8</source>
-					<doclint>none</doclint>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
 						</goals>

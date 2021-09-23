@@ -302,10 +302,10 @@ public class Book implements Serializable {
 	private Spine spine = new Spine();
 	private TableOfContents tableOfContents = new TableOfContents();
 	private Guide guide = new Guide();
-	private Resource opfResource;
+	private OpfResource opfResource;
 	private Resource ncxResource;
 	private Resource coverImage;
-	
+
 	/**
 	 * Adds the resource to the table of contents of the book as a child section of the given parentSection
 	 * 
@@ -440,7 +440,7 @@ public class Book implements Serializable {
 	 * 
 	 * @return the first non-blank title from the book's metadata.
 	 */
-	public String getTitle() {
+	public Title getTitle() {
 		return getMetadata().getFirstTitle();
 	}
 	
@@ -511,11 +511,11 @@ public class Book implements Serializable {
 		}
 	}
 
-	public Resource getOpfResource() {
+	public OpfResource getOpfResource() {
 		return opfResource;
 	}
 	
-	public void setOpfResource(Resource opfResource) {
+	public void setOpfResource(OpfResource opfResource) {
 		this.opfResource = opfResource;
 	}
 	

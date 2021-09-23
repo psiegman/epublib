@@ -29,12 +29,12 @@ class DOMUtil {
 	 * @param attribute
 	 * @return
 	 */
-	public static String getAttribute(Element element, String namespace, String attribute) {
-		String result = element.getAttributeNS(namespace, attribute);
-		if (StringUtil.isEmpty(result)) {
-			result = element.getAttribute(attribute);
+	public static String getAttribute(Node element, String namespace, String attribute) {
+		Node node = element.getAttributes().getNamedItemNS(namespace, attribute);
+		if (node == null) {
+			node = element.getAttributes().getNamedItem(attribute);
 		}
-		return result;
+		return node != null ? node.getNodeValue() : "";
 	}
 	
 	/**

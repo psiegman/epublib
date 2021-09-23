@@ -32,14 +32,28 @@ import org.xmlpull.v1.XmlSerializer;
 public class PackageDocumentWriter extends PackageDocumentBase {
 
 	private static final Logger log = LoggerFactory.getLogger(PackageDocumentWriter.class);
+	public static final String DEFAULT_VERSION = "2.0";
 
 	public static void write(EpubWriter epubWriter, XmlSerializer serializer, Book book) throws IOException {
 		try {
 			serializer.startDocument(Constants.CHARACTER_ENCODING, false);
-			serializer.setPrefix(PREFIX_OPF, NAMESPACE_OPF);
-			serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
+			serializer.setPrefix(EpubWriter.EMPTY_NAMESPACE_PREFIX, NAMESPACE_OPF);
+//			serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
 			serializer.startTag(NAMESPACE_OPF, OPFTags.packageTag);
-			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.version, "2.0");
+			String version = DEFAULT_VERSION;
+			if(null != book.getOpfResource()){
+				version = book.getOpfResource().getVersion();
+			}
+			serializer.attribute(
+					EpubWriter.EMPTY_NAMESPACE_PREFIX,
+					OPFAttributes.version, StringUtil.isNotBlank(version) ? version : DEFAULT_VERSION
+			);
+			if(null != book.getOpfResource() && StringUtil.isNotBlank(book.getOpfResource().getPrefix())){
+				serializer.attribute(
+						EpubWriter.EMPTY_NAMESPACE_PREFIX,
+						OPFAttributes.prefix, book.getOpfResource().getPrefix()
+				);
+			}
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.uniqueIdentifier, BOOK_ID_ID);
 
 			PackageDocumentMetadataWriter.writeMetaData(book, serializer);
@@ -87,7 +101,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
 	
 	private static void writeManifest(Book book, EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
-		serializer.startTag(NAMESPACE_OPF, OPFTags.manifest);
+        serializer.startTag(NAMESPACE_OPF, OPFTags.manifest);
 
 		serializer.startTag(NAMESPACE_OPF, OPFTags.item);
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.id, epubWriter.getNcxId());
@@ -147,6 +161,15 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.id, resource.getId());
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.href, resource.getHref());
 		serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.media_type, resource.getMediaType().getName());
+		if(resource.isNav()) {
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.properties, OPFValues.nav);
+		}
+		if(resource.isContainingSvg()) {
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.properties, OPFValues.svg);
+		}
+		if(resource.isScripted()){
+			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.properties, OPFValues.scripted);
+		}
 		serializer.endTag(NAMESPACE_OPF, OPFTags.item);
 	}
 
