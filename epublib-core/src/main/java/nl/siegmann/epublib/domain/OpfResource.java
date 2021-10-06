@@ -4,6 +4,8 @@ import java.io.IOException;
 
 public class OpfResource extends Resource {
 
+    public static final String DEFAULT_VERSION = "2.0";
+
     private String version;
 
     private String prefix;

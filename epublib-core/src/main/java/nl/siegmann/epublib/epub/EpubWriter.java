@@ -9,6 +9,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import nl.siegmann.epublib.domain.OpfResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -48,7 +49,13 @@ public class EpubWriter {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
-		initTOCResource(book);
+		if(
+                null == book.getOpfResource()
+                || OpfResource.DEFAULT_VERSION.equals(book.getOpfResource().getVersion())
+                || !book.getTableOfContents().getTocReferences().isEmpty()
+        ) {
+            initTOCResource(book);
+        }
 		writeResources(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
