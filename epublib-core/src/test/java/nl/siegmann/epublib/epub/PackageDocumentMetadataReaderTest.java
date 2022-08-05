@@ -36,9 +36,9 @@ public class PackageDocumentMetadataReaderTest {
     }
 
 	@Test	
-    public void testDefaultsToEnglish() {
+    public void testDefaultsToUndefined() {
         Metadata metadata = getMetadata("/opf/test_default_language.opf");
-        assertEquals("en", metadata.getLanguage());
+        assertEquals("und", metadata.getLanguage());
     }
 
     private Metadata getMetadata(String file) {
