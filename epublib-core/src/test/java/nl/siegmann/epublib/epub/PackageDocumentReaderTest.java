@@ -148,4 +148,5 @@ public class PackageDocumentReaderTest {
 		// then
 		Assert.assertTrue(true);
 	}
+
 }

@@ -8,10 +8,7 @@ import java.util.List;
 import net.sf.jazzlib.ZipFile;
 import net.sf.jazzlib.ZipInputStream;
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.MediaType;
-import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.Resources;
+import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
@@ -103,7 +100,7 @@ public class EpubReader {
     	}
     	handleMimeType(result, resources);
     	String packageResourceHref = getPackageResourceHref(resources);
-    	Resource packageResource = processPackageResource(packageResourceHref, result, resources);
+    	OpfResource packageResource = processPackageResource(packageResourceHref, result, resources);
     	result.setOpfResource(packageResource);
     	Resource ncxResource = processNcxResource(packageResource, result);
     	result.setNcxResource(ncxResource);
@@ -123,6 +120,10 @@ public class EpubReader {
 		return NCXDocument.read(book, this);
 	}
 
+	private OpfResource processPackageResource(String packageResourceHref, Book book, Resources resources) throws IOException {
+		OpfResource packageResource = new OpfResource(
+				resources.remove(packageResourceHref)
+		);
 	private Resource processPackageResource(String packageResourceHref, Book book, Resources resources) {
 		Resource packageResource = resources.remove(packageResourceHref);
 		try {

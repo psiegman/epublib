@@ -26,7 +26,7 @@ public class ResourcesLoaderTest {
 
 	@BeforeClass
 	public static void setUpClass() throws IOException {
-	   File testBook = File.createTempFile("testBook", ".epub");
+ 	   File testBook = File.createTempFile("testBook", ".epub");
  	   OutputStream out = new FileOutputStream(testBook);
  	   IOUtil.copy(ResourcesLoaderTest.class.getResourceAsStream("/testbook1.epub"), out);
  	   out.close();
@@ -154,15 +154,9 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals(MediatypeService.CSS, resource.getMediaType());
 		Assert.assertEquals(65, resource.getData().length);
 		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/book1.css"));
-
-		//When checking out the test resources on Windows they get windows style line terminators
-		//and getResourceAsStream returns the line terminators as they are in the file;
-		//To avoid test failures, we normalize the terminators before asserting.
-
-		String expectedDataString = new String(expectedData).replaceAll("\\r\\n", "\n");
-		String actualDataString = new String(resource.getData()).replaceAll("\\r\\n", "\n");
-		Assert.assertEquals(expectedDataString, actualDataString);
-
+		Assert.assertArrayEquals(expectedData, resource.getData());
+		
+		
 		// chapter1
 		resource = resources.getByHref(allHrefs.get(2));
 		Assert.assertEquals("chapter1", resource.getId());
@@ -170,9 +164,6 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals(MediatypeService.XHTML, resource.getMediaType());
 		Assert.assertEquals(247, resource.getData().length);
 		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/chapter1.html"));
-
-		expectedDataString = new String(expectedData).replaceAll("\\r\\n", "\n");
-		actualDataString = new String(resource.getData()).replaceAll("\\r\\n", "\n");
-		Assert.assertEquals(expectedDataString, actualDataString);
+		Assert.assertArrayEquals(expectedData, resource.getData());
 	}
 }

@@ -32,7 +32,10 @@ public class Resource implements Serializable {
 	private MediaType mediaType;
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
-	
+	private boolean isNav;
+	private boolean containingSvg;
+	private boolean isScripted;
+
 	/**
 	 * Creates an empty Resource with the given href.
 	 * 
@@ -136,6 +139,30 @@ public class Resource implements Serializable {
 		this.mediaType = mediaType;
 		this.inputEncoding = inputEncoding;
 		this.data = data;
+	}
+
+	public boolean isNav() {
+		return isNav;
+	}
+
+	public void setNav(boolean nav) {
+		isNav = nav;
+	}
+
+	public boolean isContainingSvg() {
+		return containingSvg;
+	}
+
+	public void setContainingSvg(boolean containingSvg) {
+		this.containingSvg = containingSvg;
+	}
+
+	public boolean isScripted() {
+		return isScripted;
+	}
+
+	public void setScripted(boolean scripted) {
+		isScripted = scripted;
 	}
 	
 	/**

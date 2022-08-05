@@ -89,8 +89,10 @@ public class NCXDocument {
 			}
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource);
 			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
-			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
-			book.setTableOfContents(tableOfContents);
+            if (null != navMapElement) {
+                TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
+                book.setTableOfContents(tableOfContents);
+            }
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -174,11 +176,11 @@ public class NCXDocument {
 	 * @throws IllegalArgumentException 
 	 */
 	public static void write(XmlSerializer xmlSerializer, Book book) throws IllegalArgumentException, IllegalStateException, IOException {
-		write(xmlSerializer, book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+		write(xmlSerializer, book.getMetadata().getIdentifiers(), book.getTitle().getValue(), book.getMetadata().getAuthors(), book.getTableOfContents());
 	}
 	
 	public static Resource createNCXResource(Book book) throws IllegalArgumentException, IllegalStateException, IOException {
-		return createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+		return createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle().getValue(), book.getMetadata().getAuthors(), book.getTableOfContents());
 	}
 	public static Resource createNCXResource(List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -198,7 +200,7 @@ public class NCXDocument {
 		serializer.startTag(NAMESPACE_NCX, NCXTags.head);
 
 		for(Identifier identifier: identifiers) {
-			writeMetaElement(identifier.getScheme(), identifier.getValue(), serializer);
+			writeMetaElement(identifier.getScheme().getName(), identifier.getValue(), serializer);
 		}
 		
 		writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, serializer);
