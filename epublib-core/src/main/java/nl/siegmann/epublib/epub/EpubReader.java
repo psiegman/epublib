@@ -124,8 +124,6 @@ public class EpubReader {
 		OpfResource packageResource = new OpfResource(
 				resources.remove(packageResourceHref)
 		);
-	private Resource processPackageResource(String packageResourceHref, Book book, Resources resources) {
-		Resource packageResource = resources.remove(packageResourceHref);
 		try {
 			PackageDocumentReader.read(packageResource, this, book, resources);
 		} catch (Exception e) {
