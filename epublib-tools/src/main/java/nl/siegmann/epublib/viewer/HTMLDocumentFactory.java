@@ -21,8 +21,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Creates swing HTML documents from resources.
@@ -34,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HTMLDocumentFactory implements NavigationEventListener {
 	
-	private static final Logger log = LoggerFactory.getLogger(HTMLDocumentFactory.class);
+	private static final Logger log = Logger.getLogger(HTMLDocumentFactory.class);
 	
 	// After opening the book we wait a while before we starting indexing the rest of the pages.
 	// This way the book opens, everything settles down, and while the user looks at the cover page
@@ -169,7 +167,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 		    parserCallback.flush();
 		    result = document;
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}
@@ -198,7 +196,7 @@ public class HTMLDocumentFactory implements NavigationEventListener {
 			try {
 				Thread.sleep(DOCUMENT_CACHE_INDEXER_WAIT_TIME);
 			} catch (InterruptedException e) {
-				log.error(e.getMessage());
+				log.severe(e.getMessage());
 			}
 			addAllDocumentsToCache(book);
 		}

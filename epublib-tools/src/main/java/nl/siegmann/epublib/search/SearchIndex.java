@@ -15,8 +15,6 @@ import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A searchindex for searching through a book.
@@ -26,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchIndex {
 
-	private static final Logger log = LoggerFactory.getLogger(SearchIndex.class);
+	private static final Logger log = Logger.getLogger(SearchIndex.class);
 	
 	public static int NBSP = 0x00A0;
 
@@ -117,7 +115,7 @@ public class SearchIndex {
 		try {
 			result = getSearchContent(resource.getReader());
 		} catch (IOException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}

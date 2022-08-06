@@ -5,8 +5,6 @@ import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,6 +16,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Reads the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -26,7 +25,7 @@ import java.util.*;
  */
 public class PackageDocumentReader extends PackageDocumentBase {
 
-    private static final Logger log = LoggerFactory.getLogger(PackageDocumentReader.class);
+    private static final Logger log = Logger.getLogger(PackageDocumentReader.class.getName());
     private static final String[] POSSIBLE_NCX_ITEM_IDS = new String[]{"toc", "ncx", "ncxtoc"};
 
 
@@ -104,7 +103,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
         Element manifestElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.manifest);
         Resources result = new Resources();
         if (manifestElement == null) {
-            log.error("Package document does not contain element " + OPFTags.manifest);
+            log.severe("Package document does not contain element " + OPFTags.manifest);
             return result;
         }
         NodeList itemElements = manifestElement.getElementsByTagNameNS(NAMESPACE_OPF, OPFTags.item);
@@ -116,12 +115,12 @@ public class PackageDocumentReader extends PackageDocumentBase {
             try {
                 href = URLDecoder.decode(href, Constants.CHARACTER_ENCODING);
             } catch (UnsupportedEncodingException e) {
-                log.error(e.getMessage());
+                log.severe(e.getMessage());
             }
             String mediaTypeName = DOMUtil.getAttribute(itemElement, NAMESPACE_OPF, OPFAttributes.media_type);
             Resource resource = resources.remove(href);
             if (resource == null) {
-                log.error("resource with href '" + href + "' not found");
+                log.severe("resource with href '" + href + "' not found");
                 continue;
             }
             resource.setId(id);
@@ -169,12 +168,12 @@ public class PackageDocumentReader extends PackageDocumentBase {
             }
             Resource resource = resources.getByHref(StringUtil.substringBefore(resourceHref, Constants.FRAGMENT_SEPARATOR_CHAR));
             if (resource == null) {
-                log.error("Guide is referencing resource with href " + resourceHref + " which could not be found");
+                log.severe("Guide is referencing resource with href " + resourceHref + " which could not be found");
                 continue;
             }
             String type = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.type);
             if (StringUtil.isBlank(type)) {
-                log.error("Guide is referencing resource with href " + resourceHref + " which is missing the 'type' attribute");
+                log.severe("Guide is referencing resource with href " + resourceHref + " which is missing the 'type' attribute");
                 continue;
             }
             String title = DOMUtil.getAttribute(referenceElement, NAMESPACE_OPF, OPFAttributes.title);
@@ -227,7 +226,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 
         Element spineElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.spine);
         if (spineElement == null) {
-            log.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
+            log.severe("Element " + OPFTags.spine + " not found in package document, generating one automatically");
             return generateSpineFromResources(resources);
         }
         Spine result = new Spine();
@@ -239,7 +238,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
             Element spineItem = (Element) spineNodes.item(i);
             String itemref = DOMUtil.getAttribute(spineItem, NAMESPACE_OPF, OPFAttributes.idref);
             if (StringUtil.isBlank(itemref)) {
-                log.error("itemref with missing or empty idref"); // XXX
+                log.severe("itemref with missing or empty idref"); // XXX
                 continue;
             }
             String id = idMapping.get(itemref);
@@ -248,7 +247,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
             }
             Resource resource = resources.getByIdOrHref(id);
             if (resource == null) {
-                log.error("resource with id \'" + id + "\' not found");
+                log.severe("resource with id \'" + id + "\' not found");
                 continue;
             }
 
@@ -323,7 +322,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
         }
 
         if (tocResource == null) {
-            log.error("Could not find table of contents resource. Tried resource with id '" + tocResourceId + "', " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
+            log.severe("Could not find table of contents resource. Tried resource with id '" + tocResourceId + "', " + Constants.DEFAULT_TOC_ID + ", " + Constants.DEFAULT_TOC_ID.toUpperCase() + " and any NCX resource.");
         }
         return tocResource;
     }
@@ -380,7 +379,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
         for (String coverHref : coverHrefs) {
             Resource resource = book.getResources().getByHref(coverHref);
             if (resource == null) {
-                log.error("Cover resource " + coverHref + " not found");
+                log.severe("Cover resource " + coverHref + " not found");
                 continue;
             }
             if (resource.getMediaType() == MediatypeService.XHTML) {

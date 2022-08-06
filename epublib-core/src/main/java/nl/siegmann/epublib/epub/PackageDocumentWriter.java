@@ -4,8 +4,6 @@ import nl.siegmann.epublib.Constants;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static nl.siegmann.epublib.domain.OpfResource.DEFAULT_VERSION;
 
@@ -25,7 +24,7 @@ import static nl.siegmann.epublib.domain.OpfResource.DEFAULT_VERSION;
  */
 public class PackageDocumentWriter extends PackageDocumentBase {
 
-    private static final Logger log = LoggerFactory.getLogger(PackageDocumentWriter.class);
+    private static final Logger log = Logger.getLogger(PackageDocumentWriter.class.getName());
 
     public static void write(EpubWriter epubWriter, XmlSerializer serializer, Book book) throws IOException {
         try {
@@ -144,15 +143,15 @@ public class PackageDocumentWriter extends PackageDocumentBase {
             return;
         }
         if (StringUtil.isBlank(resource.getId())) {
-            log.error("resource id must not be empty (href: " + resource.getHref() + ", mediatype:" + resource.getMediaType() + ")");
+            log.severe("resource id must not be empty (href: " + resource.getHref() + ", mediatype:" + resource.getMediaType() + ")");
             return;
         }
         if (StringUtil.isBlank(resource.getHref())) {
-            log.error("resource href must not be empty (id: " + resource.getId() + ", mediatype:" + resource.getMediaType() + ")");
+            log.severe("resource href must not be empty (id: " + resource.getId() + ", mediatype:" + resource.getMediaType() + ")");
             return;
         }
         if (resource.getMediaType() == null) {
-            log.error("resource mediatype must not be empty (id: " + resource.getId() + ", href:" + resource.getHref() + ")");
+            log.severe("resource mediatype must not be empty (id: " + resource.getId() + ", href:" + resource.getHref() + ")");
             return;
         }
         serializer.startTag(NAMESPACE_OPF, OPFTags.item);

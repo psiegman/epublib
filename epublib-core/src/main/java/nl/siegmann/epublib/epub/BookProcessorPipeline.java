@@ -3,11 +3,11 @@ package nl.siegmann.epublib.epub;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nl.siegmann.epublib.domain.Book;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A book processor that combines several other bookprocessors
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BookProcessorPipeline implements BookProcessor {
 
-	private Logger log = LoggerFactory.getLogger(BookProcessorPipeline.class);
+	private Logger log = Logger.getLogger(BookProcessorPipeline.class.getName());
 	private List<BookProcessor> bookProcessors;
 
 	public BookProcessorPipeline() {
@@ -41,7 +41,7 @@ public class BookProcessorPipeline implements BookProcessor {
 			try {
 				book = bookProcessor.processBook(book);
 			} catch(Exception e) {
-				log.error(e.getMessage(), e);
+				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		return book;

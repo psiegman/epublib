@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,8 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nl.siegmann.epublib.Constants;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,7 +29,7 @@ import org.xmlpull.v1.XmlSerializer;
  */
 public class EpubProcessorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(EpubProcessorSupport.class);
+	private static final Logger log = Logger.getLogger(EpubProcessorSupport.class.getName());
 	
 	protected static DocumentBuilderFactory documentBuilderFactory;
 	
@@ -82,7 +81,7 @@ public class EpubProcessorSupport {
 			result.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
 			result.setOutput(out);
 		} catch (Exception e) {
-			log.error("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
+			log.severe("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return result;
 	}
@@ -114,7 +113,7 @@ public class EpubProcessorSupport {
 			result = documentBuilderFactory.newDocumentBuilder();
 			result.setEntityResolver(getEntityResolver());
 		} catch (ParserConfigurationException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}

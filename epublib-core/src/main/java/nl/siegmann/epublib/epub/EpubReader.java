@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.jazzlib.ZipFile;
 import net.sf.jazzlib.ZipInputStream;
@@ -13,8 +15,6 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
  */
 public class EpubReader {
 
-	private static final Logger log = LoggerFactory.getLogger(EpubReader.class);
+	private static final Logger log = Logger.getLogger(EpubReader.class.getName());
 	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
 	
 	public Book readEpub(InputStream in) throws IOException {
@@ -127,7 +127,7 @@ public class EpubReader {
 		try {
 			PackageDocumentReader.read(packageResource, this, book, resources);
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return packageResource;
 	}
@@ -145,7 +145,7 @@ public class EpubReader {
 			Element rootFileElement = (Element) ((Element) document.getDocumentElement().getElementsByTagName("rootfiles").item(0)).getElementsByTagName("rootfile").item(0);
 			result = rootFileElement.getAttribute("full-path");
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		if(StringUtil.isBlank(result)) {
 			result = defaultResult;

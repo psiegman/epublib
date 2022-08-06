@@ -2,8 +2,6 @@ package nl.siegmann.epublib.epub;
 
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Reads the package document metadata.
@@ -25,13 +24,13 @@ import java.util.Map;
 // package
 class PackageDocumentMetadataReader extends PackageDocumentBase {
 
-    private static final Logger log = LoggerFactory.getLogger(PackageDocumentMetadataReader.class);
+    private static final Logger log = Logger.getLogger(PackageDocumentMetadataReader.class.getName());
 
     public static Metadata readMetadata(Document packageDocument) {
         Metadata result = new Metadata();
         Element metadataElement = DOMUtil.getFirstElementByTagNameNS(packageDocument.getDocumentElement(), NAMESPACE_OPF, OPFTags.metadata);
         if (metadataElement == null) {
-            log.error("Package does not contain element " + OPFTags.metadata);
+            log.severe("Package does not contain element " + OPFTags.metadata);
             return result;
         }
         result.setTitles(readTitles(metadataElement));
@@ -182,7 +181,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
                 date = new Date(DOMUtil.getTextChildrenContent(dateElement), dateElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.event));
                 result.add(date);
             } catch (IllegalArgumentException e) {
-                log.error(e.getMessage());
+                log.severe(e.getMessage());
             }
         }
         return result;
@@ -232,7 +231,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
     private static List<Identifier> readIdentifiers(Element metadataElement) {
         NodeList identifierElements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
         if (identifierElements.getLength() == 0) {
-            log.error("Package does not contain element " + DCTags.identifier);
+            log.severe("Package does not contain element " + DCTags.identifier);
             return new ArrayList<Identifier>();
         }
         String bookIdId = getBookIdId(metadataElement.getOwnerDocument());

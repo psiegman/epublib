@@ -34,13 +34,11 @@ import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class Viewer {
 	
-	static final Logger log = LoggerFactory.getLogger(Viewer.class);
+	static final Logger log = Logger.getLogger(Viewer.class);
 	private final JFrame mainWindow;
 	private BrowseBar browseBar;
 	private JSplitPane mainSplitPane; 
@@ -57,7 +55,7 @@ public class Viewer {
 			book = (new EpubReader()).readEpub(bookStream);
 			gotoBook(book);
 		} catch (IOException e) {
-			log.error(e.getMessage(), e);
+			log.severe(e.getMessage(), e);
 		}
 	}
 
@@ -161,7 +159,7 @@ public class Viewer {
 					Book book = (new EpubReader()).readEpub(new FileInputStream(selectedFile));
 					gotoBook(book);
 				} catch (Exception e1) {
-					log.error(e1.getMessage(), e1);
+					log.severe(e1.getMessage(), e1);
 				}
 			}
 		});
@@ -192,7 +190,7 @@ public class Viewer {
 				try {
 					(new EpubWriter()).write(navigator.getBook(), new FileOutputStream(selectedFile));
 				} catch (Exception e1) {
-					log.error(e1.getMessage(), e1);
+					log.severe(e1.getMessage(), e1);
 				}
 			}
 		});
@@ -311,7 +309,7 @@ public class Viewer {
 			try {
 				result = new FileInputStream(bookFile);
 			} catch (Exception e) {
-				log.error("Unable to open " + bookFile, e);
+				log.severe("Unable to open " + bookFile, e);
 			}
 		}
 		if (result == null) {
@@ -325,7 +323,7 @@ public class Viewer {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			log.error("Unable to set native look and feel", e);
+			log.severe("Unable to set native look and feel", e);
 		}
 
 		final InputStream bookStream = getBookInputStream(args);

@@ -24,7 +24,7 @@ import org.slf4j.Logger;import org.slf4j.LoggerFactory;
  */
 public class VFSUtil {
 	
-	private static final Logger log = LoggerFactory.getLogger(VFSUtil.class);
+	private static final Logger log = Logger.getLogger(VFSUtil.class);
 
 	public static Resource createResource(FileObject rootDir, FileObject file, String inputEncoding) throws IOException {
 		MediaType mediaType = MediatypeService.determineMediaType(file.getName().getBaseName());
@@ -57,8 +57,8 @@ public class VFSUtil {
 			try {
 				result = VFS.getManager().resolveFile(new File("."), inputLocation);
 			} catch (Exception e1) {
-				log.error(e.getMessage(), e);
-				log.error(e1.getMessage(), e);
+				log.severe(e.getMessage(), e);
+				log.severe(e1.getMessage(), e);
 			}
 		}
 		return result;
@@ -80,8 +80,8 @@ public class VFSUtil {
 			try {
 				result = new FileInputStream(inputLocation);
 			} catch (FileNotFoundException e1) {
-				log.error(e.getMessage(), e);
-				log.error(e1.getMessage(), e);
+				log.severe(e.getMessage(), e);
+				log.severe(e1.getMessage(), e);
 			}
 		}
 		return result;

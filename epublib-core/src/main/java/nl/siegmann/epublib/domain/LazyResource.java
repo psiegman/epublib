@@ -4,14 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A Resource that loads its data only on-demand.
@@ -28,7 +27,7 @@ public class LazyResource extends Resource {
 	private String filename;
 	private long cachedSize;
 	
-	private static final Logger LOG = LoggerFactory.getLogger(LazyResource.class);
+	private static final Logger LOG = Logger.getLogger(LazyResource.class.getName());
 	
 	/**
 	 * Creates a Lazy resource, by not actually loading the data for this entry.
@@ -102,8 +101,9 @@ public class LazyResource extends Resource {
 	public byte[] getData() throws IOException {
 		
 		if ( data == null ) {
-			
-			LOG.debug("Initializing lazy resource " + filename + "#" + this.getHref() );
+			if (LOG.isLoggable(Level.FINE)) {
+				LOG.fine("Initializing lazy resource " + filename + "#" + this.getHref());
+			}
 			
 			InputStream in = getResourceStream();
 			byte[] readData = IOUtil.toByteArray(in, (int) this.cachedSize);

@@ -1,11 +1,12 @@
 package nl.siegmann.epublib.epub;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.jazzlib.ZipEntry;
 import net.sf.jazzlib.ZipException;
@@ -19,8 +20,6 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.CollectionUtil;
 import nl.siegmann.epublib.util.ResourceUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Loads Resources from inputStreams, ZipFiles, etc
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ResourcesLoader {
-	private static final Logger LOG = LoggerFactory.getLogger(ResourcesLoader.class);
+	private static final Logger log = Logger.getLogger(ResourcesLoader.class.getName());
 
 	/**
 	 * Loads the entries of the zipFile as resources.
@@ -130,7 +129,7 @@ public class ResourcesLoader {
 			//see <a href="https://github.com/psiegman/epublib/issues/122">Issue #122 Infinite loop</a>.
 			//when reading a file that is not a real zip archive or a zero length file, zipInputStream.getNextEntry()
 			//throws an exception and does not advance, so loadResources enters an infinite loop
-			LOG.error("Invalid or damaged zip file.", e);
+			log.log(Level.SEVERE, "Invalid or damaged zip file.", e);
 			try { zipInputStream.closeEntry(); } catch (Exception ignored) {}
 			throw e;
 		}
