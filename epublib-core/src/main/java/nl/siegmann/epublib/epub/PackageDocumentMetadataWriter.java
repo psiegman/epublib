@@ -1,29 +1,25 @@
 package nl.siegmann.epublib.epub;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import nl.siegmann.epublib.Constants;
+import nl.siegmann.epublib.domain.Author;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Date;
+import nl.siegmann.epublib.domain.Identifier;
+import nl.siegmann.epublib.domain.Relator;
+import nl.siegmann.epublib.domain.Title;
+import nl.siegmann.epublib.util.StringUtil;
+import org.xmlpull.v1.XmlSerializer;
 
 import javax.xml.namespace.QName;
-
-import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.domain.*;
-import nl.siegmann.epublib.util.StringUtil;
-
-import org.xmlpull.v1.XmlSerializer;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 
 	
 	/**
 	 * Writes the book's metadata.
-	 * 
-	 * @param book
-	 * @param serializer
-	 * @throws IOException 
-	 * @throws IllegalStateException 
-	 * @throws IllegalArgumentException 
 	 */
 	public static void writeMetaData(Book book, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
         serializer.setPrefix(PREFIX_DUBLIN_CORE, NAMESPACE_DUBLIN_CORE);
@@ -39,11 +35,11 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 			writeIdentifiersEpub2(book.getMetadata().getIdentifiers(), serializer);
 		}
 		writeTitles(book.getMetadata().getTitles(), serializer);
-		writeSimpleMetdataElements(DCTags.subject, book.getMetadata().getSubjects(), serializer);
-		writeSimpleMetdataElements(DCTags.description, book.getMetadata().getDescriptions(), serializer);
-		writeSimpleMetdataElements(DCTags.publisher, book.getMetadata().getPublishers(), serializer);
-		writeSimpleMetdataElements(DCTags.type, book.getMetadata().getTypes(), serializer);
-		writeSimpleMetdataElements(DCTags.rights, book.getMetadata().getRights(), serializer);
+		writeSimpleMetadataElements(DCTags.subject, book.getMetadata().getSubjects(), serializer);
+		writeSimpleMetadataElements(DCTags.description, book.getMetadata().getDescriptions(), serializer);
+		writeSimpleMetadataElements(DCTags.publisher, book.getMetadata().getPublishers(), serializer);
+		writeSimpleMetadataElements(DCTags.type, book.getMetadata().getTypes(), serializer);
+		writeSimpleMetadataElements(DCTags.rights, book.getMetadata().getRights(), serializer);
 
 		// write authors
 		int countAuthors = 1;
@@ -101,7 +97,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 			}
 		}
 
-		// write coverimage
+		// write cover image
 		if(book.getCoverImage() != null) { // write the cover image
 			serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.name, OPFValues.meta_cover);
@@ -164,7 +160,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 
 		if(!(
                 null == author.getScheme()
-                        && (null == author.getRelator() || Relator.AUTHOR.equals(author.getRelator().getCode()))
+                        && (null == author.getRelator() || Relator.AUTHOR.getName().equals(author.getRelator().getCode()))
         )){
 			serializer.startTag(NAMESPACE_OPF, OPFTags.meta);
 			serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, "refines", "#" + authorId);
@@ -185,7 +181,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 
 	}
 
-	private static void writeSimpleMetdataElements(String tagName, List<String> values, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+	private static void writeSimpleMetadataElements(String tagName, List<String> values, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
 		for(String value: values) {
 			if (StringUtil.isBlank(value)) {
 				continue;
@@ -201,13 +197,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 	 * Writes out the complete list of Identifiers to the package document.
 	 * The first identifier for which the bookId is true is made the bookId identifier.
 	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-	 * 
-	 * @param identifiers
-	 * @param serializer
-	 * @throws IOException 
-	 * @throws IllegalStateException 
-	 * @throws IllegalArgumentException 
-	 * @
 	 */
 	private static void writeIdentifiersEpub2(List<Identifier> identifiers, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
 		Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);
@@ -238,13 +227,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase {
 	 * Writes out the complete list of Identifiers to the package document.
 	 * The first identifier for which the bookId is true is made the bookId identifier.
 	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-	 *
-	 * @param identifiers
-	 * @param serializer
-	 * @throws IOException
-	 * @throws IllegalStateException
-	 * @throws IllegalArgumentException
-	 * @
 	 */
 	private static void writeIdentifiersEpub3(List<Identifier> identifiers, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException  {
 		Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);

@@ -1,12 +1,16 @@
 package nl.siegmann.epublib.epub;
 
 import nl.siegmann.epublib.Constants;
-import nl.siegmann.epublib.domain.*;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.domain.Guide;
+import nl.siegmann.epublib.domain.GuideReference;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Spine;
+import nl.siegmann.epublib.domain.SpineReference;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.StringUtil;
 import org.xmlpull.v1.XmlSerializer;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,8 +55,8 @@ public class PackageDocumentWriter extends PackageDocumentBase {
             PackageDocumentMetadataWriter.writeMetaData(book, serializer);
 
             writeManifest(book, epubWriter, serializer);
-            writeSpine(book, epubWriter, serializer);
-            writeGuide(book, epubWriter, serializer);
+            writeSpine(book, serializer);
+            writeGuide(book, serializer);
 
             serializer.endTag(NAMESPACE_OPF, OPFTags.packageTag);
             serializer.endDocument();
@@ -66,16 +70,8 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
     /**
      * Writes the package's spine.
-     *
-     * @param book
-     * @param epubWriter
-     * @param serializer
-     * @throws IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
-     * @throws XMLStreamException
      */
-    private static void writeSpine(Book book, EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+    private static void writeSpine(Book book, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
         serializer.startTag(NAMESPACE_OPF, OPFTags.spine);
         if (null != book.getSpine().getTocResource()) {
             serializer.attribute(EpubWriter.EMPTY_NAMESPACE_PREFIX, OPFAttributes.toc, book.getSpine().getTocResource().getId());
@@ -115,7 +111,7 @@ public class PackageDocumentWriter extends PackageDocumentBase {
     }
 
     private static List<Resource> getAllResourcesSortById(Book book) {
-        List<Resource> allResources = new ArrayList<Resource>(book.getResources().getAll());
+        List<Resource> allResources = new ArrayList<>(book.getResources().getAll());
         Collections.sort(allResources, new Comparator<Resource>() {
 
             @Override
@@ -128,13 +124,6 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
     /**
      * Writes a resources as an item element
-     *
-     * @param resource
-     * @param serializer
-     * @throws IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
-     * @throws XMLStreamException
      */
     private static void writeItem(Book book, Resource resource, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
         if (resource == null ||
@@ -172,10 +161,6 @@ public class PackageDocumentWriter extends PackageDocumentBase {
 
     /**
      * List all spine references
-     *
-     * @throws IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     private static void writeSpineItems(Spine spine, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
         for (SpineReference spineReference : spine.getSpineReferences()) {
@@ -188,17 +173,16 @@ public class PackageDocumentWriter extends PackageDocumentBase {
         }
     }
 
-    private static void writeGuide(Book book, EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+    private static void writeGuide(Book book, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
         serializer.startTag(NAMESPACE_OPF, OPFTags.guide);
-        ensureCoverPageGuideReferenceWritten(book.getGuide(), epubWriter, serializer);
+        ensureCoverPageGuideReferenceWritten(book.getGuide(), serializer);
         for (GuideReference reference : book.getGuide().getReferences()) {
             writeGuideReference(reference, serializer);
         }
         serializer.endTag(NAMESPACE_OPF, OPFTags.guide);
     }
 
-    private static void ensureCoverPageGuideReferenceWritten(Guide guide,
-                                                             EpubWriter epubWriter, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+    private static void ensureCoverPageGuideReferenceWritten(Guide guide, XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
         if (!(guide.getGuideReferencesByType(GuideReference.COVER).isEmpty())) {
             return;
         }

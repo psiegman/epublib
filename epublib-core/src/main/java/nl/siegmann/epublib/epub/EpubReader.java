@@ -27,17 +27,19 @@ import org.w3c.dom.Element;
 public class EpubReader {
 
 	private static final Logger log = Logger.getLogger(EpubReader.class.getName());
-	private BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
+	private final BookProcessor bookProcessor = BookProcessor.IDENTITY_BOOKPROCESSOR;
 	
 	public Book readEpub(InputStream in) throws IOException {
 		return readEpub(in, Constants.CHARACTER_ENCODING);
 	}	
 	
+	@SuppressWarnings("unused")
 	public Book readEpub(ZipInputStream in) throws IOException {
 		return readEpub(in, Constants.CHARACTER_ENCODING);
 	}
 
-    public Book readEpub(ZipFile zipfile) throws IOException {
+    @SuppressWarnings("unused")
+	public Book readEpub(ZipFile zipfile) throws IOException {
         return readEpub(zipfile, Constants.CHARACTER_ENCODING);
     }
 
@@ -47,7 +49,6 @@ public class EpubReader {
 	 * @param in the inputstream from which to read the epub
 	 * @param encoding the encoding to use for the html files within the epub
 	 * @return the Book as read from the inputstream
-	 * @throws IOException
 	 */
 	public Book readEpub(InputStream in, String encoding) throws IOException {
 		return readEpub(new ZipInputStream(in), encoding);
@@ -62,8 +63,8 @@ public class EpubReader {
 	 * @param encoding the encoding for XHTML files
 	 * 
 	 * @return this Book without loading all resources into memory.
-	 * @throws IOException
 	 */
+	@SuppressWarnings("unused")
 	public Book readEpubLazy(ZipFile zipFile, String encoding ) throws IOException {
 		return readEpubLazy(zipFile, encoding, Arrays.asList(MediatypeService.mediatypes) );
 	}
@@ -83,7 +84,6 @@ public class EpubReader {
 	 * @param encoding the encoding for XHTML files
 	 * @param lazyLoadedTypes a list of the MediaType to load lazily
 	 * @return this Book without loading all resources into memory.
-	 * @throws IOException
 	 */
 	public Book readEpubLazy(ZipFile zipFile, String encoding, List<MediaType> lazyLoadedTypes ) throws IOException {
 		Resources resources = ResourcesLoader.loadResources(zipFile, encoding, lazyLoadedTypes);
@@ -98,11 +98,11 @@ public class EpubReader {
     	if (result == null) {
     		result = new Book();
     	}
-    	handleMimeType(result, resources);
+    	handleMimeType(resources);
     	String packageResourceHref = getPackageResourceHref(resources);
     	OpfResource packageResource = processPackageResource(packageResourceHref, result, resources);
     	result.setOpfResource(packageResource);
-    	Resource ncxResource = processNcxResource(packageResource, result);
+    	Resource ncxResource = processNcxResource(result);
     	result.setNcxResource(ncxResource);
     	result = postProcessBook(result);
     	return result;
@@ -116,7 +116,7 @@ public class EpubReader {
 		return book;
 	}
 
-	private Resource processNcxResource(Resource packageResource, Book book) {
+	private Resource processNcxResource(Book book) {
 		return NCXDocument.read(book, this);
 	}
 
@@ -125,7 +125,7 @@ public class EpubReader {
 				resources.remove(packageResourceHref)
 		);
 		try {
-			PackageDocumentReader.read(packageResource, this, book, resources);
+			PackageDocumentReader.read(packageResource, book, resources);
 		} catch (Exception e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}
@@ -153,7 +153,7 @@ public class EpubReader {
 		return result;
 	}
 
-	private void handleMimeType(Book result, Resources resources) {
+	private void handleMimeType(Resources resources) {
 		resources.remove("mimetype");
 	}
 }

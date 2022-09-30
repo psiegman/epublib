@@ -1,5 +1,14 @@
 package nl.siegmann.epublib.epub;
 
+import nl.siegmann.epublib.Constants;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,18 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.logging.Logger;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import nl.siegmann.epublib.Constants;
-
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.xmlpull.v1.XmlSerializer;
 
 /**
  * Various low-level support methods for reading/writing epubs.
@@ -41,8 +38,7 @@ public class EpubProcessorSupport {
 		private String previousLocation;
 		
 		@Override
-		public InputSource resolveEntity(String publicId, String systemId)
-				throws SAXException, IOException {
+		public InputSource resolveEntity(String publicId, String systemId) throws IOException {
 			String resourcePath;
 			if (systemId.startsWith("http:")) {
 				URL url = new URL(systemId);
@@ -98,10 +94,6 @@ public class EpubProcessorSupport {
 		return new EntityResolverImpl();
 	}
 	
-	public DocumentBuilderFactory getDocumentBuilderFactory() {
-		return documentBuilderFactory;
-	}
-
 	/**
 	 * Creates a DocumentBuilder that looks up dtd's and schema's from epublib's classpath.
 	 * 

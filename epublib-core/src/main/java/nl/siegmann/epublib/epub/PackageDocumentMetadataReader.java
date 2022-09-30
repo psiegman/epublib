@@ -97,12 +97,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
     /**
      * consumes meta tags that have a property attribute as defined in the standard. For example:
      * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
-     *
-     * @param metadataElement
-     * @return
      */
     private static Map<QName, String> readOtherProperties(Element metadataElement) {
-        Map<QName, String> result = new HashMap<QName, String>();
+        Map<QName, String> result = new HashMap<>();
 
         NodeList metaTags = metadataElement.getElementsByTagName(OPFTags.meta);
         for (int i = 0; i < metaTags.getLength(); i++) {
@@ -122,12 +119,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
     /**
      * consumes meta tags that have a property attribute as defined in the standard. For example:
      * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
-     *
-     * @param metadataElement
-     * @return
      */
     private static Map<String, String> readMetaProperties(Element metadataElement) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         NodeList metaTags = metadataElement.getElementsByTagName(OPFTags.meta);
         for (int i = 0; i < metaTags.getLength(); i++) {
@@ -145,8 +139,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
         if (packageElement == null) {
             return null;
         }
-        String result = packageElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.uniqueIdentifier);
-        return result;
+        return packageElement.getAttributeNS(NAMESPACE_OPF, OPFAttributes.uniqueIdentifier);
     }
 
     private static List<Author> readCreators(Element metadataElement) {
@@ -159,7 +152,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 
     private static List<Author> readAuthors(String authorTag, Element metadataElement) {
         NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, authorTag);
-        List<Author> result = new ArrayList<Author>(elements.getLength());
+        List<Author> result = new ArrayList<>(elements.getLength());
         for (int i = 0; i < elements.getLength(); i++) {
             Element authorElement = (Element) elements.item(i);
             Author author = createAuthor(authorElement);
@@ -173,7 +166,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
 
     private static List<Date> readDates(Element metadataElement) {
         NodeList elements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.date);
-        List<Date> result = new ArrayList<Date>(elements.getLength());
+        List<Date> result = new ArrayList<>(elements.getLength());
         for (int i = 0; i < elements.getLength(); i++) {
             Element dateElement = (Element) elements.item(i);
             Date date;
@@ -232,10 +225,10 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
         NodeList identifierElements = metadataElement.getElementsByTagNameNS(NAMESPACE_DUBLIN_CORE, DCTags.identifier);
         if (identifierElements.getLength() == 0) {
             log.severe("Package does not contain element " + DCTags.identifier);
-            return new ArrayList<Identifier>();
+            return new ArrayList<>();
         }
         String bookIdId = getBookIdId(metadataElement.getOwnerDocument());
-        List<Identifier> result = new ArrayList<Identifier>(identifierElements.getLength());
+        List<Identifier> result = new ArrayList<>(identifierElements.getLength());
         for (int i = 0; i < identifierElements.getLength(); i++) {
             Element identifierElement = (Element) identifierElements.item(i);
             Scheme scheme = new Scheme(identifierElement.getAttributeNS(NAMESPACE_OPF, DCAttributes.scheme));
@@ -249,10 +242,10 @@ class PackageDocumentMetadataReader extends PackageDocumentBase {
                     Node schemeNode = metaElement.getAttributes().getNamedItem(OPFAttributes.scheme);
                     if (
                             null != refines
-                                    && null != property
-                                    && null != scheme
-                                    && refines.getNodeValue().equals("#" + identifierElement.getAttribute("id"))
-                                    && "identifier-type".equals(property.getNodeValue())
+                            && null != property
+                            && null != schemeNode
+                            && refines.getNodeValue().equals("#" + identifierElement.getAttribute("id"))
+                            && "identifier-type".equals(property.getNodeValue())
                     ) {
                         scheme = new Scheme(schemeNode.getNodeValue(), metaElement.getTextContent());
                     }
