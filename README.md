@@ -16,9 +16,11 @@ This means that reading/writing epub files works on Android.
 ## Command line examples
 
 Set the author of an existing epub
+
 	java -jar epublib-3.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --author Tester,Joe
 
 Set the cover image of an existing epub
+
 	java -jar epublib-3.0-SNAPSHOT.one-jar.jar --in input.epub --out result.epub --cover-image my_cover.jpg
 
 ## Creating an epub programmatically
