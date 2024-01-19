@@ -103,6 +103,9 @@ public class EpubReader {
     	OpfResource packageResource = processPackageResource(packageResourceHref, result, resources);
     	result.setOpfResource(packageResource);
     	Resource ncxResource = processNcxResource(result);
+		if (ncxResource == null) {
+			NavDocument.read(result);
+		}
     	result.setNcxResource(ncxResource);
     	result = postProcessBook(result);
     	return result;

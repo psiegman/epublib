@@ -48,6 +48,7 @@ public class PackageDocumentReader extends PackageDocumentBase {
 
         resources = readManifest(packageDocument, resources, idMapping);
         book.setResources(resources);
+        book.setNavResource(resources.getNavResource());
         readCover(packageDocument, book);
         book.setMetadata(PackageDocumentMetadataReader.readMetadata(packageDocument));
         book.setSpine(readSpine(packageDocument, book.getResources(), idMapping));
