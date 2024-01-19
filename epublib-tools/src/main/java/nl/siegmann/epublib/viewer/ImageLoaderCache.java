@@ -19,8 +19,6 @@ import nl.siegmann.epublib.util.CollectionUtil;
 import org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is a trick to get the JEditorKit to load its images from the epub file instead of from the given url.
@@ -37,7 +35,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 
 	public static final String IMAGE_URL_PREFIX = "http:/";
 
-	private static final Logger log = LoggerFactory.getLogger(ImageLoaderCache.class);
+	private static final Logger log = Logger.getLogger(ImageLoaderCache.class);
 	
 	private Map<String, Image> cache = new HashMap<String, Image>();
 	private Book book;
@@ -74,7 +72,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 		try {
 			document.setBase(new URL(ImageLoaderCache.IMAGE_URL_PREFIX));
 		} catch (MalformedURLException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		setContextResource(navigator.getCurrentResource());
 		document.getDocumentProperties().put("imageCache", this);
@@ -102,7 +100,7 @@ class ImageLoaderCache extends Dictionary<String, Image> {
 		try {
 			result = ImageIO.read(imageResource.getInputStream());
 		} catch (IOException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}

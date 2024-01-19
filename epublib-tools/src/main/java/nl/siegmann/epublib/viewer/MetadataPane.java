@@ -24,12 +24,10 @@ import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MetadataPane extends JPanel implements NavigationEventListener {
 
-	private static final Logger log = LoggerFactory.getLogger(MetadataPane.class);
+	private static final Logger log = Logger.getLogger(MetadataPane.class);
 	
 	private static final long serialVersionUID = -2810193923996466948L;
 	private JScrollPane scrollPane; 
@@ -69,7 +67,7 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 		try {
 			Image image = ImageIO.read(coverImageResource.getInputStream());
 			if (image == null) {
-				log.error("Unable to load cover image from book");
+				log.severe("Unable to load cover image from book");
 				return;
 			}
 			image = image.getScaledInstance(200, -1, Image.SCALE_SMOOTH);
@@ -77,7 +75,7 @@ public class MetadataPane extends JPanel implements NavigationEventListener {
 //			label.setSize(100, 100);
 			contentPanel.add(label, BorderLayout.NORTH);
 		} catch (IOException e) {
-			log.error("Unable to load cover image from book", e.getMessage());
+			log.severe("Unable to load cover image from book", e.getMessage());
 		}
 	}
 	

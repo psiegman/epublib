@@ -16,7 +16,17 @@ public class Author implements Serializable {
 	
 	private String firstname;
 	private String lastname;
-	private Relator relator = Relator.AUTHOR;
+	private Relator relator;
+
+	public Scheme getScheme() {
+		return scheme;
+	}
+
+	public void setScheme(Scheme scheme) {
+		this.scheme = scheme;
+	}
+
+	private Scheme scheme;
 	
 	public Author(String singleName) {
 		this("", singleName);

@@ -6,6 +6,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -22,8 +24,6 @@ import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.ResourceUtil;
 import nl.siegmann.epublib.util.StringUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,7 +44,7 @@ public class NCXDocument {
 	public static final String DEFAULT_NCX_HREF = "toc.ncx";
 	public static final String PREFIX_DTB = "dtb";
 	
-	private static final Logger log = LoggerFactory.getLogger(NCXDocument.class);
+	private static final Logger log = Logger.getLogger(NCXDocument.class.getName());
 
 	private interface NCXTags {
 		String ncx = "ncx";
@@ -79,7 +79,7 @@ public class NCXDocument {
 	public static Resource read(Book book, EpubReader epubReader) {
 		Resource ncxResource = null;
 		if(book.getSpine().getTocResource() == null) {
-			log.error("Book does not contain a table of contents file");
+			log.severe("Book does not contain a table of contents file");
 			return ncxResource;
 		}
 		try {
@@ -89,10 +89,12 @@ public class NCXDocument {
 			}
 			Document ncxDocument = ResourceUtil.getAsDocument(ncxResource);
 			Element navMapElement = DOMUtil.getFirstElementByTagNameNS(ncxDocument.getDocumentElement(), NAMESPACE_NCX, NCXTags.navMap);
-			TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
-			book.setTableOfContents(tableOfContents);
+            if (null != navMapElement) {
+                TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildNodes(), book));
+                book.setTableOfContents(tableOfContents);
+            }
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return ncxResource;
 	}
@@ -129,7 +131,7 @@ public class NCXDocument {
 		String fragmentId = StringUtil.substringAfter(reference, Constants.FRAGMENT_SEPARATOR_CHAR);
 		Resource resource = book.getResources().getByHref(href);
 		if (resource == null) {
-			log.error("Resource with href " + href + " in NCX document not found");
+			log.severe("Resource with href " + href + " in NCX document not found");
 		}
 		TOCReference result = new TOCReference(label, resource, fragmentId);
 		List<TOCReference> childTOCReferences = readTOCReferences(navpointElement.getChildNodes(), book);
@@ -143,7 +145,7 @@ public class NCXDocument {
 		try {
 			result = URLDecoder.decode(result, Constants.CHARACTER_ENCODING);
 		} catch (UnsupportedEncodingException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}
@@ -174,11 +176,11 @@ public class NCXDocument {
 	 * @throws IllegalArgumentException 
 	 */
 	public static void write(XmlSerializer xmlSerializer, Book book) throws IllegalArgumentException, IllegalStateException, IOException {
-		write(xmlSerializer, book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+		write(xmlSerializer, book.getMetadata().getIdentifiers(), book.getTitle().getValue(), book.getMetadata().getAuthors(), book.getTableOfContents());
 	}
 	
 	public static Resource createNCXResource(Book book) throws IllegalArgumentException, IllegalStateException, IOException {
-		return createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+		return createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle().getValue(), book.getMetadata().getAuthors(), book.getTableOfContents());
 	}
 	public static Resource createNCXResource(List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -198,7 +200,7 @@ public class NCXDocument {
 		serializer.startTag(NAMESPACE_NCX, NCXTags.head);
 
 		for(Identifier identifier: identifiers) {
-			writeMetaElement(identifier.getScheme(), identifier.getValue(), serializer);
+			writeMetaElement(identifier.getScheme().getName(), identifier.getValue(), serializer);
 		}
 		
 		writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, serializer);

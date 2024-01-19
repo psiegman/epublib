@@ -8,6 +8,7 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.Resources;
 import nl.siegmann.epublib.service.MediatypeService;
 import nl.siegmann.epublib.util.IOUtil;
+import org.apache.commons.io.input.UnixLineEndingInputStream;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -153,7 +154,7 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals("OEBPS/book1.css", resource.getHref());
 		Assert.assertEquals(MediatypeService.CSS, resource.getMediaType());
 		Assert.assertEquals(65, resource.getData().length);
-		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/book1.css"));
+		expectedData = IOUtil.toByteArray(new UnixLineEndingInputStream(getClass().getResourceAsStream("/book1/book1.css"), false));
 		Assert.assertArrayEquals(expectedData, resource.getData());
 		
 		
@@ -163,7 +164,7 @@ public class ResourcesLoaderTest {
 		Assert.assertEquals("OEBPS/chapter1.html", resource.getHref());
 		Assert.assertEquals(MediatypeService.XHTML, resource.getMediaType());
 		Assert.assertEquals(247, resource.getData().length);
-		expectedData = IOUtil.toByteArray(this.getClass().getResourceAsStream("/book1/chapter1.html"));
+		expectedData = IOUtil.toByteArray(new UnixLineEndingInputStream(getClass().getResourceAsStream("/book1/chapter1.html"), false));
 		Assert.assertArrayEquals(expectedData, resource.getData());
 	}
 }

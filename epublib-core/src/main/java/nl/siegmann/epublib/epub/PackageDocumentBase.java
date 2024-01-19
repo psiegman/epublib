@@ -68,6 +68,11 @@ public class PackageDocumentBase {
 		String version = "version";
 		String scheme = "scheme";
 		String property = "property";
+		String properties = "properties";
+		String refines = "refines";
+		String identifier_type = "identifier-type";
+		String title_type = "title-type";
+		String prefix = "prefix";
 	}
 	
 	protected interface OPFValues {
@@ -75,5 +80,8 @@ public class PackageDocumentBase {
 		String reference_cover = "cover";
 		String no = "no";
 		String generator = "generator";
+		String nav = "nav";
+		String svg = "svg";
+		String scripted = "scripted";
 	}
 }

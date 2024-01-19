@@ -1,5 +1,14 @@
 package nl.siegmann.epublib.epub;
 
+import nl.siegmann.epublib.Constants;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,20 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import nl.siegmann.epublib.Constants;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.xmlpull.v1.XmlSerializer;
+import java.util.logging.Logger;
 
 /**
  * Various low-level support methods for reading/writing epubs.
@@ -30,7 +26,7 @@ import org.xmlpull.v1.XmlSerializer;
  */
 public class EpubProcessorSupport {
 	
-	private static final Logger log = LoggerFactory.getLogger(EpubProcessorSupport.class);
+	private static final Logger log = Logger.getLogger(EpubProcessorSupport.class.getName());
 	
 	protected static DocumentBuilderFactory documentBuilderFactory;
 	
@@ -42,8 +38,7 @@ public class EpubProcessorSupport {
 		private String previousLocation;
 		
 		@Override
-		public InputSource resolveEntity(String publicId, String systemId)
-				throws SAXException, IOException {
+		public InputSource resolveEntity(String publicId, String systemId) throws IOException {
 			String resourcePath;
 			if (systemId.startsWith("http:")) {
 				URL url = new URL(systemId);
@@ -82,7 +77,7 @@ public class EpubProcessorSupport {
 			result.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
 			result.setOutput(out);
 		} catch (Exception e) {
-			log.error("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
+			log.severe("When creating XmlSerializer: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		return result;
 	}
@@ -99,10 +94,6 @@ public class EpubProcessorSupport {
 		return new EntityResolverImpl();
 	}
 	
-	public DocumentBuilderFactory getDocumentBuilderFactory() {
-		return documentBuilderFactory;
-	}
-
 	/**
 	 * Creates a DocumentBuilder that looks up dtd's and schema's from epublib's classpath.
 	 * 
@@ -114,7 +105,7 @@ public class EpubProcessorSupport {
 			result = documentBuilderFactory.newDocumentBuilder();
 			result.setEntityResolver(getEntityResolver());
 		} catch (ParserConfigurationException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		return result;
 	}

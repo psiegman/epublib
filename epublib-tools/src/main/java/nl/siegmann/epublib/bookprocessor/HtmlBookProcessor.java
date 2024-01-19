@@ -9,8 +9,6 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.BookProcessor;
 import nl.siegmann.epublib.service.MediatypeService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for BookProcessors that only manipulate html type resources.
@@ -20,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class HtmlBookProcessor implements BookProcessor {
 
-	private final static Logger log = LoggerFactory.getLogger(HtmlBookProcessor.class); 
+	private final static Logger log = Logger.getLogger(HtmlBookProcessor.class); 
 	public static final String OUTPUT_ENCODING = "UTF-8";
 
 	public HtmlBookProcessor() {
@@ -32,7 +30,7 @@ public abstract class HtmlBookProcessor implements BookProcessor {
 			try {
 				cleanupResource(resource, book);
 			} catch (IOException e) {
-				log.error(e.getMessage(), e);
+				log.severe(e.getMessage(), e);
 			}
 		}
 		return book;

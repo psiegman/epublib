@@ -16,8 +16,6 @@ import org.htmlcleaner.DoctypeToken;
 import org.htmlcleaner.EpublibXmlSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Cleans up regular html into xhtml. Uses HtmlCleaner to do this.
@@ -29,7 +27,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 		BookProcessor {
 
 	@SuppressWarnings("unused")
-	private final static Logger log = LoggerFactory.getLogger(HtmlCleanerBookProcessor.class);
+	private final static Logger log = Logger.getLogger(HtmlCleanerBookProcessor.class);
 
 	private HtmlCleaner htmlCleaner;
 

@@ -36,9 +36,9 @@ public class PackageDocumentMetadataReaderTest {
     }
 
 	@Test	
-    public void testDefaultsToEnglish() {
+    public void testDefaultsToUndefined() {
         Metadata metadata = getMetadata("/opf/test_default_language.opf");
-        assertEquals("en", metadata.getLanguage());
+        assertEquals("und", metadata.getLanguage());
     }
 
     private Metadata getMetadata(String file) {
@@ -84,13 +84,13 @@ public class PackageDocumentMetadataReaderTest {
     	Metadata metadata = PackageDocumentMetadataReader.readMetadata(metadataDocument);
     	
     	// then
-    	Assert.assertEquals("Three Men in a Boat", metadata.getFirstTitle());
+    	Assert.assertEquals("Three Men in a Boat", metadata.getFirstTitle().getValue());
 
     	// test identifier
     	Assert.assertNotNull(metadata.getIdentifiers());
     	Assert.assertEquals(1, metadata.getIdentifiers().size());
     	Identifier identifier = metadata.getIdentifiers().get(0);
-    	Assert.assertEquals("URI", identifier.getScheme());
+    	Assert.assertEquals("URI", identifier.getScheme().getName());
     	Assert.assertEquals("zelda@mobileread.com:2010040720", identifier.getValue());
     	
     	Assert.assertEquals("8", metadata.getMetaAttribute("calibre:rating"));

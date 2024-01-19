@@ -20,16 +20,9 @@ public class Identifier implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 955949951416391810L;
-
-	public interface Scheme {
-		String UUID = "UUID";
-		String ISBN = "ISBN";
-		String URL = "URL";
-		String URI = "URI";
-	}
 	
 	private boolean bookId = false;
-	private String scheme;
+	private Scheme scheme;
 	private String value;
 
 	/**
@@ -40,9 +33,17 @@ public class Identifier implements Serializable {
 	}
 	
 	
-	public Identifier(String scheme, String value) {
+	public Identifier(Scheme scheme, String value) {
 		this.scheme = scheme;
 		this.value = value;
+	}
+
+	public Scheme getScheme() {
+		return scheme;
+	}
+
+	public void setScheme(Scheme scheme) {
+		this.scheme = scheme;
 	}
 
 	/**
@@ -72,12 +73,6 @@ public class Identifier implements Serializable {
 		return result;
 	}
 	
-	public String getScheme() {
-		return scheme;
-	}
-	public void setScheme(String scheme) {
-		this.scheme = scheme;
-	}
 	public String getValue() {
 		return value;
 	}
@@ -104,19 +99,19 @@ public class Identifier implements Serializable {
 	}
 
 	public int hashCode() {
-		return StringUtil.defaultIfNull(scheme).hashCode() ^ StringUtil.defaultIfNull(value).hashCode();
+		return StringUtil.defaultIfNull(scheme.getName()).hashCode() ^ StringUtil.defaultIfNull(value).hashCode();
 	}
 	
 	public boolean equals(Object otherIdentifier) {
 		if(! (otherIdentifier instanceof Identifier)) {
 			return false;
 		}
-		return StringUtil.equals(scheme, ((Identifier) otherIdentifier).scheme)
+		return StringUtil.equals(scheme.getName(), ((Identifier) otherIdentifier).scheme.getName())
 		&& StringUtil.equals(value, ((Identifier) otherIdentifier).value);
 	}
 	
 	public String toString() {
-		if (StringUtil.isBlank(scheme)) {
+		if (StringUtil.isBlank(scheme.getName())) {
 			return "" + value;
 		}
 		return "" + scheme + ":" + value;

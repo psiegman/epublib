@@ -21,8 +21,6 @@ import nl.siegmann.epublib.service.MediatypeService;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,7 +33,7 @@ import org.xml.sax.SAXException;
  */
 public class ToolsResourceUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(ToolsResourceUtil.class);
+	private static Logger log = Logger.getLogger(ToolsResourceUtil.class);
 
 	
 	public static String getTitle(Resource resource) {
@@ -88,7 +86,7 @@ public class ToolsResourceUtil {
 				}
 			}
 		} catch (IOException e) {
-			log.error(e.getMessage());
+			log.severe(e.getMessage());
 		}
 		resource.setTitle(title);
 		return title;

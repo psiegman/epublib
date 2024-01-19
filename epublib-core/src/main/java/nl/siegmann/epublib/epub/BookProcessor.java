@@ -15,7 +15,7 @@ public interface BookProcessor {
 	/**
 	 * A BookProcessor that returns the input book unchanged.
 	 */
-	public BookProcessor IDENTITY_BOOKPROCESSOR = new BookProcessor() {
+	BookProcessor IDENTITY_BOOKPROCESSOR = new BookProcessor() {
 		
 		@Override
 		public Book processBook(Book book) {

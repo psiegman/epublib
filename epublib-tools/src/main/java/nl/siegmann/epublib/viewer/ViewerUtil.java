@@ -6,12 +6,10 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ViewerUtil {
 	
-	private static Logger log = LoggerFactory.getLogger(ViewerUtil.class);
+	private static Logger log = Logger.getLogger(ViewerUtil.class);
 
 	/**
 	 * Creates a button with the given icon. The icon will be loaded from the classpath.
@@ -41,7 +39,7 @@ public class ViewerUtil {
 			Image image = ImageIO.read(ViewerUtil.class.getResourceAsStream(fullIconPath));
 			result = new ImageIcon(image);
 		} catch(Exception e) {
-			log.error("Icon \'" + fullIconPath + "\' not found");
+			log.severe("Icon \'" + fullIconPath + "\' not found");
 		}
 		return result;
 	}

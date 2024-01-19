@@ -5,12 +5,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import nl.siegmann.epublib.domain.OpfResource;
 import org.xmlpull.v1.XmlSerializer;
 
 import nl.siegmann.epublib.domain.Book;
@@ -26,7 +27,7 @@ import nl.siegmann.epublib.util.IOUtil;
  */
 public class EpubWriter {
 	
-	private final static Logger log = LoggerFactory.getLogger(EpubWriter.class); 
+	private final static Logger log = Logger.getLogger(EpubWriter.class.getName()); 
 	
 	// package
 	static final String EMPTY_NAMESPACE_PREFIX = "";
@@ -48,7 +49,13 @@ public class EpubWriter {
 		ZipOutputStream resultStream = new ZipOutputStream(out);
 		writeMimeType(resultStream);
 		writeContainer(resultStream);
-		initTOCResource(book);
+		if(
+                null == book.getOpfResource()
+                || OpfResource.DEFAULT_VERSION.equals(book.getOpfResource().getVersion())
+                || !book.getTableOfContents().getTocReferences().isEmpty()
+        ) {
+            initTOCResource(book);
+        }
 		writeResources(book, resultStream);
 		writePackageDocument(book, resultStream);
 		resultStream.close();
@@ -72,7 +79,7 @@ public class EpubWriter {
 			book.getSpine().setTocResource(tocResource);
 			book.getResources().add(tocResource);
 		} catch (Exception e) {
-			log.error("Error writing table of contents: " + e.getClass().getName() + ": " + e.getMessage());
+			log.severe("Error writing table of contents: " + e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	
@@ -101,7 +108,7 @@ public class EpubWriter {
 			IOUtil.copy(inputStream, resultStream);
 			inputStream.close();
 		} catch(Exception e) {
-			log.error(e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	

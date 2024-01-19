@@ -28,9 +28,19 @@ public class Resources implements Serializable {
 	private static final String IMAGE_PREFIX = "image_";
 	private static final String ITEM_PREFIX = "item_";
 	private int lastId = 1;
-	
+	private Resource navResource;
+
 	private Map<String, Resource> resources = new HashMap<String, Resource>();
-	
+
+	public Resource getNavResource() {
+		return navResource;
+	}
+
+	public void setNavResource(Resource navResource) {
+		this.navResource = navResource;
+	}
+
+
 	/**
 	 * Adds a resource to the resources.
 	 * 

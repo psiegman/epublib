@@ -22,8 +22,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -41,7 +39,7 @@ import org.w3c.dom.NodeList;
 public class CoverpageBookProcessor implements BookProcessor {
 
 	public static int MAX_COVER_IMAGE_SIZE = 999;
-	private static final Logger log = LoggerFactory.getLogger(CoverpageBookProcessor.class);
+	private static final Logger log = Logger.getLogger(CoverpageBookProcessor.class);
 	public static final String DEFAULT_COVER_PAGE_ID = "cover";
 	public static final String DEFAULT_COVER_PAGE_HREF = "cover.html";
 	public static final String DEFAULT_COVER_IMAGE_ID = "cover-image";
@@ -141,7 +139,7 @@ public class CoverpageBookProcessor implements BookProcessor {
 				}
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.severe(e.getMessage(), e);
 		}
 		return null;
 	}
